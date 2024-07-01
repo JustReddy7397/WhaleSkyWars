@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.whaleskywars.api.model.game;
+package ga.justreddy.wiki.whaleskywars.api.model.game.team;
 
 import org.bukkit.Location;
 
@@ -24,6 +24,13 @@ public interface IGameSpawn {
      * @return true if the GameSpawn is used, false otherwise
      */
     boolean isUsed();
+
+    /**
+     * Sets the used state of the GameSpawn.
+     *
+     * @param used the used state to set
+     */
+    void setUsed(boolean used);
 
     /**
      * Returns the cage of the GameSpawn.

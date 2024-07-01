@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.whaleskywars.api.model.game;
+package ga.justreddy.wiki.whaleskywars.api.model.game.team;
 
 import org.bukkit.Location;
 
@@ -12,11 +12,18 @@ import org.bukkit.Location;
 public interface ICage {
 
     /**
-     * Creates the Cage at the given location.
+     * Creates the small Cage at the given location.
      *
      * @param location the location to create the Cage at
      */
-    void create(Location location);
+    void createSmall(Location location);
+
+    /**
+     * Creates the big Cage at the given location.
+     *
+     * @param location the location to create the Cage at
+     */
+    void createBig(Location location);
 
     /**
      * Removes the Cage from the given location.
