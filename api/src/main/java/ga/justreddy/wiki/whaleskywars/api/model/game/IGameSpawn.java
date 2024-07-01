@@ -32,4 +32,11 @@ public interface IGameSpawn {
      */
     ICage getCage();
 
+    /**
+     * Sets the cage of the GameSpawn.
+     *
+     * @param cage the cage to set
+     */
+    void setCage(ICage cage);
+
 }

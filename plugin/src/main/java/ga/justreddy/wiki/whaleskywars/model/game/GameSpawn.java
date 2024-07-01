@@ -11,10 +11,10 @@ public class GameSpawn implements IGameSpawn {
 
     private final Location location;
     private final boolean used;
-    private final ICage cage;
+    private ICage cage;
 
     public GameSpawn(Location location, boolean used, ICage cage) {
-        this.location = location;
+        this.location = location.clone().add(0.5D, 0.0D, 0.5D);
         this.used = used;
         this.cage = cage;
     }
@@ -32,5 +32,10 @@ public class GameSpawn implements IGameSpawn {
     @Override
     public ICage getCage() {
         return cage;
+    }
+
+    @Override
+    public void setCage(ICage cage) {
+        this.cage = cage;
     }
 }
