@@ -9,14 +9,14 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     private static WhaleSkyWars instance;
 
-    public static WhaleSkyWars getInstance() {
-        return instance;
-    }
-
     // Version specific
     private INms nms;
     private IWorldEdit worldEdit;
     private ISchematic schematic;
+
+    public static WhaleSkyWars getInstance() {
+        return instance;
+    }
 
     @Override
     public void onLoad() {

@@ -5,6 +5,5 @@ package ga.justreddy.wiki.whaleskywars.manager;
  */
 public class CageManager {
 
-    
 
 }
