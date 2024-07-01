@@ -20,19 +20,18 @@ public class PreGamePhase implements IPhase {
         game.assignTeams();
 
         if (game.getWaitingSpawn() != null) {
-           game.getWaitingCuboid().clear();
+            game.getWaitingCuboid().clear();
 
-           game.getTeams().forEach(team -> {
-               IGameSpawn gameSpawn = team.getGameSpawn();
-               if (gameSpawn.isUsed()) return;
-               gameSpawn.setUsed(true);
+            game.getTeams().forEach(team -> {
+                IGameSpawn gameSpawn = team.getGameSpawn();
+                if (gameSpawn.isUsed()) return;
+                gameSpawn.setUsed(true);
 
-               int cageId = 0; // TODO
+                int cageId = 0; // TODO
 
-           });
+            });
 
         }
-
 
 
     }
