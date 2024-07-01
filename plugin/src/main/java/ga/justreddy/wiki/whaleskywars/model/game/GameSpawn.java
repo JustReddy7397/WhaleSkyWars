@@ -1,7 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
-import ga.justreddy.wiki.whaleskywars.api.model.game.ICage;
-import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSpawn;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.ICage;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import org.bukkit.Location;
 
 /**
@@ -10,7 +10,7 @@ import org.bukkit.Location;
 public class GameSpawn implements IGameSpawn {
 
     private final Location location;
-    private final boolean used;
+    private boolean used;
     private ICage cage;
 
     public GameSpawn(Location location, boolean used, ICage cage) {
@@ -27,6 +27,11 @@ public class GameSpawn implements IGameSpawn {
     @Override
     public boolean isUsed() {
         return used;
+    }
+
+    @Override
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
     @Override

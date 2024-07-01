@@ -7,7 +7,11 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
+import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
+import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
+import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
+import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,31 +26,27 @@ public class Game implements IGame {
 
     private final String name;
     private final String displayName;
-
+    private final ITeamAssigner assigner = new TeamAssigner();
+    private final FileConfiguration config;
     private GameState state;
     private GameMode mode;
-
     private List<IGamePlayer> players;
     private List<IGameTeam> teams;
     private List<IGamePlayer> spectators;
-
     private Map<UUID, Integer> kills;
-
     private ICuboid waitingCuboid;
     private ICuboid gameCuboid;
-
     private Location waitingSpawn;
     private Location spectatorSpawn;
-
     private int minimumPlayers;
     private int maximumPlayers;
     private int teamSize;
-
-    private final ITeamAssigner assigner = new TeamAssigner();
-
-    private final FileConfiguration config;
-
+    private PhaseHandler phaseHandler;
     private World world;
+
+    private AbstractTimer startingTimer;
+    private AbstractTimer endingTimer;
+    private AbstractTimer preGameTimer;
 
     public Game(String name, FileConfiguration config) {
         this.name = name;
@@ -84,6 +84,11 @@ public class Game implements IGame {
     }
 
     @Override
+    public int getPlayerCount() {
+        return getPlayers().size();
+    }
+
+    @Override
     public List<IGamePlayer> getPlayers() {
         return new ArrayList<>(players);
     }
@@ -101,6 +106,11 @@ public class Game implements IGame {
     @Override
     public List<IGameTeam> getTeams() {
         return new ArrayList<>(teams);
+    }
+
+    @Override
+    public Set<IGameTeam> getRandomTeams() {
+        return new HashSet<>(teams);
     }
 
     @Override
@@ -174,8 +184,31 @@ public class Game implements IGame {
     }
 
     @Override
-    public void init(World world) {
+    public AbstractTimer getStartingTimer() {
+        return startingTimer;
+    }
 
+    @Override
+    public AbstractTimer getPreGameTimer() {
+        return preGameTimer;
+    }
+
+    @Override
+    public AbstractTimer getEndingTimer() {
+        return endingTimer;
+    }
+
+    @Override
+    public void init(World world) {
+        this.world = world;
+
+        // TODO Load all the data from the config
+        this.startingTimer = new StartingTimer(10);
+        this.endingTimer = new EndingTimer(10);
+        this.preGameTimer = new PreGameTimer(10);
+
+        // LAST
+        this.phaseHandler = new PhaseHandler(this);
     }
 
     @Override
@@ -210,12 +243,12 @@ public class Game implements IGame {
 
     @Override
     public void onGamePlayerJoin(IGamePlayer player) {
-
+        // TODO
     }
 
     @Override
     public void onGamePlayerJoin(IGamePlayer player, IGameTeam team) {
-
+        // TODO
     }
 
     @Override
@@ -225,16 +258,31 @@ public class Game implements IGame {
 
     @Override
     public void onGamePlayerLeave(IGamePlayer player, boolean isSilent) {
-
+        // TODO
     }
 
     @Override
     public void onCountDown() {
-
+        phaseHandler.onTick();
     }
 
     @Override
     public void restart() {
+        // TODO
+    }
 
+    @Override
+    public void goToNextPhase() {
+        phaseHandler.nextPhase();
+    }
+
+    @Override
+    public void assignTeams() {
+        assigner.assign(this);
+    }
+
+    // No interface method because I don't want people to use this.
+    public PhaseHandler getPhaseHandler() {
+        return phaseHandler;
     }
 }

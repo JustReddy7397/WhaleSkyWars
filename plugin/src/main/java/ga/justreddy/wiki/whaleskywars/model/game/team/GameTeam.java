@@ -1,7 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.model.game.team;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSpawn;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSpawn;
 import org.bukkit.Location;

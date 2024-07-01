@@ -4,11 +4,13 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -26,6 +28,8 @@ public interface IGame {
 
     int getTeamSize();
 
+    int getPlayerCount();
+
     List<IGamePlayer> getPlayers();
 
     List<IGamePlayer> getAlivePlayers();
@@ -33,6 +37,8 @@ public interface IGame {
     List<IGamePlayer> getSpectators();
 
     List<IGameTeam> getTeams();
+
+    Set<IGameTeam> getRandomTeams();
 
     List<IGameTeam> getAliveTeams();
 
@@ -62,6 +68,12 @@ public interface IGame {
 
     boolean isGameMode(GameMode gameMode);
 
+    AbstractTimer getStartingTimer();
+
+    AbstractTimer getPreGameTimer();
+
+    AbstractTimer getEndingTimer();
+
     void init(World world);
 
     void sendMessage(List<IGamePlayer> players, String message);
@@ -87,5 +99,9 @@ public interface IGame {
     void onCountDown();
 
     void restart();
+
+    void goToNextPhase();
+
+    void assignTeams();
 
 }

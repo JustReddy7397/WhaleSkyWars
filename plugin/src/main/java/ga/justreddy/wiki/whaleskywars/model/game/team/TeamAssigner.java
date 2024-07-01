@@ -1,11 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.model.game.team;
 
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
+import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author JustReddy
@@ -17,7 +18,38 @@ public class TeamAssigner implements ITeamAssigner {
     @Override
     public void assign(IGame game) {
 
+        if (game.getPlayerCount() > game.getTeamSize() && game.getTeamSize() > 1) {
+            // Parties support eventually
+            LinkedList<List<IGamePlayer>> teams = new LinkedList<>();
+            if (!teams.isEmpty()) {
+                for (IGameTeam team : game.getTeams()) {
+                    teams.sort(Comparator.comparing(List::size));
+                    if (teams.get(0).isEmpty()) break;
+                    for (int i = 0; i < game.getTeamSize() && team.getPlayers().size() < game.getTeamSize(); i++) {
+                        if (teams.get(0).size() > i) {
+                            IGamePlayer toAdd = teams.get(0).remove(0);
+                            toAdd.getPlayer().ifPresent(Player::closeInventory);
+                            team.addPlayer(toAdd);
+                            skip.add(toAdd.getUniqueId());
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
+        for (IGamePlayer remaining : game.getPlayers()) {
+            if (skip.contains(remaining.getUniqueId())) continue;
+            for (IGameTeam team : game.getRandomTeams()) {
+                if (team.getPlayers().size() < game.getTeamSize()) {
+                    remaining.getPlayer().ifPresent(Player::closeInventory);
+                    team.addPlayer(remaining);
+                    remaining.setGameTeam(team);
+                    break;
+                }
+            }
+        }
 
     }
 }
