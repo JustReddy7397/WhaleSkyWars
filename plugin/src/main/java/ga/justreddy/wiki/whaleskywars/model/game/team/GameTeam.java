@@ -3,26 +3,25 @@ package ga.justreddy.wiki.whaleskywars.model.game.team;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.model.game.GameSpawn;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author JustReddy
- */
 public class GameTeam implements IGameTeam {
 
     private final String id;
     private final List<IGamePlayer> players;
-    private final List<IGameSpawn> spawns;
+    private final IGameSpawn gameSpawn;
     private final Location spawnLocation;
 
-    public GameTeam(String id, int size, Location spawnLocation) {
+    public GameTeam(String id, Location spawnLocation) {
         this.id = id;
         this.players = new ArrayList<>();
-        this.spawns = new ArrayList<>();
+        // The cage will be set once the game starts
+        this.gameSpawn = new GameSpawn(spawnLocation, false, null);
         this.spawnLocation = spawnLocation;
     }
 
@@ -49,8 +48,8 @@ public class GameTeam implements IGameTeam {
     }
 
     @Override
-    public List<IGameSpawn> getGameSpawns() {
-        return spawns;
+    public IGameSpawn getGameSpawn() {
+        return gameSpawn;
     }
 
     @Override

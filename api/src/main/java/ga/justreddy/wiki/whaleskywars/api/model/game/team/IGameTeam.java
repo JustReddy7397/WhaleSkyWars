@@ -7,9 +7,11 @@ import org.bukkit.Location;
 import java.util.List;
 
 /**
- * Represents a GameSpawn in the WhaleSkyWars game.
- * A GameSpawn is a location where players can spawn in the game.
- * Each GameSpawn has a location, a state of being used, and a cage.
+ * Represents a GameTeam in the WhaleSkyWars game.
+ * A GameTeam is a group of players in the game.
+ * Each GameTeam has an id, a list of players, a list of living players,
+ * a list of spectator players, a {@link IGameSpawn} GameSpawn, a size
+ * and methods to add, check and remove players.
  *
  * @author JustReddy
  */
@@ -44,11 +46,11 @@ public interface IGameTeam {
     List<IGamePlayer> getSpectatorPlayers();
 
     /**
-     * Returns the list of game spawns for the GameTeam.
+     * Returns the GameSpawn of the GameTeam.
      *
-     * @return the list of game spawns
+     * @return the GameSpawn of the GameTeam
      */
-    List<IGameSpawn> getGameSpawns();
+    IGameSpawn getGameSpawn();
 
     /**
      * Returns the size of the GameTeam.
