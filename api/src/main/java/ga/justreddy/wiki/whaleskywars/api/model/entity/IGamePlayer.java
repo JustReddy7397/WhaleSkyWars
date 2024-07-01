@@ -2,7 +2,9 @@ package ga.justreddy.wiki.whaleskywars.api.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SpectralArrow;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,5 +58,47 @@ public interface IGamePlayer {
      * @return true if the GamePlayer is dead, false otherwise
      */
     boolean isDead();
+
+    /**
+     * Sends a message to the GamePlayer.
+     * @param message the message to send
+     */
+    void sendMessage(String message);
+
+    /**
+     * Sends a list of messages to the GamePlayer.
+     * @param messages the list of messages to send
+     */
+    void sendMessages(List<String> messages);
+
+    /**
+     * Sends a list of messages to the GamePlayer.
+     * @param messages the list of messages to send
+     */
+    void sendMessages(String... messages);
+
+    /**
+     * Sends a title to the GamePlayer.
+     * @param title the title to send
+     * @param subtitle the subtitle to send
+     * @param fadeIn the fade in time
+     * @param stay the stay time
+     * @param fadeOut the fade out time
+     */
+    void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut);
+
+    /**
+     * Sends an action bar message to the GamePlayer.
+     * @param message the message to send
+     */
+    void sendActionBar(String message);
+
+    /**
+     * Sends a sound to the GamePlayer.
+     * @param sound the sound to send
+     * @param volume the volume of the sound
+     * @param pitch the pitch of the sound
+     */
+    void sendSound(String sound, float volume, float pitch);
 
 }
