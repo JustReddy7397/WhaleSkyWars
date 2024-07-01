@@ -25,8 +25,12 @@ repositories {
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
     compileOnly "net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT"
+    // Gradle dumb dumb, doesn't know the maven dependency for bungeecord-chat
     implementation files("D:\\JARS\\bungeecord-chat-1.20-R0.2.jar")
     compileOnly project(":api")
+    // Needed for methods to copy maps across servers
+    // The API doesn't have the methods I need
+    compileOnly files("D:\\JARS\\slimeworldmanager-plugin-2.2.1.jar")
 }
 
 def targetJavaVersion = 8
