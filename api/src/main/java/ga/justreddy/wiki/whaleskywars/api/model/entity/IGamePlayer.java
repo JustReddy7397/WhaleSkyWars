@@ -1,8 +1,8 @@
 package ga.justreddy.wiki.whaleskywars.api.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SpectralArrow;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,9 @@ import java.util.UUID;
 /**
  * Represents a GamePlayer in the WhaleSkyWars game.
  * A GamePlayer is a player participating in a game.
- * Each GamePlayer has a unique id, a name, a Player object, a Game object, and states for playing and being dead.
+ * Each GamePlayer has a unique id, a name, a Player object,
+ * a Game object, a GameTeam object
+ * and states for playing and being dead.
  *
  * @author JustReddy
  */
@@ -46,6 +48,27 @@ public interface IGamePlayer {
     IGame getGame();
 
     /**
+     * Sets the Game object of the GamePlayer.
+     *
+     * @param game the Game to set
+     */
+    void setGame(IGame game);
+
+    /**
+     * Returns the GameTeam of the GamePlayer.
+     *
+     * @return the GameTeam of the GamePlayer
+     */
+    IGameTeam getGameTeam();
+
+    /**
+     * Sets the GameTeam of the GamePlayer.
+     *
+     * @param team the GameTeam to set
+     */
+    void setGameTeam(IGameTeam team);
+
+    /**
      * Returns whether the GamePlayer is playing.
      *
      * @return true if the GamePlayer is playing, false otherwise
@@ -60,44 +83,57 @@ public interface IGamePlayer {
     boolean isDead();
 
     /**
+     * Sets whether the player should be dead or not.
+     *
+     * @param dead true if the GamePlayer is dead, false otherwise
+     */
+    void setDead(boolean dead);
+
+    /**
      * Sends a message to the GamePlayer.
+     *
      * @param message the message to send
      */
     void sendMessage(String message);
 
     /**
      * Sends a list of messages to the GamePlayer.
+     *
      * @param messages the list of messages to send
      */
     void sendMessages(List<String> messages);
 
     /**
      * Sends a list of messages to the GamePlayer.
+     *
      * @param messages the list of messages to send
      */
     void sendMessages(String... messages);
 
     /**
      * Sends a title to the GamePlayer.
-     * @param title the title to send
+     *
+     * @param title    the title to send
      * @param subtitle the subtitle to send
-     * @param fadeIn the fade in time
-     * @param stay the stay time
-     * @param fadeOut the fade out time
+     * @param fadeIn   the fade in time
+     * @param stay     the stay time
+     * @param fadeOut  the fade out time
      */
     void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut);
 
     /**
      * Sends an action bar message to the GamePlayer.
+     *
      * @param message the message to send
      */
     void sendActionBar(String message);
 
     /**
      * Sends a sound to the GamePlayer.
-     * @param sound the sound to send
+     *
+     * @param sound  the sound to send
      * @param volume the volume of the sound
-     * @param pitch the pitch of the sound
+     * @param pitch  the pitch of the sound
      */
     void sendSound(String sound, float volume, float pitch);
 
