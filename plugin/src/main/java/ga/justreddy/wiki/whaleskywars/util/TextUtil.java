@@ -72,7 +72,7 @@ public class TextUtil {
                 "&4%line%",
                 "&cAn internal error has occurred in " + WhaleSkyWars.getInstance().getDescription().getName() + "!",
                 "&cContact the plugin author if you cannot fix this error.",
-                "&cDescription: &6$description",
+                "&cDescription: &6" + description,
                 "&4%line%"
         );
 
@@ -84,6 +84,5 @@ public class TextUtil {
     public static void errorCommand(CommandSender sender, String description) {
         sendMessages(sender, "&4%line%", "&cAn error occurred while running this command", "&cDescription: &6" + description, "&4%line%");
     }
-
 
 }
