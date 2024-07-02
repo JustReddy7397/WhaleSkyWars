@@ -1,0 +1,29 @@
+#    ___________            __      __
+#   /   _____/  | _____.__./  \    /  \_____ _______  ______
+#   \_____  \|  |/ <   |  |\   \/\/   /\__  \\_  __ \/  ___/
+#   /        \    < \___  | \        /  / __ \|  | \/\___ \
+#  /_______  /__|_ \/ ____|  \__/\  /  (____  /__|  /____  >
+#          \/     \/\/            \/        \/           \/
+#
+# Author: JustReddy.
+# Discord: https://discord.gg/x2tEZcShKn
+#
+# Welcome to the database.yml file. This file is used to set your database.
+# Everything here requires a server restart to take effect.
+
+# DO NOT TOUCH THIS!
+config-version = 1
+
+[storage]
+type = "SQLITE" # SQLITE, MYSQL, MONGODB
+
+[storage.mysql]
+host = "localhost"
+port = 3306
+table-prefix = "whalesw_"
+database = "none"
+username = "root"
+password = "none"
+
+[storage.mongodb]
+uri = "mongodb://localhost:27017"
