@@ -25,12 +25,18 @@ repositories {
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
     compileOnly "net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT"
-    // Gradle dumb dumb, doesn't know the maven dependency for bungeecord-chat
     implementation files("D:\\JARS\\bungeecord-chat-1.20-R0.2.jar")
-    compileOnly project(":api")
-    // Needed for methods to copy maps across servers
-    // The API doesn't have the methods I need
-    compileOnly files("D:\\JARS\\slimeworldmanager-plugin-2.2.1.jar")
+    compileOnly project(':api')
+    compileOnly files("libs/slimeworldmanager-plugin-2.2.1.jar")
+    compileOnly "org.projectlombok:lombok:1.18.20"
+    annotationProcessor("org.projectlombok:lombok:1.18.20")
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+    implementation "com.alessiodp.libby:libby-bukkit:2.0.0-SNAPSHOT"
+    compileOnly "org.mongodb:mongodb-driver:3.12.12"
+    compileOnly "redis.clients:jedis:5.1.1"
+    compileOnly "com.rabbitmq:amqp-client:5.19.0"
+    compileOnly 'com.j256.ormlite:ormlite-jdbc:6.1'
+
 }
 
 def targetJavaVersion = 8

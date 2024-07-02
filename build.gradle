@@ -1,6 +1,25 @@
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            name = "spigotmc-repo"
+            url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/groups/public/"
+        }
+        maven {
+            url = "https://repo.md-5.net/content/repositories/releases/"
+        }
+
+    }
 }
 
 group = 'ga.justreddy.wiki'
@@ -27,6 +46,7 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
     implementation project(':api')
     implementation project(':plugin')
+    implementation project(":v1_8_R3")
 }
 
 
