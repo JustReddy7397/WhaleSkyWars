@@ -74,6 +74,8 @@ public interface IGame {
 
     AbstractTimer getEndingTimer();
 
+    World getWorld();
+
     void init(World world);
 
     void sendMessage(List<IGamePlayer> players, String message);
@@ -97,8 +99,6 @@ public interface IGame {
     void onGamePlayerLeave(IGamePlayer player, boolean isSilent);
 
     void onCountDown();
-
-    void restart();
 
     void goToNextPhase();
 

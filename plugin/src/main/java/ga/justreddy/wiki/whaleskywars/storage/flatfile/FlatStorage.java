@@ -7,9 +7,10 @@ import ga.justreddy.wiki.whaleskywars.storage.IStorage;
  * @author JustReddy
  */
 public class FlatStorage implements IStorage {
+
     @Override
     public void createData() {
-        
+
     }
 
     @Override

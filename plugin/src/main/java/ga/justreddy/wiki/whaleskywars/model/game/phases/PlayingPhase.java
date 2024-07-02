@@ -11,6 +11,8 @@ public class PlayingPhase implements IPhase {
     @Override
     public void onEnable(IGame game) {
         game.setGameState(GameState.PLAYING);
+
+
     }
 
     @Override

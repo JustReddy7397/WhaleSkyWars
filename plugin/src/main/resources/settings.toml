@@ -8,7 +8,8 @@
 # Author: JustReddy.
 # Discord: https://discord.gg/x2tEZcShKn
 #
-# Welcome to the settings.yml file. This file is used to configure the plugin.
+# Welcome to the settings.toml file.
+# This file is used to configure the plugin.
 # Everything here requires a server restart to take effect.
 
 # DO NOT TOUCH THIS!

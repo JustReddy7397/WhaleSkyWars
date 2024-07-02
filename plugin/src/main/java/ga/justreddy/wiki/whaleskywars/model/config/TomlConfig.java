@@ -3,7 +3,6 @@ package ga.justreddy.wiki.whaleskywars.model.config;
 import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -40,6 +39,7 @@ public class TomlConfig {
         toml = new Toml(
                 new Toml().read(WhaleSkyWars.getInstance().getResource(completeName))
         ).read(file);
+
     }
 
     public void reload() {

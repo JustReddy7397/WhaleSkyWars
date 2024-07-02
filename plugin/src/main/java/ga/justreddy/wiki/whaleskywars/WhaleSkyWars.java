@@ -1,10 +1,13 @@
 package ga.justreddy.wiki.whaleskywars;
 
-import com.alessiodp.libby.Library;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
+import ga.justreddy.wiki.whaleskywars.manager.CageManager;
+import ga.justreddy.wiki.whaleskywars.manager.GameManager;
 import ga.justreddy.wiki.whaleskywars.manager.LibraryManager;
 import ga.justreddy.wiki.whaleskywars.manager.WorldManager;
+import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
@@ -26,15 +29,22 @@ public final class WhaleSkyWars extends JavaPlugin {
     private IWorldEdit worldEdit;
     private ISchematic schematic;
 
+    // Misc
     private SlimePlugin slimePlugin;
     private SlimeLoader slimeLoader;
+    private IGameMap gameMap;
 
     // Managers
     private WorldManager worldManager;
+    private GameManager gameManager;
+    private CageManager cageManager;
 
     // Configs
     private TomlConfig settingsConfig;
     private TomlConfig databaseConfig;
+
+    // Bungee
+    private ServerMode serverMode;
 
     @Override
     public void onLoad() {
@@ -47,6 +57,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         if (!loadConfigs()) return;
+
+        serverMode = ServerMode.valueOf(settingsConfig.getString("modules.mode", "MULTI_ARENA"));
 
     }
 
@@ -67,6 +79,19 @@ public final class WhaleSkyWars extends JavaPlugin {
             return false;
         }
         return true;
+    }
+
+    private void loadManagers() {
+        worldManager = new WorldManager();
+        gameManager = new GameManager();
+        cageManager = new CageManager();
+        gameManager.start();
+        cageManager.start();
+    }
+
+    private void stopManagers() {
+        gameManager.die();
+        cageManager.die();
     }
 
 }

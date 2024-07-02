@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.entity;
 
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import org.bukkit.entity.Player;
@@ -39,6 +40,17 @@ public interface IGamePlayer {
      * @return the Player object of the GamePlayer
      */
     Optional<Player> getPlayer();
+
+    /**
+     * Gets the PlayerCosmetic object of the GamePlayer.
+     */
+    IPlayerCosmetics getCosmetics();
+
+    /**
+     * Sets the PlayerCosmetic object of the GamePlayer.
+     * @param cosmetics the PlayerCosmetic object to set
+     */
+    void setCosmetics(IPlayerCosmetics cosmetics);
 
     /**
      * Returns the Game object of the GamePlayer.

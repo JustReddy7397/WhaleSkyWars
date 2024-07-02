@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
+import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.ICuboid;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
@@ -8,12 +9,16 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
+import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
+import ga.justreddy.wiki.whaleskywars.model.game.team.GameTeam;
 import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
+import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
@@ -27,7 +32,7 @@ public class Game implements IGame {
     private final String name;
     private final String displayName;
     private final ITeamAssigner assigner = new TeamAssigner();
-    private final FileConfiguration config;
+    private final Toml config;
     private GameState state;
     private GameMode mode;
     private List<IGamePlayer> players;
@@ -48,7 +53,7 @@ public class Game implements IGame {
     private AbstractTimer endingTimer;
     private AbstractTimer preGameTimer;
 
-    public Game(String name, FileConfiguration config) {
+    public Game(String name, Toml config) {
         this.name = name;
         this.config = config;
         this.displayName = config.getString("settings.displayName", name);
@@ -160,7 +165,7 @@ public class Game implements IGame {
 
     @Override
     public void setGameState(GameState gameState) {
-        this.state = gameState;
+        state = gameState;
     }
 
     @Override
@@ -175,7 +180,7 @@ public class Game implements IGame {
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.mode = gameMode;
+        mode = gameMode;
     }
 
     @Override
@@ -199,16 +204,74 @@ public class Game implements IGame {
     }
 
     @Override
+    public World getWorld() {
+        return world;
+    }
+
+    @Override
     public void init(World world) {
         this.world = world;
 
+        teamSize = config.getLong("settings.teamSize").intValue();
+        this.minimumPlayers = config.getLong("settings.minimumPlayers").intValue();
+        if (teamSize == 1) {
+            mode = GameMode.SOLO;
+        } else {
+            mode = GameMode.TEAM;
+        }
+
+        Location boundHigh;
+        Location boundLow;
+
+        if (config.contains("waiting-location")) {
+            waitingSpawn = LocationUtil.getLocation(config.getString("waiting-location"));
+            if (waitingSpawn != null) {
+                boundHigh = LocationUtil.getLocation(config.getString("waiting-cuboid.high"));
+                boundLow = LocationUtil.getLocation(config.getString("waiting-cuboid.low"));
+                if (boundHigh != null && boundLow != null) {
+                    waitingCuboid = new Cuboid(boundLow, boundHigh);
+                }
+            }
+        }
+
+        boundHigh = LocationUtil.getLocation(config.getString("game-cuboid.high"));
+        boundLow = LocationUtil.getLocation(config.getString("game-cuboid.low"));
+        if (boundHigh != null && boundLow != null) {
+            gameCuboid = new Cuboid(boundLow, boundHigh);
+        }
+
+        spectatorSpawn = LocationUtil.getLocation(config.getString("spectator-location"));
+
+        Toml islands = config.getTable("islands");
+        if (islands != null) {
+            for (Map.Entry<String, Object> entry : islands.entrySet()) {
+                Toml island = config.getTable("islands." + entry.getKey());
+                if (island == null) continue;
+                Location location = LocationUtil.getLocation(island.getString("location"));
+                if (location == null) continue;
+                teams.add(new GameTeam(entry.getKey(), location));
+            }
+        }
+
+        // TODO chests!!
+
+        this.maximumPlayers = this.teams.size() * this.teamSize;
+
+
         // TODO Load all the data from the config
-        this.startingTimer = new StartingTimer(10);
-        this.endingTimer = new EndingTimer(10);
-        this.preGameTimer = new PreGameTimer(10);
+        startingTimer = new StartingTimer(10);
+        endingTimer = new EndingTimer(10);
+        preGameTimer = new PreGameTimer(10);
 
         // LAST
-        this.phaseHandler = new PhaseHandler(this);
+        phaseHandler = new PhaseHandler(this);
+
+        if (config.getBoolean("settings.disabled")) {
+            setGameState(GameState.DISABLED);
+        } else {
+            phaseHandler.setPhase(new WaitingPhase());
+        }
+
     }
 
     @Override
@@ -267,11 +330,6 @@ public class Game implements IGame {
     }
 
     @Override
-    public void restart() {
-        // TODO
-    }
-
-    @Override
     public void goToNextPhase() {
         phaseHandler.nextPhase();
     }
@@ -281,7 +339,7 @@ public class Game implements IGame {
         assigner.assign(this);
     }
 
-    // No interface method because I don't want people to use this.
+    // No interface method because I don't want people to use this
     public PhaseHandler getPhaseHandler() {
         return phaseHandler;
     }
