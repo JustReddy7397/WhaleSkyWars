@@ -14,6 +14,4 @@ public interface IGameMap {
 
     void onDisable(IGame game);
 
-    World getBukkitWorld();
-
 }
