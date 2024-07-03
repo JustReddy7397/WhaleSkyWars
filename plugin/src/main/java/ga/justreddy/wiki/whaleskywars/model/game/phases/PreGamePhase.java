@@ -1,11 +1,16 @@
 package ga.justreddy.wiki.whaleskywars.model.game.phases;
 
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
+import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author JustReddy
@@ -27,13 +32,28 @@ public class PreGamePhase implements IPhase {
                 if (gameSpawn.isUsed()) return;
                 gameSpawn.setUsed(true);
 
-                int cageId = 0; // TODO
+                if (!team.getPlayers().isEmpty()) {
+                    IGamePlayer player = team.getPlayers().get(ThreadLocalRandom.current().nextInt(team.getPlayers().size()));
+                    Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                    gameSpawn.setCage(cage);
 
+                    switch (game.getGameMode()) {
+                        case SOLO:
+                            cage.createSmall(team.getSpawnLocation());
+                            break;
+                        case TEAM:
+                            cage.createBig(team.getSpawnLocation());
+                            break;
+                    }
+
+                    team.getPlayers().forEach(gamePlayer -> {
+                        gamePlayer.getPlayer().ifPresent(player1 -> {
+                            player1.teleport(team.getSpawnLocation());
+                        });
+                    });
+                }
             });
-
         }
-
-
     }
 
     @Override

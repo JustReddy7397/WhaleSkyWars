@@ -3,10 +3,7 @@ package ga.justreddy.wiki.whaleskywars;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
-import ga.justreddy.wiki.whaleskywars.manager.CageManager;
-import ga.justreddy.wiki.whaleskywars.manager.GameManager;
-import ga.justreddy.wiki.whaleskywars.manager.LibraryManager;
-import ga.justreddy.wiki.whaleskywars.manager.WorldManager;
+import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
@@ -38,6 +35,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private WorldManager worldManager;
     private GameManager gameManager;
     private CageManager cageManager;
+    private GameEventManager gameEventManager;
+    private PlayerManager playerManager;
 
     // Configs
     private TomlConfig settingsConfig;
@@ -83,6 +82,8 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     private void loadManagers() {
         worldManager = new WorldManager();
+        gameEventManager = new GameEventManager();
+        playerManager = new PlayerManager();
         gameManager = new GameManager();
         cageManager = new CageManager();
         gameManager.start();
@@ -92,6 +93,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private void stopManagers() {
         gameManager.die();
         cageManager.die();
+        playerManager.die();
+        gameEventManager.die();
     }
 
 }

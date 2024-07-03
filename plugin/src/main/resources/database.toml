@@ -7,6 +7,12 @@
 #
 # Author: JustReddy.
 # Discord: https://discord.gg/x2tEZcShKn
+# Github: https://github.com/JustReddy7397/WhaleSkyWars
+# Issues: https://github.com/JustReddy7397/WhaleSkyWars/issues
+#
+# The TOML file format is a simple configuration file format
+# that's designed to be straightforward to read due to its obvious semantics.
+# Documentation: https://toml.io/en/
 #
 # Welcome to the database.toml file.
 # This file is used to set your database.

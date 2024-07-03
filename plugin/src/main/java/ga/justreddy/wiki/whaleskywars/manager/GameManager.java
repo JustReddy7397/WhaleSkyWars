@@ -8,7 +8,10 @@ import ga.justreddy.wiki.whaleskywars.model.game.Game;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author JustReddy
@@ -60,6 +63,14 @@ public class GameManager {
 
     public IGame getGameByName(String name) {
         return games.getOrDefault(name, null);
+    }
+
+    public List<IGame> getGamesBySimilarName(String name) {
+        try (Stream<IGame> gameStream = games.values().stream()) {
+            try (Stream<IGame> filteredStream = gameStream.filter(game -> game.getName().contains(name))) {
+                return filteredStream.collect(Collectors.toList());
+            }
+        }
     }
 
 
