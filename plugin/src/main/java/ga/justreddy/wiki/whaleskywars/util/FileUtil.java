@@ -15,7 +15,7 @@ import java.util.List;
 public class FileUtil {
 
 
-    public static void copy(InputStream source, File destination)  {
+    public static void copy(InputStream source, File destination) {
 
         try (OutputStream out = Files.newOutputStream(destination.toPath())) {
             byte[] buffer = new byte[1024];
