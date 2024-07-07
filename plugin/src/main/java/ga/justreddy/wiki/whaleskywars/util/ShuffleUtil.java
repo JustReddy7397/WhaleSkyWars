@@ -62,14 +62,14 @@ public class ShuffleUtil {
         // Create a new random object
         Random random = ThreadLocalRandom.current();
         // Looping over all the games except the first one!
-        for(int i = 1; i < games.size(); i++){
+        for (int i = 1; i < games.size(); i++) {
             // Getting the game by the index aka "i"
             IGame currentObject = games.get(i);
             // Getting the player count of the current game
             int value = currentObject.getPlayerCount();
             // If the value is equal to the current value,
             // then we set the end index to the current index
-            if(value == currentValue){
+            if (value == currentValue) {
                 endIndex = i;
             } else {
                 // Else we shuffle the values between the start and end index
@@ -91,7 +91,7 @@ public class ShuffleUtil {
         // The size is the end index - the start index + 1
         int size = end - start + 1;
         // Looping over the list
-        while(size > 1){
+        while (size > 1) {
             // Getting a random integer between the start and the size
             int i = start + random.nextInt(size);
             // Decreasing the size by 1
