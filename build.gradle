@@ -59,6 +59,7 @@ shadowJar {
     destinationDirectory = file("$output")
     archiveFileName = "Testing.jar"
     relocate 'com.cryptomorin.xseries', 'ga.justreddy.wiki.whaleskywars.libs.xseries'
+    relocate 'fr.mrmicky.fastboard', 'ga.justreddy.wiki.whaleskywars.libs.fastboard'
 
 }
 

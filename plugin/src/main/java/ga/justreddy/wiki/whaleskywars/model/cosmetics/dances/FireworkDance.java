@@ -37,6 +37,7 @@ public class FireworkDance extends VictoryDance {
 
         int bukkitTask = new BukkitRunnable() {
             int counter = duration * 20 / 30;
+
             @Override
             public void run() {
                 if (player.getGame() != game) {

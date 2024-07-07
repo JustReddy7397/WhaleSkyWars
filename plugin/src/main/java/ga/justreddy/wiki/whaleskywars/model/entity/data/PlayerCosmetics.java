@@ -86,7 +86,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
             return false;
         }
         ownedVictoryDances.remove(dance);
-        return true
+        return true;
     }
 
     @Override

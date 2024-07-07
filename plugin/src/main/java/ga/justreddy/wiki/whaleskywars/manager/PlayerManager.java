@@ -32,7 +32,7 @@ public class PlayerManager {
     }
 
     public IGamePlayer get(String name) {
-        try (Stream<IGamePlayer> playerStream =  players.values().stream()) {
+        try (Stream<IGamePlayer> playerStream = players.values().stream()) {
             try (Stream<IGamePlayer> filteredStream = playerStream.filter(player -> player.getName().equals(name))) {
                 return filteredStream.findFirst().orElse(null);
             }

@@ -1,14 +1,19 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
 import com.moandjiezana.toml.Toml;
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.ICuboid;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
+import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
 import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
 import ga.justreddy.wiki.whaleskywars.model.game.team.GameTeam;
 import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
@@ -18,8 +23,7 @@ import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,10 +39,11 @@ public class Game implements IGame {
     private final Toml config;
     private GameState state;
     private GameMode mode;
-    private List<IGamePlayer> players;
-    private List<IGameTeam> teams;
-    private List<IGamePlayer> spectators;
-    private Map<UUID, Integer> kills;
+    private final List<IGamePlayer> players;
+    private final List<IGameTeam> teams;
+    private final List<IGamePlayer> spectators;
+    private final Map<UUID, Integer> kills;
+    private final List<GameEvent> events;
     private ICuboid waitingCuboid;
     private ICuboid gameCuboid;
     private Location waitingSpawn;
@@ -61,6 +66,7 @@ public class Game implements IGame {
         this.teams = new ArrayList<>();
         this.spectators = new ArrayList<>();
         this.kills = new HashMap<>();
+        this.events = new ArrayList<>();
     }
 
     @Override
@@ -204,6 +210,18 @@ public class Game implements IGame {
     }
 
     @Override
+    public GameEvent getCurrentEvent() {
+        GameEvent currentEvent = null;
+        for (GameEvent event : events) {
+            if (event.isEnabled() && event.getTimer() > 0) {
+                currentEvent = event;
+                break;
+            }
+        }
+        return currentEvent;
+    }
+
+    @Override
     public World getWorld() {
         return world;
     }
@@ -306,6 +324,51 @@ public class Game implements IGame {
 
     @Override
     public void onGamePlayerJoin(IGamePlayer player) {
+        SkyWarsGameJoinEvent event = new SkyWarsGameJoinEvent(player, this);
+        event.call();
+
+        Player bukkitPlayer = player.getPlayer().get();
+
+        // TODO we handle the gamestate stuff here!!!
+
+        bukkitPlayer.setAllowFlight(false);
+        bukkitPlayer.setFlying(false);
+
+        players.add(player);
+        player.setGame(this);
+        kills.put(player.getUniqueId(), 0);
+        bukkitPlayer.getInventory().setHeldItemSlot(4);
+        bukkitPlayer.getInventory().clear();
+        bukkitPlayer.setGameMode(org.bukkit.GameMode.ADVENTURE);
+
+        if (waitingSpawn != null && waitingCuboid != null) {
+            bukkitPlayer.teleport(waitingSpawn);
+        } else {
+            assigner.assign(this, player);
+
+            IGameTeam team = player.getGameTeam();
+            IGameSpawn gameSpawn = team.getGameSpawn();
+            if (gameSpawn.isUsed()) {
+                bukkitPlayer.teleport(team.getSpawnLocation());
+                return;
+            }
+            gameSpawn.setUsed(true);
+
+            if (!team.getPlayers().isEmpty()) {
+                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                gameSpawn.setCage(cage);
+                switch (getGameMode()) {
+                    case SOLO:
+                        cage.createSmall(team.getSpawnLocation());
+                        break;
+                    case TEAM:
+                        cage.createBig(team.getSpawnLocation());
+                        break;
+                }
+            }
+            bukkitPlayer.teleport(team.getSpawnLocation());
+        }
+
         // TODO
     }
 

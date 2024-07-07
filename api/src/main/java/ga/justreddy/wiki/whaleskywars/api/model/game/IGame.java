@@ -74,6 +74,8 @@ public interface IGame {
 
     AbstractTimer getEndingTimer();
 
+    GameEvent getCurrentEvent();
+
     World getWorld();
 
     void init(World world);

@@ -1,7 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game.map;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
-import org.bukkit.World;
 
 /**
  * @author JustReddy

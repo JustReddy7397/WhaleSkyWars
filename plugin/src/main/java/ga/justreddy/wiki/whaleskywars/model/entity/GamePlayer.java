@@ -3,8 +3,11 @@ package ga.justreddy.wiki.whaleskywars.model.entity;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -21,6 +24,7 @@ public class GamePlayer implements IGamePlayer {
     private final String name;
     private final Optional<Player> player;
     private IPlayerCosmetics cosmetics;
+    private IPlayerStats stats;
     private IGame game;
     private IGameTeam gameTeam;
     private boolean dead;
@@ -29,10 +33,15 @@ public class GamePlayer implements IGamePlayer {
         this.uniqueId = uniqueId;
         this.name = name;
         this.player = Optional.ofNullable(Bukkit.getPlayer(uniqueId));
-        this.cosmetics = null;
+        this.cosmetics = new PlayerCosmetics();
+        this.stats = new PlayerStats();
         this.game = null;
         this.gameTeam = null;
         this.dead = false;
+    }
+
+    public static IGamePlayer get(UUID uuid) {
+        return WhaleSkyWars.getInstance().getPlayerManager().get(uuid);
     }
 
     @Override
@@ -58,6 +67,16 @@ public class GamePlayer implements IGamePlayer {
     @Override
     public void setCosmetics(IPlayerCosmetics cosmetics) {
         this.cosmetics = cosmetics;
+    }
+
+    @Override
+    public IPlayerStats getStats() {
+        return stats;
+    }
+
+    @Override
+    public void setStats(IPlayerStats stats) {
+        this.stats = stats;
     }
 
     @Override
@@ -127,10 +146,6 @@ public class GamePlayer implements IGamePlayer {
     @Override
     public void sendSound(String sound, float volume, float pitch) {
 
-    }
-
-    public static IGamePlayer get(UUID uuid) {
-        return WhaleSkyWars.getInstance().getPlayerManager().get(uuid);
     }
 
 }
