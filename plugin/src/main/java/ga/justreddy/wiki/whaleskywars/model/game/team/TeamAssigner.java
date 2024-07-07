@@ -41,6 +41,7 @@ public class TeamAssigner implements ITeamAssigner {
 
         for (IGamePlayer remaining : game.getPlayers()) {
             if (skip.contains(remaining.getUniqueId())) continue;
+            if (remaining.getGameTeam() != null) continue;
             for (IGameTeam team : game.getRandomTeams()) {
                 if (team.getPlayers().size() < game.getTeamSize()) {
                     remaining.getPlayer().ifPresent(Player::closeInventory);
@@ -51,5 +52,39 @@ public class TeamAssigner implements ITeamAssigner {
             }
         }
 
+    }
+
+    @Override
+    public void assign(IGame game, IGamePlayer player) {
+        // TODO change :)
+        if (game.getPlayerCount() > game.getTeamSize() && game.getTeamSize() > 1) {
+            // Parties support eventually
+            LinkedList<List<IGamePlayer>> teams = new LinkedList<>();
+            if (!teams.isEmpty()) {
+                for (IGameTeam team : game.getTeams()) {
+                    teams.sort(Comparator.comparing(List::size));
+                    if (teams.get(0).isEmpty()) break;
+                    for (int i = 0; i < game.getTeamSize() && team.getPlayers().size() < game.getTeamSize(); i++) {
+                        if (teams.get(0).size() > i) {
+                            IGamePlayer toAdd = teams.get(0).remove(0);
+                            toAdd.getPlayer().ifPresent(Player::closeInventory);
+                            team.addPlayer(toAdd);
+                            skip.add(toAdd.getUniqueId());
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (IGameTeam team : game.getRandomTeams()) {
+            if (team.getPlayers().size() < game.getTeamSize()) {
+                player.getPlayer().ifPresent(Player::closeInventory);
+                team.addPlayer(player);
+                player.setGameTeam(team);
+                break;
+            }
+        }
     }
 }

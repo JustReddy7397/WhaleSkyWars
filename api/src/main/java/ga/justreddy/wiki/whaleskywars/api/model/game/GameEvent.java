@@ -26,12 +26,12 @@ public abstract class GameEvent implements Cloneable {
         if (timer > 0) timer--;
     }
 
-    public void setTimer(int timer) {
-        this.timer = timer;
-    }
-
     public int getTimer() {
         return timer;
+    }
+
+    public void setTimer(int timer) {
+        this.timer = timer;
     }
 
     public String getName() {

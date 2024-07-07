@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game.team;
 
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 
 /**
@@ -17,4 +18,12 @@ public interface ITeamAssigner {
      * @param game the game to assign teams for
      */
     void assign(IGame game);
+
+    /**
+     * Assigns a player to a team in a game.
+     * @param game the game to assign the player to
+     * @param player the player to assign to a team
+     */
+    void assign(IGame game, IGamePlayer player);
+
 }

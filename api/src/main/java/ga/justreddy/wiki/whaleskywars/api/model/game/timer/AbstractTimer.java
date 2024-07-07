@@ -59,4 +59,7 @@ public abstract class AbstractTimer implements Runnable {
         return ticksExceed;
     }
 
+    public int getSeconds() {
+        return seconds;
+    }
 }
