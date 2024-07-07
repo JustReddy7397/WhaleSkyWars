@@ -21,6 +21,8 @@
 # DO NOT TOUCH THIS!
 config-version = 1
 
+date-format = "dd/MM/yyyy"
+
 [lobby-board]
 enabled = true
 title = "&dWhaleSkyWars"
@@ -88,7 +90,7 @@ lines = [
 ]
 
 # You can add your own events here as well,
-# But thats only if you've registered a game event through the api
+# But that's only if you've registered a game event through the api
 # If you do though, make sure to match it with the name of the event
 [events]
 waiting = "Waiting..."
@@ -97,5 +99,5 @@ pregame = "Releasing in {time}"
 refill = "Refilling in {time}"
 dragon = "Dragon in {time}"
 finish = "Game ends in {time}"
-ending = "Game ending in {time}"
+ending = "Restarting in {time}"
 no-event = "No event"

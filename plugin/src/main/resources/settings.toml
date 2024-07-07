@@ -30,11 +30,11 @@ enabled = false
 update-interval = 120 # in seconds
 
 [game-options]
-events = [ ] # TODO
+events = [] # TODO
 
 [game-options.command-whitelist]
 enabled = false
-commands = [ "leave" ]
+commands = ["leave"]
 
 [game-options.countdowns]
 start = 10
@@ -85,7 +85,7 @@ lobby = "lobby"
 # They are used only when "on-leave" option is set to "LEAVE_COMMAND" and will be executed from the spigot server's console.
 # You can use %player% placeholder - it will be replaced with the player's name.
 # Do not put slash (/) at the beginning!
-leave-commands = [ "cmd <player>", "tell <player> &aYou have left the game!" ]
+leave-commands = ["cmd <player>", "tell <player> &aYou have left the game!"]
 
 [bungee.socket]
 # Bungeecord server hostname,
