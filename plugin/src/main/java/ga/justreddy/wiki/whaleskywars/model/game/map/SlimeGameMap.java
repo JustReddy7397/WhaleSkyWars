@@ -24,7 +24,7 @@ import java.io.IOException;
  * @author JustReddy
  */
 public class SlimeGameMap implements IGameMap {
-    
+
     private final SlimePlugin slimePlugin;
     private final SlimeLoader slimeLoader;
 
@@ -84,8 +84,8 @@ public class SlimeGameMap implements IGameMap {
                         });
                     });
 
-                }catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException |
-                        WorldInUseException ex) {
+                } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException |
+                         WorldInUseException ex) {
                     onDisable(game);
                     TextUtil.error(ex, "Failed to load world " + name, false);
                 }
@@ -107,7 +107,7 @@ public class SlimeGameMap implements IGameMap {
                     if (slimeLoader.worldExists(game.getName())) {
                         slimeLoader.deleteWorld(game.getName());
                     }
-                }catch (UnknownWorldException | IOException e) {
+                } catch (UnknownWorldException | IOException e) {
                     TextUtil.error(e, "Failed to delete world " + game.getName(), false);
                     return;
                 }
@@ -129,7 +129,7 @@ public class SlimeGameMap implements IGameMap {
                     if (slimeLoader.worldExists(game.getName())) {
                         slimeLoader.deleteWorld(game.getName());
                     }
-                }catch (UnknownWorldException | IOException e) {
+                } catch (UnknownWorldException | IOException e) {
                     TextUtil.error(e, "Failed to delete world " + game.getName(), false);
                 }
             });
