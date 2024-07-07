@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.v1_8_R3;
+package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;

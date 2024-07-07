@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.v1_8_R3;
+package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -31,7 +31,7 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void removeAi(Entity entity) {
-        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity)entity).getHandle();
+        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) entity).getHandle();
         NBTTagCompound tag = nmsEntity.getNBTTag();
         if (tag == null) {
             tag = new NBTTagCompound();
