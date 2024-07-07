@@ -3,6 +3,9 @@ package ga.justreddy.wiki.whaleskywars.storage.readable;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author JustReddy
  */
@@ -33,7 +36,18 @@ public class JsonStorage implements IStorage {
     }
 
     @Override
-    public IGamePlayer loadPlayer(IGamePlayer player) {
+    public IGamePlayer loadPlayer(UUID uuid) {
         return null;
     }
+
+    @Override
+    public CompletableFuture<IGamePlayer> loadOfflinePlayer(UUID uuid) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<IGamePlayer> loadPlayer(String name) {
+        return null;
+    }
+
 }
