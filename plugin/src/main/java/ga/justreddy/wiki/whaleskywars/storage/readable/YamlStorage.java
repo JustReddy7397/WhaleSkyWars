@@ -1,8 +1,10 @@
 package ga.justreddy.wiki.whaleskywars.storage.readable;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,6 +50,31 @@ public class YamlStorage implements IStorage {
     @Override
     public CompletableFuture<IGamePlayer> loadPlayer(String name) {
         return null;
+    }
+
+    @Override
+    public void saveKit(Kit kit) {
+
+    }
+
+    @Override
+    public List<Kit> getKits() {
+        return List.of();
+    }
+
+    @Override
+    public void deleteKit(Kit kit) {
+
+    }
+
+    @Override
+    public void updateKit(Kit kit) {
+
+    }
+
+    @Override
+    public void saveKits(List<Kit> kits) {
+
     }
 
 }

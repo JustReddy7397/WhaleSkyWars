@@ -31,4 +31,16 @@ public interface IPlayerCosmetics {
 
     Set<Integer> getOwnedVictoryDances();
 
+    String getSelectedKit();
+
+    void setSelectedKit(String selectedKit);
+
+    boolean addCachedKit(String kit);
+
+    boolean removeCachedKit(String kit);
+
+    boolean hasCachedKit(String kit);
+
+    Set<String> getOwnedKits();
+
 }

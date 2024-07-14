@@ -98,4 +98,34 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     public Set<Integer> getOwnedVictoryDances() {
         return ownedVictoryDances;
     }
+
+    @Override
+    public String getSelectedKit() {
+        return "";
+    }
+
+    @Override
+    public void setSelectedKit(String selectedKit) {
+
+    }
+
+    @Override
+    public boolean addCachedKit(String kit) {
+        return false;
+    }
+
+    @Override
+    public boolean removeCachedKit(String kit) {
+        return false;
+    }
+
+    @Override
+    public boolean hasCachedKit(String kit) {
+        return false;
+    }
+
+    @Override
+    public Set<String> getOwnedKits() {
+        return Set.of();
+    }
 }

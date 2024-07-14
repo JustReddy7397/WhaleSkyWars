@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars.api;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,5 +29,7 @@ public interface SkyWarsAPI {
     List<IGame> getGames();
 
     void registerGameEvent(GameEvent event);
+
+    JavaPlugin getPlugin();
 
 }

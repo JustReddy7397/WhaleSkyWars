@@ -1,9 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.util;
 
+import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.util.iridium.IridiumColorAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 
 import java.util.List;
 
@@ -83,6 +86,34 @@ public class TextUtil {
 
     public static void errorCommand(CommandSender sender, String description) {
         sendMessages(sender, "&4%line%", "&cAn error occurred while running this command", "&cDescription: &6" + description, "&4%line%");
+    }
+
+    public static String uppercaseFirstLetter(String word) {
+        return word.substring(0, 1).toUpperCase() + word.substring(1);
+    }
+
+    public static String nameOf(XMaterial material) {
+        String materialName = material.name();
+
+        if (materialName.contains("_")) {
+            String[] split = materialName.split("_");
+
+            StringBuilder builder = new StringBuilder();
+            for (String inSplit : split) {
+                builder.append(uppercaseFirstLetter(inSplit.toLowerCase())).append(" ");
+            }
+
+            return builder.substring(0, builder.length() - 1);
+        }
+        return uppercaseFirstLetter(materialName.toLowerCase());
+    }
+
+    public static String nameOf(Enchantment enchantment) {
+        return WhaleSkyWars.getInstance().getNms().nameOfEnchantment(enchantment);
+    }
+
+    public static Enchantment valueOf(String value) {
+        return WhaleSkyWars.getInstance().getNms().valueOfEnchantment(value);
     }
 
 }

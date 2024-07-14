@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.version.nms;
 
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
@@ -16,5 +17,11 @@ public interface INms {
     void setUnbreakable(ItemStack itemStack);
 
     void removeAi(Entity entity);
+
+    String nameOfEnchantment(Enchantment enchantment);
+
+    Enchantment valueOfEnchantment(String enchantment);
+
+
 
 }

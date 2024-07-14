@@ -125,4 +125,8 @@ public class TomlConfig {
         return toml.getList(key, defaultValue);
     }
 
+    public Toml getTable(String key) {
+        return toml.getTable(key);
+    }
+
 }

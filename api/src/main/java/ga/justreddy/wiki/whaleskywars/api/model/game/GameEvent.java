@@ -26,6 +26,10 @@ public abstract class GameEvent implements Cloneable {
         if (timer > 0) timer--;
     }
 
+    public boolean isEnded() {
+        return timer <= 0;
+    }
+
     public int getTimer() {
         return timer;
     }

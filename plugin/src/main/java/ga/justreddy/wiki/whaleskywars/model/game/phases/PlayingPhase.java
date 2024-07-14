@@ -1,9 +1,13 @@
 package ga.justreddy.wiki.whaleskywars.model.game.phases;
 
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
+import ga.justreddy.wiki.whaleskywars.model.game.Game;
+import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 
 /**
  * @author JustReddy
@@ -19,16 +23,49 @@ public class PlayingPhase implements IPhase {
             if (spawn.getCage() == null) return;
             spawn.getCage().remove(team.getSpawnLocation());
         });
+        game.getAlivePlayers().forEach(player -> {
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                Kit kit = WhaleSkyWars.getInstance().getKitManager().getKitByName(player.getCosmetics().getSelectedKit());
+                if (kit == null) {
+                    kit = WhaleSkyWars.getInstance().getKitManager().getDefaultKit();
+                }
+                kit.equipKit(player);
+            });
+        });
 
     }
 
     @Override
     public void onTick(IGame game) {
 
+        if (game.getAliveTeams().size() == 1) {
+            ((Game)game).getPhaseHandler().setPhase(new EndingPhase(game.getAliveTeams().get(0)));
+            return;
+        } else if (game.getAliveTeams().isEmpty()) {
+            game.goToNextPhase();
+            return;
+        }
+
+        GameEvent event = game.getCurrentEvent();
+
+        if (event == null) {
+            if (game.getAliveTeams().size() == 1) {
+                ((Game)game).getPhaseHandler().setPhase(new EndingPhase(game.getAliveTeams().get(0)));
+            } else if (game.getAliveTeams().isEmpty()) {
+                game.goToNextPhase();
+            }
+            return;
+        }
+
+        if (event.isEnabled()) event.update();
+
+        if (event.isEnded()) {
+            event.onEnable(game);
+        }
     }
 
     @Override
     public IPhase getNextPhase() {
-        return new EndingPhase();
+        return new EndingPhase(null);
     }
 }

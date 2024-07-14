@@ -1,7 +1,9 @@
 package ga.justreddy.wiki.whaleskywars.storage;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +27,16 @@ public interface IStorage {
     CompletableFuture<IGamePlayer> loadOfflinePlayer(UUID uuid);
 
     CompletableFuture<IGamePlayer> loadPlayer(String name);
+
+    void saveKit(Kit kit);
+
+    List<Kit> getKits();
+
+    void deleteKit(Kit kit);
+
+    void updateKit(Kit kit);
+
+    void saveKits(List<Kit> kits);
 
 
 }

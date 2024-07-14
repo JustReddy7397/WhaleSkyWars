@@ -13,6 +13,10 @@ import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
+import ga.justreddy.wiki.whaleskywars.storage.IStorage;
+import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
+import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
+import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
@@ -27,7 +31,6 @@ import java.io.IOException;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
-
 
     // Config Version
     private static final int SETTINGS_VERSION = 1;
@@ -51,6 +54,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private CageManager cageManager;
     private GameEventManager gameEventManager;
     private PlayerManager playerManager;
+    private KitRequestManager kitRequestManager;
+    private KitManager kitManager;
     // Configs
     private TomlConfig settingsConfig;
     private TomlConfig databaseConfig;
@@ -60,10 +65,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     // Bungee
     private ServerMode serverMode;
 
-    private static String getVersion(Server server) {
-        final String packageName = server.getClass().getPackage().getName();
-        return packageName.substring(packageName.lastIndexOf('.') + 1);
-    }
+    private IStorage storage;
 
     @Override
     public void onLoad() {
@@ -120,10 +122,36 @@ public final class WhaleSkyWars extends JavaPlugin {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aSetting server mode...");
         try {
             serverMode = ServerMode.valueOf(settingsConfig.getString("modules.mode").toUpperCase());
+            TextUtil.color("&7[&dWhaleSkyWars&7] &aServer mode set to " + serverMode.name());
         } catch (Exception e) {
             TextUtil.error(e, "Failed to set server mode! " + settingsConfig.getString("modules.mode") + " not supported!", true);
             return;
         }
+
+        TextUtil.color("&7[&dWhaleSkyWars&7] &aLoading storage...");
+        switch (databaseConfig.getString("storage.type").toUpperCase()) {
+            case "SQLITE":
+                storage = new FlatStorage();
+                break;
+                case "MYSQL":
+                    storage = new SequalStorage(
+                            "mysql",
+                            databaseConfig.getString("storage.mysql.host"),
+                            databaseConfig.getString("storage.mysql.database"),
+                            databaseConfig.getString("storage.mysql.username"),
+                            databaseConfig.getString("storage.mysql.password"),
+                            databaseConfig.getInteger("storage.mysql.port")
+                    );
+                    break;
+            case "MONGODB":
+                storage = new MongoStorage(databaseConfig.getString("storage.mongodb.uri"));
+                break;
+            default:
+                TextUtil.error(null, "Invalid storage type: " + databaseConfig.getString("storage.type"), true);
+                return;
+        }
+        TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aStorage loaded ("+databaseConfig.getString("storage.type").toUpperCase()+")!");
+        storage.createData();
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aFinding GameMap...");
         if (settingsConfig.getBoolean("modules.slimeworldmanager")) {
@@ -160,6 +188,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        stopManagers();
     }
 
     private boolean loadConfigs() {
@@ -200,8 +229,12 @@ public final class WhaleSkyWars extends JavaPlugin {
         playerManager = new PlayerManager();
         gameManager = new GameManager();
         cageManager = new CageManager();
+        kitRequestManager = new KitRequestManager();
+        kitManager = new KitManager();
         gameManager.start();
         cageManager.start();
+        kitManager.loadKits();
+
     }
 
     private void stopManagers() {
@@ -211,5 +244,10 @@ public final class WhaleSkyWars extends JavaPlugin {
         gameEventManager.die();
     }
 
+
+    private static String getVersion(Server server) {
+        final String packageName = server.getClass().getPackage().getName();
+        return packageName.substring(packageName.lastIndexOf('.') + 1);
+    }
 
 }

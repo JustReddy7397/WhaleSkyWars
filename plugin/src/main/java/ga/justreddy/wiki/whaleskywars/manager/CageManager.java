@@ -54,7 +54,8 @@ public class CageManager {
         File smallSchematic = new File(WhaleSkyWars
                 .getInstance().getDataFolder(),
                 "cages/" + name + "/small.schematic");
-        File bigSchematic = new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/" + name + "/big.schematic");
+        File bigSchematic = new File(WhaleSkyWars.getInstance().getDataFolder(),
+                "cages/" + name + "/big.schematic");
         Cage cage = new Cage(actualname, id, cost, smallSchematic, bigSchematic);
         data.put(id, cage);
     }
