@@ -100,6 +100,8 @@ public interface IGame {
 
     void onGamePlayerLeave(IGamePlayer player, boolean isSilent);
 
+    void onGamePlayerDeath(IGamePlayer killer, IGamePlayer victim, KillPath path);
+
     void onCountDown();
 
     void goToNextPhase();

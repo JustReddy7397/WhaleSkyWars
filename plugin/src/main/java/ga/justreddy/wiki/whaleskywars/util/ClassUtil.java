@@ -13,32 +13,28 @@ import java.util.jar.JarInputStream;
  */
 public class ClassUtil {
 
-    public static <T> Class<? extends T> findClass(File file, Class<T> clazz) throws Exception {
+    public static <T> List<Class<? extends T>> findClasses(File file, Class<T> clazz) throws Exception {
         final URL url = file.toURI().toURL();
         List<Class<? extends T>> classes = new ArrayList<>();
-        List<String> matches = new ArrayList<>();
         try (JarInputStream stream = new JarInputStream(url.openStream());
-             URLClassLoader loader = new URLClassLoader(new URL[]{url})) {
-            JarEntry entry = stream.getNextJarEntry();
-
-            String name = entry.getName();
-
-            if (name.endsWith(".class")) {
-                matches.add(name.substring(0, name.lastIndexOf(46)).replace('/', '.'));
-            }
-
-            for (String match : matches) {
-                Class<?> loaded = Class.forName(match, true, loader);
-                if (clazz.isAssignableFrom(loaded)) {
-                    classes.add(loaded.asSubclass(clazz));
+             URLClassLoader loader = new URLClassLoader(new URL[]{url}, ClassUtil.class.getClassLoader())) {
+            JarEntry entry;
+            while ((entry = stream.getNextJarEntry()) != null) {
+                if (!entry.getName().endsWith(".class")) {
+                    continue;
+                }
+                String className = entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6);
+                try {
+                    Class<?> loadedClass = Class.forName(className, true, loader);
+                    if (clazz.isAssignableFrom(loadedClass)) {
+                        classes.add(loadedClass.asSubclass(clazz));
+                    }
+                } catch (ClassNotFoundException ignored) {
                 }
             }
-
-            if (!classes.isEmpty()) {
-                return classes.get(0);
-            }
-            return null;
+        } catch (NoClassDefFoundError ignored) {
         }
+        return classes;
     }
 
 }

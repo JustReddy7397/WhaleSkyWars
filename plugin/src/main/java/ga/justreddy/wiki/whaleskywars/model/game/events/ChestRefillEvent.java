@@ -14,7 +14,7 @@ public class ChestRefillEvent extends GameEvent {
 
     @Override
     public void onEnable(IGame game) {
-
+        setEnabled(false);
     }
 
     @Override

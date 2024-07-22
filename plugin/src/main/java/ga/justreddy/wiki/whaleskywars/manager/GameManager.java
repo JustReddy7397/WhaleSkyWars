@@ -73,5 +73,7 @@ public class GameManager {
         }
     }
 
-
+    public File getGamesFolder() {
+        return gamesFolder;
+    }
 }

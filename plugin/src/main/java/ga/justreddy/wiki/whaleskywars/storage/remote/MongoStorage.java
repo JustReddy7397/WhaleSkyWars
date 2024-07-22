@@ -4,6 +4,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +65,7 @@ public class MongoStorage implements IStorage {
 
     @Override
     public List<Kit> getKits() {
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override

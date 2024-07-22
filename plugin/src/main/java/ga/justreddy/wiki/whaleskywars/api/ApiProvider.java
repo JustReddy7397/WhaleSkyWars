@@ -5,6 +5,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,5 +55,10 @@ public class ApiProvider implements SkyWarsAPI {
     @Override
     public void registerGameEvent(GameEvent event) {
         WhaleSkyWars.getInstance().getGameEventManager().register(event);
+    }
+
+    @Override
+    public JavaPlugin getPlugin() {
+        return WhaleSkyWars.getInstance();
     }
 }

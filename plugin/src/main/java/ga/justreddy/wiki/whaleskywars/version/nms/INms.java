@@ -16,6 +16,8 @@ public interface INms {
 
     void setUnbreakable(ItemStack itemStack);
 
+    void setCollideWithEntities(Entity entity, boolean collide);
+
     void removeAi(Entity entity);
 
     String nameOfEnchantment(Enchantment enchantment);

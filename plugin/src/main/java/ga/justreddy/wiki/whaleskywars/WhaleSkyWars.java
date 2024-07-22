@@ -11,6 +11,7 @@ import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
+import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
@@ -62,6 +63,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private TomlConfig scoreboardConfig;
     // Creators
     private CageCreator cageCreator;
+    private GameCreator gameCreator;
     // Bungee
     private ServerMode serverMode;
 
@@ -179,7 +181,7 @@ public final class WhaleSkyWars extends JavaPlugin {
 
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), this);
 
-        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(), 0, 20);
+        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20);
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
 
@@ -221,6 +223,7 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     private void loadCreators() {
         cageCreator = new CageCreator();
+        gameCreator = new GameCreator();
     }
 
     private void loadManagers() {
@@ -231,6 +234,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         cageManager = new CageManager();
         kitRequestManager = new KitRequestManager();
         kitManager = new KitManager();
+        gameEventManager.start();
         gameManager.start();
         cageManager.start();
         kitManager.loadKits();

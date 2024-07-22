@@ -126,6 +126,6 @@ public class PlayerCosmetics implements IPlayerCosmetics {
 
     @Override
     public Set<String> getOwnedKits() {
-        return Set.of();
+        return new HashSet<>();
     }
 }

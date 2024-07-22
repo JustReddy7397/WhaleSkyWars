@@ -7,6 +7,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.ICuboid;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.KillPath;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
@@ -21,9 +22,12 @@ import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -284,7 +288,7 @@ public class Game implements IGame {
         // LAST
         phaseHandler = new PhaseHandler(this);
 
-        if (config.getBoolean("settings.disabled")) {
+        if (!config.getBoolean("settings.enabled")) {
             setGameState(GameState.DISABLED);
         } else {
             phaseHandler.setPhase(new WaitingPhase());
@@ -328,8 +332,6 @@ public class Game implements IGame {
         event.call();
 
         Player bukkitPlayer = player.getPlayer().get();
-
-        // TODO we handle the gamestate stuff here!!!
 
         bukkitPlayer.setAllowFlight(false);
         bukkitPlayer.setFlying(false);
@@ -385,6 +387,30 @@ public class Game implements IGame {
     @Override
     public void onGamePlayerLeave(IGamePlayer player, boolean isSilent) {
         // TODO
+    }
+
+    @Override
+    public void onGamePlayerDeath(IGamePlayer killer, IGamePlayer victim, KillPath path) {
+        Player bukkitVictim = victim.getPlayer().get();
+        victim.setDead(true);
+        // TODO refresh
+        Bukkit.getScheduler().runTaskLater(WhaleSkyWars.getInstance(), () -> {
+            bukkitVictim.setGameMode(org.bukkit.GameMode.ADVENTURE);
+            bukkitVictim.setAllowFlight(true);
+            bukkitVictim.setFlying(true);
+            WhaleSkyWars.getInstance().getNms().setCollideWithEntities(bukkitVictim, false);
+            bukkitVictim.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 0, false, false));
+        }, 1L);
+        getPlayers().forEach(gamePlayers ->  {
+            gamePlayers.getPlayer().ifPresent(bukkitPlayer -> {
+                bukkitPlayer.hidePlayer(bukkitVictim);
+            });
+        });
+
+        if (killer != null) {
+            // TODO ?
+        }
+
     }
 
     @Override
