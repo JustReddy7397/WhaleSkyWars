@@ -1,7 +1,9 @@
 package ga.justreddy.wiki.whaleskywars.model.config;
 
 import com.moandjiezana.toml.Toml;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +61,23 @@ public class CustomTomlReader {
     }
 
     public boolean isSet(String key) {
-        return values.containsKey(key);
+        String[] split = key.split("\\.");
+        Map<String, Object> currentMap = new HashMap<>(values);
+        for (String k : split) {
+            if (currentMap.containsKey(k)) {
+                Object value = currentMap.get(k);
+                if (value instanceof Map) {
+                    currentMap = (Map<String, Object>) value;
+                } else {
+                    // If it's the last key and it exists, return true
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+        // If all keys exist and the last key points to a map, return true
+        return true;
     }
 
     public Set<String> keys() {
