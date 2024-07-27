@@ -7,9 +7,17 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlReader;
 import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
+import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashMap;
@@ -20,13 +28,14 @@ import java.util.UUID;
 /**
  * @author JustReddy
  */
-public class GameCreator {
+public class GameCreator implements Listener {
 
     private final Map<UUID, String> setup;
     private static final File GAMES_FOLDER = WhaleSkyWars.getInstance().getGameManager().getGamesFolder();
 
     public GameCreator() {
         this.setup = new HashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, WhaleSkyWars.getInstance());
     }
 
     public void createGame(IGamePlayer player, String name) {
@@ -288,8 +297,98 @@ public class GameCreator {
         player.sendMessage("Island " + islandId + " cleared");
     }
 
-    public void save(IGamePlayer player) {
+    public void save(IGamePlayer player, boolean enable) {
+
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        Toml toml = load(file);
+
+        CustomTomlReader reader = CustomTomlReader.of(toml);
+
+        if (!isEverythingSettedUp(reader)) {
+            // TODO
+            player.sendMessage("Not everything is set up");
+            return;
+        }
+
+        World world = Bukkit.getServer().getWorld(name);
+
+
         // TODO
+        player.sendMessage("Game saved");
+
+        setup.remove(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        if (!setup.containsKey(bukkitPlayer.getUniqueId())) {
+            return;
+        }
+
+        IGamePlayer player = GamePlayer.get(bukkitPlayer.getUniqueId());
+        if (player == null) {
+            return;
+        }
+
+        ItemStack itemStack = event.getItem();
+        if (itemStack == null || itemStack.getType() == Material.AIR) return;
+
+        String name = setup.get(player.getUniqueId());
+        File file = getFile(name);
+        Toml toml = load(file);
+        CustomTomlReader reader = CustomTomlReader.of(toml);
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        if (event.getClickedBlock() == null) return;
+        if (itemStack.getType() == Material.STICK) {
+            String location = LocationUtil.toLocation(event.getClickedBlock().getLocation());
+            switch (event.getAction()) {
+                case LEFT_CLICK_BLOCK:
+                    writer.set("waiting-cuboid", "high", location);
+                    writer.write();
+                    player.sendMessage("High location set for waiting cuboid");
+                    event.setCancelled(true);
+                    break;
+                case RIGHT_CLICK_BLOCK:
+                    writer.set("waiting-cuboid", "low", location);
+                    writer.write();
+                    player.sendMessage("Low location set for waiting cuboid");
+                    event.setCancelled(true);
+                    break;
+            }
+
+        } else if (itemStack.getType() == Material.BLAZE_ROD) {
+            String location = LocationUtil.toLocation(event.getClickedBlock().getLocation());
+            switch (event.getAction()) {
+                case LEFT_CLICK_BLOCK:
+                    writer.set("game-cuboid", "high", location);
+                    writer.write();
+                    player.sendMessage("High location set for game cuboid");
+                    event.setCancelled(true);
+                    break;
+                case RIGHT_CLICK_BLOCK:
+                    writer.set("waiting-cuboid", "low", location);
+                    writer.write();
+                    player.sendMessage("game location set for game cuboid");
+                    event.setCancelled(true);
+                    break;
+            }
+        }
+
+    }
+
+    private boolean isEverythingSettedUp(CustomTomlReader reader) {
+        return reader.isSet("game-cuboid.high")
+                && reader.isSet("game-cuboid.low")
+                && reader.isSet("spectator-location")
+                && reader.isSet("islands");
     }
 
     private int getCurrentIsland(Toml toml) {
