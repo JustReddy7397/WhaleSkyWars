@@ -53,21 +53,51 @@ public class GameCommand implements SkyWarsCommand {
                     "&7&m----------------------------------------",
                     "&bWhaleSkyWars &7v1.0.0 &8- &7Made by &bJustReddy",
                     "&b/ws game create <name> &7- &3Create a new game",
-                    " &b/ws game setdisplayname <name> &7- &3Set the display name",
+                    "&b/ws game setdisplayname <name> &7- &3Set the display name",
                     "&b/ws game setminimun <amount> &7- &3Set the minimum amount of players",
                     "&b/ws game setteamsize <amount> &7- &3Set the team size",
                     "&b/ws game setwaiting &7- &3Set the waiting spawn",
                     "&b/ws game setspectator &7- &3Set the spectator spawn",
-                    "&b/ws game bounds <lobby/game> <high/low> &7- &3Set the bounds",
-                    "&b/ws island create &7- &3Creates an island",
-                    "&b/ws island add <id> balloon &7- &3Sets the balloon spawn for the specified island",
-                    "&b/ws island add <id> spawn &7- &3Sets the spawn for the specified island",
-                    "&b/ws island remove <id> &7- &3Removes the specified island",
-                    "&b/ws save &7- &3Saves the game",
+                    "&b/ws game island create &7- &3Creates an island",
+                    "&b/ws game island add <id> balloon &7- &3Sets the balloon spawn for the specified island",
+                    "&b/ws game island add <id> spawn &7- &3Sets the spawn for the specified island",
+                    "&b/ws game island remove <id> &7- &3Removes the specified island",
+                    "&b/ws game save &7- &3Saves the game",
                     "&7&m----------------------------------------"
             );
             return;
         }
+
+        switch (args[1].toLowerCase()) {
+            case "create":
+                createGame(gamePlayer, args);
+                break;
+            case "setdisplayname":
+                setDisplayName(gamePlayer, args);
+                break;
+            case "setminimum":
+                setMinimumPlayers(gamePlayer, args);
+                break;
+            case "setteamsize":
+                setTeamSize(gamePlayer, args);
+                break;
+            case "setwaiting":
+                setWaitingSpawn(gamePlayer);
+                break;
+            case "setspectator":
+                setSpectatorSpawn(gamePlayer);
+                break;
+            case "island":
+                setIslandStuff(gamePlayer, args);
+                break;
+            case "save":
+                save(gamePlayer, args);
+                break;
+            default:
+                gamePlayer.sendMessage("&cUnknown sub-command");
+                break;
+        }
+
     }
 
     private void createGame(IGamePlayer gamePlayer, String[] args) {
@@ -150,10 +180,10 @@ public class GameCommand implements SkyWarsCommand {
             player.sendMessages(
                     "&7&m----------------------------------------",
                     "&bWhaleSkyWars &7v1.0.0 &8- &7Made by &bJustReddy",
-                    "&b/ws island create &7- &3Creates an island",
-                    "&b/ws island add <id> balloon &7- &3Sets the balloon spawn for the specified island",
-                    "&b/ws island add <id> spawn &7- &3Sets the spawn for the specified island",
-                    "&b/ws island remove <id> &7- &3Removes the specified island",
+                    "&b/ws game island create &7- &3Creates an island",
+                    "&b/ws game island add <id> balloon &7- &3Sets the balloon spawn for the specified island",
+                    "&b/ws game island add <id> spawn &7- &3Sets the spawn for the specified island",
+                    "&b/ws game island remove <id> &7- &3Removes the specified island",
                     "&7&m----------------------------------------"
             );
             return;
@@ -167,7 +197,7 @@ public class GameCommand implements SkyWarsCommand {
 
         if (args[2].equalsIgnoreCase("add")) {
             if (args.length < 5) {
-                player.sendMessage("&cUsage: /ws island add <id> <balloon/spawn>");
+                player.sendMessage("&cUsage: /ws game island add <id> <balloon/spawn>");
                 return;
             }
 
@@ -218,9 +248,17 @@ public class GameCommand implements SkyWarsCommand {
 
     }
 
-    private void save(IGamePlayer player) {
+    private void save(IGamePlayer player, String[] args) {
+
+        if (args.length != 3) {
+            player.sendMessage("&cUsage: /ws game save <enable=true/false>");
+            return;
+        }
+
+        boolean enable = Boolean.parseBoolean(args[2]);
+
         WhaleSkyWars.getInstance().getGameCreator()
-                .save(player);
+                .save(player, enable);
     }
 
 }
