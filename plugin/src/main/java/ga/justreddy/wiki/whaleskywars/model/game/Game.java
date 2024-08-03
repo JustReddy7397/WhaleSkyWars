@@ -271,7 +271,7 @@ public class Game implements IGame {
             for (Map.Entry<String, Object> entry : islands.entrySet()) {
                 Toml island = config.getTable("islands." + entry.getKey());
                 if (island == null) continue;
-                Location location = LocationUtil.getLocation(island.getString("location"));
+                Location location = LocationUtil.getLocation(island.getString("spawn"));
                 if (location == null) continue;
                 teams.add(new GameTeam(entry.getKey(), location));
             }
@@ -294,7 +294,8 @@ public class Game implements IGame {
             setGameState(GameState.DISABLED);
         } else {
             phaseHandler.setPhase(new WaitingPhase());
-            // TODO ?
+            System.out.println("Game " + name + " has been initialized");
+            // TODO?
         }
 
 
@@ -419,6 +420,7 @@ public class Game implements IGame {
 
     @Override
     public void onCountDown() {
+        if (phaseHandler == null) return;
         phaseHandler.onTick();
     }
 
