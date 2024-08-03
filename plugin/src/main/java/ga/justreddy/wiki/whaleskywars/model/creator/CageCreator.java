@@ -4,6 +4,7 @@ import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.ISchematic;
 import org.bukkit.Location;
@@ -35,9 +36,11 @@ public class CageCreator {
             return;
         }
 
+        File folder = getFile(name);
         File file = getFile(name, name + ".toml");
-        if (!file.exists()) {
+        if (!file.exists() && !folder.exists()) {
             try {
+                folder.mkdir();
                 file.createNewFile();
             } catch (IOException e) {
                 TextUtil.error(e, "Failed to create cage file " + file.getName(), false);
@@ -85,20 +88,12 @@ public class CageCreator {
             return;
         }
 
+
+
         Toml toml = new Toml().read(file);
-
-        Map<String, Object> contents = new HashMap<>(toml.toMap());
-
-        TomlWriter writer = new TomlWriter();
-
-        contents.put("cost", cost);
-
-        try {
-            writer.write(contents, file);
-        } catch (IOException e) {
-            TextUtil.error(e, "Failed to write cage file " + file.getName(), false);
-            return;
-        }
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        writer.set("cost", cost);
+        writer.write();
         player.sendMessage("&aSuccessfully set cost of cage " + name + " to " + cost);
     }
 
@@ -205,8 +200,12 @@ public class CageCreator {
         this.data.remove(uuid);
     }
 
+    public File getFile(String name) {
+        return new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/" + name);
+    }
+
     public File getFile(String name, String fileName) {
-        return new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/" + name + "/" + fileName);
+        return new File(WhaleSkyWars.getInstance().getDataFolder().getAbsolutePath() + "/cages/" + name, fileName);
     }
 
 }

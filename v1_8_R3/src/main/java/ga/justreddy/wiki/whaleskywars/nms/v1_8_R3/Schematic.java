@@ -1,9 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -77,9 +75,11 @@ public class Schematic implements ISchematic {
         try {
             BukkitWorld bukkitWorld = new BukkitWorld(location.getWorld());
             EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(bukkitWorld, -1);
+            Vector pasteLocation = new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+            pasteLocation = pasteLocation.subtract(5,1,5);
             Operation operation = new ClipboardHolder(schem, bukkitWorld.getWorldData())
                     .createPaste(editSession, bukkitWorld.getWorldData())
-                    .to(new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ()))
+                    .to(pasteLocation)
                     .ignoreAirBlocks(true)
                     .build();
             Operations.complete(operation);
