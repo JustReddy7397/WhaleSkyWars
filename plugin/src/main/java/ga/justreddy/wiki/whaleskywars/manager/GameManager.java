@@ -5,6 +5,7 @@ import com.google.gson.internal.bind.JsonTreeReader;
 import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 
@@ -55,6 +56,9 @@ public class GameManager {
     public void register(String name, Toml toml) {
         IGame game = new Game(name, toml);
         games.put(name, game);
+        if (WhaleSkyWars.getInstance().getServerMode() != ServerMode.LOBBY) {
+            WhaleSkyWars.getInstance().getGameMap().onEnable(game);
+        }
     }
 
     public ImmutableList<IGame> getGames() {
