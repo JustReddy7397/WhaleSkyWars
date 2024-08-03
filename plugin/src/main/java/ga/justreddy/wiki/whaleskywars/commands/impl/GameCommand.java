@@ -2,8 +2,10 @@ package ga.justreddy.wiki.whaleskywars.commands.impl;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
+import ga.justreddy.wiki.whaleskywars.manager.GameManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +71,11 @@ public class GameCommand implements SkyWarsCommand {
         }
 
         switch (args[1].toLowerCase()) {
+            case "join":
+                IGame game = WhaleSkyWars.getInstance().getGameManager()
+                        .getGameByName("Aquamarine");
+                game.onGamePlayerJoin(gamePlayer);
+                break;
             case "create":
                 createGame(gamePlayer, args);
                 break;
