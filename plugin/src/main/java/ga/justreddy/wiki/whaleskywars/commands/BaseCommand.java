@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.commands;
 
+import ga.justreddy.wiki.whaleskywars.commands.impl.CageCommand;
 import ga.justreddy.wiki.whaleskywars.commands.impl.GameCommand;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.command.Command;
@@ -19,7 +20,7 @@ public class BaseCommand implements CommandExecutor {
 
     public BaseCommand() {
         this.commands = new HashMap<>();
-        registerCommands(new GameCommand());
+        registerCommands(new GameCommand(), new CageCommand());
     }
 
     public void registerCommands(SkyWarsCommand... commands) {
