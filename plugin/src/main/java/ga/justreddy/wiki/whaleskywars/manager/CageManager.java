@@ -23,6 +23,24 @@ public class CageManager {
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
+
+        File defaultCageFolder = new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/default");
+        if (!defaultCageFolder.exists()) {
+            defaultCageFolder.mkdirs();
+        }
+        File defaultCage = new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/default/default.toml");
+        File defaultSmallCage = new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/default/small.schematic");
+        File defaultBigCage = new File(WhaleSkyWars.getInstance().getDataFolder(), "cages/default/big.schematic");
+        if (!defaultCage.exists()) {
+            WhaleSkyWars.getInstance().saveResource("cages/default/default.toml", false);
+        }
+        if (!defaultSmallCage.exists()) {
+            WhaleSkyWars.getInstance().saveResource("cages/default/small.schematic", false);
+        }
+        if (!defaultBigCage.exists()) {
+            WhaleSkyWars.getInstance().saveResource("cages/default/big.schematic", false);
+        }
+
     }
 
     public void start() {
