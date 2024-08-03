@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,12 @@ public class GameCreator implements Listener {
             // TODO
             player.sendMessage("Game already exists");
             return;
+        } else {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         Toml toml = load(file);
@@ -204,11 +211,10 @@ public class GameCreator implements Listener {
 
         CustomTomlReader reader = CustomTomlReader.of(toml);
         CustomTomlReader islands = reader.getTable("islands");
-        Map<String, Object> values = islands.getTable();
         int island = getCurrentIsland(toml);
-        CustomTomlWriter writer = CustomTomlWriter.of(values);
-        writer.set(island + "", "spawn", "");
-        writer.set(island + "", "balloon", "");
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        writer.set("islands." + island + ".spawn", "");
+        writer.set("islands." + island + ".balloon", "");
         writer.write(file);
         player.sendMessage("Island " + island + " created");
     }
@@ -236,7 +242,7 @@ public class GameCreator implements Listener {
         // Player can never be null :D
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
-        CustomTomlWriter writer = CustomTomlWriter.of(values);
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
         // TODO
         writer.set(islandId + "", "spawn", LocationUtil.toLocation(location));
         player.sendMessage("Island " + islandId + " spawn set");
@@ -265,7 +271,7 @@ public class GameCreator implements Listener {
         // Player can never be null :D
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
-        CustomTomlWriter writer = CustomTomlWriter.of(values);
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
         // TODO
         writer.set(islandId + "", "balloon", LocationUtil.toLocation(location));
         player.sendMessage("Island " + islandId + " balloon set");
@@ -291,7 +297,7 @@ public class GameCreator implements Listener {
             player.sendMessage("Island " + islandId + " does not exist");
             return;
         }
-        CustomTomlWriter writer = CustomTomlWriter.of(values);
+        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
         writer.remove(islandId + "");
         writer.write(file);
         player.sendMessage("Island " + islandId + " cleared");

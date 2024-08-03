@@ -58,6 +58,8 @@ public class Game implements IGame {
     private PhaseHandler phaseHandler;
     private World world;
 
+    private BungeeGame bungeeGame;
+
     private AbstractTimer startingTimer;
     private AbstractTimer endingTimer;
     private AbstractTimer preGameTimer;
@@ -292,7 +294,9 @@ public class Game implements IGame {
             setGameState(GameState.DISABLED);
         } else {
             phaseHandler.setPhase(new WaitingPhase());
+            // TODO ?
         }
+
 
     }
 
@@ -428,8 +432,17 @@ public class Game implements IGame {
         assigner.assign(this);
     }
 
-    // No interface method because I don't want people to use this
+    // No interface methods because I don't want people to use this
     public PhaseHandler getPhaseHandler() {
         return phaseHandler;
     }
+
+    public BungeeGame getBungeeGame() {
+        return bungeeGame;
+    }
+
+    public void setBungeeGame(BungeeGame bungeeGame) {
+        this.bungeeGame = bungeeGame;
+    }
+
 }

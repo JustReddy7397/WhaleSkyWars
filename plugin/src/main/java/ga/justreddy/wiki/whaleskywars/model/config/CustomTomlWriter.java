@@ -25,7 +25,7 @@ public class CustomTomlWriter {
 
     public CustomTomlWriter(Toml toml, File file) {
         this.writer = new TomlWriter();
-        this.values = toml.toMap();
+        this.values = toml.toMap() == null ? new HashMap<>() : new HashMap<>(toml.toMap());
         this.file = file;
     }
 
@@ -41,7 +41,25 @@ public class CustomTomlWriter {
     public void set(String key, Object value) {
         Validate.notNull(key, "Key cannot be null");
         Validate.notNull(value, "Value cannot be null");
-        values.put(key, value);
+        Map<String, Object> values = new HashMap<>(this.values);
+        String[] split = key.split("\\.");
+        if (split.length == 1) {
+            values.put(key, value);
+            return;
+        }
+        for (String k : split) {
+            if (split[split.length - 1].equals(k)) {
+                values.put(k, value);
+                return;
+            }
+            if (values.containsKey(k)) {
+                values = (Map<String, Object>) values.get(k);
+            } else {
+                Map<String, Object> map = new HashMap<>();
+                values.put(k, map);
+                values = map;
+            }
+        }
     }
 
     public void set(String section, String key, Object value) {

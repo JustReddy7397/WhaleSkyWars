@@ -2,7 +2,10 @@ package ga.justreddy.wiki.whaleskywars.util;
 
 import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.support.bungee.Bungee;
 import ga.justreddy.wiki.whaleskywars.util.iridium.IridiumColorAPI;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -68,6 +71,12 @@ public class TextUtil {
         }
     }
 
+    public static void sendBungeeConsoleMessages(String... messages) {
+        for (String message : messages) {
+            ProxyServer.getInstance().getConsole().sendMessage(ChatColor.translateAlternateColorCodes('&', message.replaceAll("%line%", CONSOLE_LINE)));
+        }
+    }
+
     public static void error(Throwable throwable, String description, boolean disable) {
         if (throwable != null) throwable.printStackTrace();
 
@@ -81,6 +90,21 @@ public class TextUtil {
 
         if (disable && Bukkit.getPluginManager().isPluginEnabled(WhaleSkyWars.getInstance())) {
             Bukkit.getPluginManager().disablePlugin(WhaleSkyWars.getInstance());
+        }
+    }
+
+    public static void errorBungee(Throwable throwable, String description, boolean disable) {
+        if (throwable != null) throwable.printStackTrace();
+
+        sendBungeeConsoleMessages(
+                "&4%line%",
+                "&cAn internal error has occurred in " + Bungee.getInstance().getDescription().getName() + "!",
+                "&cContact the plugin author if you cannot fix this error.",
+                "&cDescription: &6" + description,
+                "&4%line%"
+        );
+        if (disable) {
+            Bungee.getInstance().onDisable();
         }
     }
 

@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Setter
 public class Packet implements Serializable {
 
-    private String server;
+    protected String server;
     private final PacketType packetType;
 
 }

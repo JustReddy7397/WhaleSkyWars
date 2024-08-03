@@ -1,15 +1,15 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.internal.bind.JsonTreeReader;
 import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,7 +73,29 @@ public class GameManager {
         }
     }
 
+    public BungeeGame getByGame(IGame game) {
+        return ((Game)game).getBungeeGame();
+    }
+
+    public BungeeGame getByGameName(String name) {
+        IGame game = getGameByName(name);
+        if (game == null) return null;
+        return ((Game)game).getBungeeGame();
+    }
+
+    public Game getByBungeeGame(BungeeGame bungeeGame) {
+        Set<IGame> games = new HashSet<>(this.games.values());
+        return games.stream()
+                .filter(igame -> igame instanceof Game)
+                .map(igame -> (Game) igame)
+                .filter(game -> game.getBungeeGame() != null)
+                .filter(game -> game.getBungeeGame().equals(bungeeGame))
+                .findFirst()
+                .orElse(null);
+    }
+
     public File getGamesFolder() {
         return gamesFolder;
     }
+
 }

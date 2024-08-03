@@ -8,3 +8,11 @@ softdepend:
   - Vault
   - DecentHolograms
   - SlimeWorldManager
+commands:
+  whaleskywars:
+    aliases:
+      - ws
+      - sw
+    description: Main command for WhaleSkyWars
+    usage: /<command> <subcommand>
+    permission: whaleskywars.command

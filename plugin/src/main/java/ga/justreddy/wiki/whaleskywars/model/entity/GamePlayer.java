@@ -8,6 +8,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
+import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -116,7 +117,7 @@ public class GamePlayer implements IGamePlayer {
 
     @Override
     public void sendMessage(String message) {
-        player.ifPresent(player -> player.sendMessage(message));
+        player.ifPresent(player -> player.sendMessage(TextUtil.color(message)));
     }
 
     @Override

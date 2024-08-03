@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
+import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
 import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
 import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
@@ -180,6 +181,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         // TODO load db etc
 
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), this);
+        getCommand("whaleskywars").setExecutor(new BaseCommand());
 
         Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20);
 

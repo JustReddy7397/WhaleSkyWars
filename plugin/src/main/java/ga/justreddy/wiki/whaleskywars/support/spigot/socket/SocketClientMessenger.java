@@ -33,7 +33,7 @@ public class SocketClientMessenger implements ISpigotMessenger {
         this.host = host;
         this.port = port;
         this.server = server;
-        this.sender = new SocketClientMessengerSender();
+        this.sender = new SocketClientMessengerSender(this);
         this.receiver = new SocketClientMessengerReceiver();
    }
 
