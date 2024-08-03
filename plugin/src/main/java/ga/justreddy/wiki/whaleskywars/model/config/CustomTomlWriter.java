@@ -41,25 +41,18 @@ public class CustomTomlWriter {
     public void set(String key, Object value) {
         Validate.notNull(key, "Key cannot be null");
         Validate.notNull(value, "Value cannot be null");
-        Map<String, Object> values = new HashMap<>(this.values);
         String[] split = key.split("\\.");
-        if (split.length == 1) {
-            values.put(key, value);
-            return;
-        }
-        for (String k : split) {
-            if (split[split.length - 1].equals(k)) {
-                values.put(k, value);
-                return;
+        Map<String, Object> currentMap = values;
+
+        for (int i = 0; i < split.length - 1; i++) {
+            String section = split[i];
+            if (!currentMap.containsKey(section) || !(currentMap.get(section) instanceof Map)) {
+                currentMap.put(section, new HashMap<String, Object>());
             }
-            if (values.containsKey(k)) {
-                values = (Map<String, Object>) values.get(k);
-            } else {
-                Map<String, Object> map = new HashMap<>();
-                values.put(k, map);
-                values = map;
-            }
+            currentMap = (Map<String, Object>) currentMap.get(section);
         }
+
+        currentMap.put(split[split.length - 1], value);
     }
 
     public void set(String section, String key, Object value) {

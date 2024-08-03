@@ -63,11 +63,11 @@ public class GameCreator implements Listener {
 
         Toml toml = load(file);
         CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.set("settings", "displayName", name);
-        writer.set("settings", "teamSize", 1);
-        writer.set("settings", "gameMode", GameMode.SOLO.toString());
-        writer.set("settings", "minimumPlayers", 2);
-        writer.set("settings", "enabled", false);
+        writer.set("settings.displayName", name);
+        writer.set("settings.teamSize", 1);
+        writer.set("settings.gameMode", GameMode.SOLO.toString());
+        writer.set("settings.minimumPlayers", 2);
+        writer.set("settings.enabled", false);
         writer.write();
         setup.put(player.getUniqueId(), name);
         World world = WhaleSkyWars.getInstance().getWorldManager()
@@ -234,7 +234,8 @@ public class GameCreator implements Listener {
         CustomTomlReader reader = CustomTomlReader.of(toml);
         CustomTomlReader islands = reader.getTable("islands");
         Map<String, Object> values = islands.getTable();
-        if (!values.containsKey(islandId + "")) {
+
+        if (values == null || !values.containsKey(islandId + "")) {
             // TODO
             player.sendMessage("Island " + islandId + " does not exist");
             return;
@@ -244,7 +245,8 @@ public class GameCreator implements Listener {
         Location location = player.getPlayer().get().getLocation();
         CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
         // TODO
-        writer.set(islandId + "", "spawn", LocationUtil.toLocation(location));
+        writer.set("islands." + islandId + ".spawn", LocationUtil.toLocation(location));
+        writer.write();
         player.sendMessage("Island " + islandId + " spawn set");
     }
 
@@ -273,7 +275,8 @@ public class GameCreator implements Listener {
         Location location = player.getPlayer().get().getLocation();
         CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
         // TODO
-        writer.set(islandId + "", "balloon", LocationUtil.toLocation(location));
+        writer.set("islands." + islandId + ".balloon", LocationUtil.toLocation(location));
+        writer.write();
         player.sendMessage("Island " + islandId + " balloon set");
     }
 
@@ -298,7 +301,7 @@ public class GameCreator implements Listener {
             return;
         }
         CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.remove(islandId + "");
+        writer.remove("islands", islandId + "");
         writer.write(file);
         player.sendMessage("Island " + islandId + " cleared");
     }
