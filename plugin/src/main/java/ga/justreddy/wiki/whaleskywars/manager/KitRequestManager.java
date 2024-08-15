@@ -32,7 +32,11 @@ public class KitRequestManager {
         if (requests.containsKey(player.getUniqueId())) throw new KitRequestException(
                 "Player " + player.getName() + "(" + player.getUniqueId() + ") already has a request"
         );
+        if (isSomeoneAlreadyMakingAKit(request.getKitName())) {
+            throw new KitRequestException("Someone is already making a kit with the name " + request.getKitName());
+        }
         requests.put(player.getUniqueId(), request);
+        // TODO
         if (request instanceof KitModificationRequest) {
             ((KitModificationRequest) request).getKit().equipKit(player);
             player.getPlayer().ifPresent(p -> p.setGameMode(GameMode.CREATIVE));
@@ -50,6 +54,11 @@ public class KitRequestManager {
 
     public void removeKitRequest(IGamePlayer player) {
         requests.remove(player.getUniqueId());
+    }
+
+    private boolean isSomeoneAlreadyMakingAKit(String kitName) {
+        return requests.values().stream()
+                .anyMatch(request -> request.getKitName().equalsIgnoreCase(kitName));
     }
 
 }

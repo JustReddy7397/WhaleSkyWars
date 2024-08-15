@@ -50,14 +50,14 @@ dependencies {
 }
 
 
-ext.set('output', "./runtime/plugins")
+ext.set('output', "D:\\server\\spigot_1\\plugins")
 
 shadowJar {
 
     def output = rootProject.ext.get('output')
 
     destinationDirectory = file("$output")
-    archiveFileName = "Testing.jar"
+    archiveFileName = "WhaleSkyWars.jar"
     relocate 'com.cryptomorin.xseries', 'ga.justreddy.wiki.whaleskywars.libs.xseries'
     relocate 'fr.mrmicky.fastboard', 'ga.justreddy.wiki.whaleskywars.libs.fastboard'
 

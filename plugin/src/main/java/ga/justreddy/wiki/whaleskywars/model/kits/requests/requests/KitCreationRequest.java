@@ -41,4 +41,8 @@ public class KitCreationRequest implements KitRequest {
     public IGamePlayer getGamePlayer() {
         return player;
     }
+
+    public String getKitName() {
+        return kitName;
+    }
 }

@@ -1,13 +1,19 @@
 package ga.justreddy.wiki.whaleskywars.model.game.team;
 
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IBalloon;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.model.cosmetics.Balloon;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSpawn;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class GameTeam implements IGameTeam {
@@ -16,12 +22,14 @@ public class GameTeam implements IGameTeam {
     private final List<IGamePlayer> players;
     private final IGameSpawn gameSpawn;
     private final Location spawnLocation;
+    private final Location balloonLocation;
 
-    public GameTeam(String id, Location spawnLocation) {
+    public GameTeam(String id, Location spawnLocation, Location balloonLocation) {
         this.id = id;
         this.players = new ArrayList<>();
         // The cage will be set once the game starts
         this.gameSpawn = new GameSpawn(spawnLocation, false, null);
+        this.balloonLocation = balloonLocation;
         this.spawnLocation = spawnLocation;
     }
 
@@ -32,7 +40,7 @@ public class GameTeam implements IGameTeam {
 
     @Override
     public List<IGamePlayer> getPlayers() {
-        return players;
+        return new ArrayList<>(players);
     }
 
     @Override
@@ -79,5 +87,32 @@ public class GameTeam implements IGameTeam {
     @Override
     public Location getSpawnLocation() {
         return spawnLocation;
+    }
+
+    @Override
+    public void spawnBalloon() {
+        List<Integer> balloons = new ArrayList<>();
+        for (IGamePlayer player : getPlayers()) {
+            Balloon balloon = WhaleSkyWars.getInstance().getBalloonManager().getById(player.getCosmetics().getSelectedBalloon());
+            if (balloon == null) {
+                continue;
+            }
+
+            if (balloons.contains(balloon.getId())) {
+                continue;
+            }
+            balloons.add(balloon.getId());
+        }
+
+        if (balloons.isEmpty()) return;
+
+        int id = balloons.get(ThreadLocalRandom.current().nextInt(balloons.size()));
+
+        Balloon balloon = WhaleSkyWars.getInstance().getBalloonManager().getById(id);
+
+        if (balloon == null) return;
+
+        balloon.spawn(balloonLocation);
+
     }
 }

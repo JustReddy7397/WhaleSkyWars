@@ -99,6 +99,18 @@ public interface IGamePlayer {
     void setGameTeam(IGameTeam team);
 
     /**
+     * Returns the CombatLog of the GamePlayer.
+     * @return the CombatLog of the GamePlayer
+     */
+    ICombatLog getCombatLog();
+
+    /**
+     * Sets the CombatLog of the GamePlayer.
+     * @param combatLog the CombatLog to set
+     */
+    void setCombatLog(ICombatLog combatLog);
+
+    /**
      * Returns whether the GamePlayer is playing.
      *
      * @return true if the GamePlayer is playing, false otherwise

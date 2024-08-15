@@ -108,4 +108,6 @@ public interface IGame {
 
     void assignTeams();
 
+    void reset();
+
 }

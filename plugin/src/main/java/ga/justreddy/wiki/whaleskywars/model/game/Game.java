@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.game;
 import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
+import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.ICuboid;
@@ -14,6 +15,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
+import ga.justreddy.wiki.whaleskywars.model.ServerMode;
+import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
 import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
 import ga.justreddy.wiki.whaleskywars.model.game.team.GameTeam;
@@ -22,6 +25,8 @@ import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
+import ga.justreddy.wiki.whaleskywars.util.PlayerUtil;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * @author JustReddy
  */
+@Getter
 public class Game implements IGame {
 
     private final String name;
@@ -273,7 +279,8 @@ public class Game implements IGame {
                 if (island == null) continue;
                 Location location = LocationUtil.getLocation(island.getString("spawn"));
                 if (location == null) continue;
-                teams.add(new GameTeam(entry.getKey(), location));
+                Location balloon = LocationUtil.getLocation(island.getString("balloon"));
+                teams.add(new GameTeam(entry.getKey(), location, balloon));
             }
         }
 
@@ -283,9 +290,9 @@ public class Game implements IGame {
 
 
         // TODO Load all the data from the config
-        startingTimer = new StartingTimer(10);
-        endingTimer = new EndingTimer(10);
-        preGameTimer = new PreGameTimer(10);
+        startingTimer = new StartingTimer(10, this);
+        endingTimer = new EndingTimer(10, this);
+        preGameTimer = new PreGameTimer(10, this);
 
         // LAST
         phaseHandler = new PhaseHandler(this);
@@ -374,6 +381,10 @@ public class Game implements IGame {
                 }
             }
             bukkitPlayer.teleport(team.getSpawnLocation());
+            WhaleSkyWars.getInstance().getSkyWarsBoard()
+                    .removeScoreboard(player);
+            WhaleSkyWars.getInstance().getSkyWarsBoard()
+                    .setGameBoard(player);
         }
 
         // TODO
@@ -391,6 +402,31 @@ public class Game implements IGame {
 
     @Override
     public void onGamePlayerLeave(IGamePlayer player, boolean isSilent) {
+        SkyWarsGameLeaveEvent leaveEvent = new SkyWarsGameLeaveEvent(player, this);
+        leaveEvent.call();
+        spectators.removeIf(gamePlayer -> gamePlayer.getUniqueId().equals(player.getUniqueId()));
+        players.removeIf(gamePlayer -> gamePlayer.getUniqueId().equals(player.getUniqueId()));
+        player.setGame(null);
+        IGameTeam team = player.getGameTeam();
+        if (team != null) {
+            team.removePlayer(player);
+        }
+        player.setGameTeam(null);
+        player.setDead(false);
+
+        WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
+        PlayerUtil.refresh(player);
+
+        if (WhaleSkyWars.getInstance().getServerMode() == ServerMode.BUNGEE) {
+            // TODO
+        } else {
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                bukkitPlayer.teleport(Bukkit.getWorld("world").getSpawnLocation());
+            });
+        }
+
+
+        if (isSilent) return;
         // TODO
     }
 
@@ -422,6 +458,9 @@ public class Game implements IGame {
     public void onCountDown() {
         if (phaseHandler == null) return;
         phaseHandler.onTick();
+        getPlayers()
+                .forEach(WhaleSkyWars.getInstance().getSkyWarsBoard()
+                        ::updateGameScoreboard);
     }
 
     @Override
@@ -432,6 +471,16 @@ public class Game implements IGame {
     @Override
     public void assignTeams() {
         assigner.assign(this);
+    }
+
+    @Override
+    public void reset() {
+        players.clear();
+        spectators.clear();
+        kills.clear();
+        teams.clear();
+        events.clear();
+        WhaleSkyWars.getInstance().getGameMap().onRestart(this);
     }
 
     // No interface methods because I don't want people to use this

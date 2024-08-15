@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.model.game.timers;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 
 /**
@@ -8,8 +9,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
  */
 public class EndingTimer extends AbstractTimer {
 
-    public EndingTimer(int seconds) {
-        super(WhaleSkyWars.getInstance(), seconds);
+    public EndingTimer(int seconds, IGame game) {
+        super(WhaleSkyWars.getInstance(), seconds, game);
     }
 
     @Override

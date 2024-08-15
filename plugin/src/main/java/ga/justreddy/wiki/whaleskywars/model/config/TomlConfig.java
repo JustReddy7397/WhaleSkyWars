@@ -17,9 +17,7 @@ public class TomlConfig {
 
     private static final String VERSION_KEY = "config-version";
 
-    private final String name;
-
-    private File file;
+    private final File file;
 
     private Toml toml;
 
@@ -30,7 +28,6 @@ public class TomlConfig {
         }
 
         final String completeName = name.endsWith(".toml") ? name : name + ".toml";
-        this.name = completeName;
         final File configFile = new File(WhaleSkyWars.getInstance().getDataFolder().getAbsolutePath(), completeName);
         if (!configFile.exists()) {
             Files.copy(WhaleSkyWars.getInstance()
@@ -129,4 +126,11 @@ public class TomlConfig {
         return toml.getTable(key);
     }
 
+    public Toml getToml() {
+        return toml;
+    }
+
+    public File getFile() {
+        return file;
+    }
 }

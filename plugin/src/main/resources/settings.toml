@@ -29,6 +29,7 @@ mode = "MULTI_ARENA" # MULTI_ARENA, BUNGEE, LOBBY
 enabled = false
 update-interval = 120 # in seconds
 
+
 [game-options]
 events = [] # TODO
 
@@ -79,7 +80,7 @@ server-name = "srv1"
 # Use LEAVE_COMMAND to make spigot server console execute custom command when the player leaves the game.
 on-leave = "LOBBY_SERVER"
 # Lobby server.
-# Use the bungeecord server name that you set in bungeecord config.yml.
+# Use the bungeecord server name that you set in bungeecord config.toml.
 lobby = "lobby"
 # Leave commands.
 # They are used only when "on-leave" option is set to "LEAVE_COMMAND" and will be executed from the spigot server's console.
@@ -91,7 +92,7 @@ leave-commands = ["cmd <player>", "tell <player> &aYou have left the game!"]
 # Bungeecord server hostname,
 # if your spigot and bungeecord server are on the same machine leave it set to "localhost".
 host = "localhost"
-# Bungeecord socket server port, set it to the same value as in the bungee-config.yml in your bungeecord server.
+# Bungeecord socket server port, set it to the same value as in the bungee-config.toml in your bungeecord server.
 # WARNING!
 # This is NOT your bungeecord server port,
 # it's your socket server port that can be changed in the file mentioned above.
@@ -107,4 +108,4 @@ virtual-host = "/"
 # I can't guarantee that this will work.
 [bungee.redis]
 host = "localhost"
-port = 6_379
+port = 6379

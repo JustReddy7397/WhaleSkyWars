@@ -5,7 +5,9 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 /**
  * @author JustReddy
@@ -19,23 +21,23 @@ public class RestartingPhase implements IPhase {
         ServerMode mode = WhaleSkyWars.getInstance().getServerMode();
 
         World world = game.getWorld();
+        game.getPlayers().forEach(player -> {
+            game.onGamePlayerLeave(player, true);
+            System.out.println("boomies");
+        });
         if (world != null) {
 
-            world.getPlayers().forEach(player -> {
-                if (mode == ServerMode.BUNGEE) {
-                    // TODO send back to lobby
-                } else if (mode == ServerMode.MULTI_ARENA) {
-                    // TODO send back to lobby
-                }
-            });
+
 
             world.getEntities().forEach(entity -> {
+                if (entity instanceof Player) return;
                 if (entity != null) {
                     entity.remove();
                 }
             });
 
-            WhaleSkyWars.getInstance().getGameMap().onRestart(game);
+
+            game.reset();
 
         }
 

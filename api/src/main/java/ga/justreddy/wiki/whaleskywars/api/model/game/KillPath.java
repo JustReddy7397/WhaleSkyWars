@@ -8,6 +8,10 @@ public enum KillPath {
     MELEE,
     VOID,
     FALL,
+    FIRE,
+    EXPLOSION,
+    DROWNING,
+    SUFFOCATION,
     PROJECTILE,
     UNKNOWN
 

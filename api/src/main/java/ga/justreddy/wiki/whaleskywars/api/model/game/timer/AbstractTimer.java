@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game.timer;
 
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,10 +14,12 @@ public abstract class AbstractTimer implements Runnable {
     protected int ticksExceed = 0;
     protected int task = -1;
     protected boolean started;
+    protected IGame game;
 
-    public AbstractTimer(JavaPlugin plugin, int seconds) {
+    public AbstractTimer(JavaPlugin plugin, int seconds, IGame game) {
         this.plugin = plugin;
         this.seconds = seconds;
+        this.game = game;
     }
 
     /**
@@ -33,8 +36,8 @@ public abstract class AbstractTimer implements Runnable {
             stop();
             return;
         }
-        --ticksExceed;
         onTick();
+        ticksExceed--;
     }
 
     public void start() {

@@ -6,10 +6,12 @@ import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
+import ga.justreddy.wiki.whaleskywars.listeners.GameListener;
 import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
 import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
+import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
@@ -20,12 +22,14 @@ import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
+import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.ISchematic;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.IWorldEdit;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,13 +59,17 @@ public final class WhaleSkyWars extends JavaPlugin {
     private GameManager gameManager;
     private CageManager cageManager;
     private GameEventManager gameEventManager;
+    private VictoryDanceManager victoryDanceManager;
     private PlayerManager playerManager;
     private KitRequestManager kitRequestManager;
     private KitManager kitManager;
+    private BalloonManager balloonManager;
     // Configs
     private TomlConfig settingsConfig;
     private TomlConfig databaseConfig;
     private TomlConfig scoreboardConfig;
+    private TomlConfig defaultConfig;
+    private TomlConfig balloonsConfig;
     // Creators
     private CageCreator cageCreator;
     private GameCreator gameCreator;
@@ -69,6 +77,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private ServerMode serverMode;
 
     private IStorage storage;
+
+    private Location spawn;
 
     @Override
     public void onLoad() {
@@ -181,9 +191,14 @@ public final class WhaleSkyWars extends JavaPlugin {
         // TODO load db etc
 
         Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         getCommand("whaleskywars").setExecutor(new BaseCommand());
 
         Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20);
+
+        if (defaultConfig.getString("spawn") != null && !defaultConfig.getString("spawn").equalsIgnoreCase("null")) {
+            spawn = LocationUtil.getLocation(defaultConfig.getString("spawn"));
+        }
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
 
@@ -216,6 +231,10 @@ public final class WhaleSkyWars extends JavaPlugin {
                 TextUtil.error(null, "Scoreboard config is outdated! Please update!", true);
                 return false;
             }
+            loading = "config.toml";
+            defaultConfig = new TomlConfig("config.toml");
+            loading = "balloons.toml";
+            balloonsConfig = new TomlConfig("balloons.toml");
         } catch (IOException e) {
             TextUtil.error(e, "Failed to load config " + loading, true);
             return false;
@@ -236,10 +255,14 @@ public final class WhaleSkyWars extends JavaPlugin {
         cageManager = new CageManager();
         kitRequestManager = new KitRequestManager();
         kitManager = new KitManager();
+        victoryDanceManager = new VictoryDanceManager();
+        this.balloonManager = new BalloonManager();
         gameEventManager.start();
         gameManager.start();
         cageManager.start();
         kitManager.loadKits();
+        victoryDanceManager.start();
+        balloonManager.start();
 
     }
 
@@ -248,6 +271,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         cageManager.die();
         playerManager.die();
         gameEventManager.die();
+        victoryDanceManager.die();
     }
 
 
@@ -256,4 +280,10 @@ public final class WhaleSkyWars extends JavaPlugin {
         return packageName.substring(packageName.lastIndexOf('.') + 1);
     }
 
+    public void setSpawn(Location spawn) {
+        this.spawn = spawn;
+        CustomTomlWriter writer = new CustomTomlWriter(defaultConfig.getToml(), defaultConfig.getFile());
+        writer.set("spawn", LocationUtil.toLocation(spawn));
+        writer.write();
+    }
 }

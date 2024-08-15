@@ -4,6 +4,8 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.ScoreBoardCreator;
 import ga.justreddy.wiki.whaleskywars.util.NumberUtil;
@@ -24,9 +26,11 @@ import java.util.stream.Collectors;
 public class SkyWarsBoard {
 
     private final Map<UUID, Integer> data;
+    private final Map<UUID, ScoreBoardCreator> creators;
 
     public SkyWarsBoard() {
         this.data = new HashMap<>();
+        this.creators = new HashMap<>();
     }
 
     public void setLobbyBoard(IGamePlayer player) {
@@ -89,6 +93,10 @@ public class SkyWarsBoard {
             public String setPlaceHolders(String line) {
                 IGame game = player.getGame();
                 line = line.replace("{player}", player.getName());
+                line = line.replace("{players}", game.getAlivePlayers().size() + "");
+                line = line.replace("{max-players}", game.getMaximumPlayers() + "");
+                line = line.replace("{map}", game.getDisplayName());
+                line = line.replace("{mode}", game.getGameMode().name());
                 line = line.replace("{date}", dateFormat.format(System.currentTimeMillis()));
                 line = line.replace("{kills}", String.valueOf(game.getKills(player)));
                 String currentEvent = config.getString("events.no-event");
@@ -99,11 +107,11 @@ public class SkyWarsBoard {
                         break;
                     case STARTING:
                         currentEvent = config.getString("events.starting")
-                                .replace("{time}", NumberUtil.toFormat(game.getPreGameTimer().getSeconds()));
+                                .replace("{time}", NumberUtil.toFormat(game.getStartingTimer().getTicksExceed()));
                         break;
                     case PREGAME:
                         currentEvent = config.getString("events.pregame")
-                                .replace("{time}", NumberUtil.toFormat(game.getPreGameTimer().getSeconds()));
+                                .replace("{time}", NumberUtil.toFormat(game.getPreGameTimer().getTicksExceed()));
                         break;
                     case PLAYING:
                         GameEvent event = game.getCurrentEvent();
@@ -115,7 +123,7 @@ public class SkyWarsBoard {
                         break;
                     case ENDING:
                         currentEvent = config.getString("events.ending")
-                                .replace("{time}", NumberUtil.toFormat(game.getEndingTimer().getSeconds()));
+                                .replace("{time}", NumberUtil.toFormat(game.getEndingTimer().getTicksExceed()));
                         break;
                 }
                 line = line.replace("{event}", currentEvent);
@@ -127,23 +135,54 @@ public class SkyWarsBoard {
             }
         };
 
-        int taskId = Bukkit.getScheduler().runTaskTimerAsynchronously(WhaleSkyWars.getInstance(), () -> {
-            String title = config.getString("game-board.title");
-            creator.setTitle(title);
-            List<String> lines = config.getStringList("game-board.lines")
-                    .stream().map(creator::setPlaceHolders).collect(Collectors.toList());
-            creator.setLines(lines);
-        }, 0, 20L).getTaskId();
-        data.put(player.getUniqueId(), taskId);
+        String title = config.getString("game-board.title");
+        creator.setTitle(title);
+        if (player.getGame().getGameState() == GameState.WAITING) {
+            creator.setLines(config.getStringList("game-board.waiting.lines")
+                    .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+        } else {
+            if (player.getGame().getGameMode() == GameMode.SOLO) {
+                creator.setLines(config.getStringList("game-board.playing-solo.lines")
+                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+            } else {
+                creator.setLines(config.getStringList("game-board.playing-team.lines")
+                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+            }
+        }
 
+        creators.put(player.getUniqueId(), creator);
+        data.put(player.getUniqueId(), -1);
     }
 
     public void removeScoreboard(IGamePlayer player) {
         UUID uuid = player.getUniqueId();
-        if (!data.containsKey(uuid)) return;
+        creators.remove(uuid);
         player.getPlayer().ifPresent(bukkitPlayer -> bukkitPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard()));
-        Bukkit.getServer().getScheduler().cancelTask(data.get(uuid));
+        if (data.getOrDefault(uuid, -1) != -1) {
+            Bukkit.getScheduler().cancelTask(data.get(uuid));
+        }
         data.remove(uuid);
+    }
+
+    public void updateGameScoreboard(IGamePlayer player) {
+        if (!creators.containsKey(player.getUniqueId())) return;
+        TomlConfig config = WhaleSkyWars.getInstance().getScoreboardConfig();
+        if (!config.getBoolean("game-board.enabled")) return;
+        ScoreBoardCreator creator = creators.get(player.getUniqueId());
+        String title = config.getString("game-board.title");
+        creator.setTitle(title);
+        if (player.getGame().getGameState() == GameState.WAITING) {
+            creator.setLines(config.getStringList("game-board.waiting.lines")
+                    .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+        } else {
+            if (player.getGame().getGameMode() == GameMode.SOLO) {
+                creator.setLines(config.getStringList("game-board.playing-solo.lines")
+                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+            } else {
+                creator.setLines(config.getStringList("game-board.playing-team.lines")
+                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
+            }
+        }
     }
 
 }

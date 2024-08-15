@@ -14,22 +14,8 @@
 # that's designed to be straightforward to read due to its obvious semantics.
 # Documentation: https://toml.io/en/
 #
-# Welcome to the database.toml file.
-# This file is used to set your database.
-# Everything here requires a server restart to take effect.
+# Welcome to the config.toml file.
+# This file is used to store stuff for the plugin, for example, lobby location.
+# Nothing here requires a server restart to take effect.
 
-# DO NOT TOUCH THIS!
-config-version = 1
-
-[storage]
-type = "SQLITE" # SQLITE, MYSQL, MONGODB
-
-[storage.mysql]
-host = "localhost"
-port = 3306
-database = "none"
-username = "root"
-password = "none"
-
-[storage.mongodb]
-uri = "mongodb://localhost:27017"
+spawn = "null"

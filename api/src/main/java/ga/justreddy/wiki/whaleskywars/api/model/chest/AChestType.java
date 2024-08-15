@@ -68,7 +68,9 @@ public abstract class AChestType {
     public void populate(Inventory inventory, String chestType) {
         inventory.clear();
         ThreadLocalRandom random = ThreadLocalRandom.current();
-
+        List<ILootItem> items = lootItemsPerChestType.get(chestType);
+        if (items == null) return;
+        fillRandomizer(inventory, random, items);
     }
 
     /**
@@ -105,7 +107,7 @@ public abstract class AChestType {
      * Adds a loot item to the chest type.
      * @param chestType The type of chest to add.
      */
-    public void addChestType(String chestType) {
+    public final void addChestType(String chestType) {
         this.chestTypes.add(chestType);
     }
 

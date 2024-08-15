@@ -24,4 +24,9 @@ public class KitModificationRequest implements KitRequest {
     public IGamePlayer getGamePlayer() {
         return player;
     }
+
+    @Override
+    public String getKitName() {
+        return kit.getName();
+    }
 }

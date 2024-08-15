@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,8 +64,18 @@ public class KitManager {
         return kits.values().stream().filter(Kit::isDefault).findFirst().orElse(kits.values().stream().findFirst().get());
     }
 
+    public void cacheOrReplace(Kit kitFromPlayer) {
+        if (!kits.containsKey(kitFromPlayer.getName())) {
+            kits.put(kitFromPlayer.getName(), kitFromPlayer);
+        } else {
+            kits.replace(kitFromPlayer.getName(), kitFromPlayer);
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> WhaleSkyWars.getInstance().getStorage().saveKit(kitFromPlayer));
+    }
+
     public Map<String, Kit> getKits() {
         return kits;
     }
+
 
 }

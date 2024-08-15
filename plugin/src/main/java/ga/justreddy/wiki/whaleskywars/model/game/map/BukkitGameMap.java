@@ -38,7 +38,7 @@ public class BukkitGameMap implements IGameMap {
         );
 
         try {
-            FileUtil.copy(originalWorldFolder, newWorldFolder);
+            FileUtil.copy(newWorldFolder, originalWorldFolder);
         } catch (Exception e) {
             TextUtil.error(e, "Failed to copy world " + game.getName(), false);
             return;

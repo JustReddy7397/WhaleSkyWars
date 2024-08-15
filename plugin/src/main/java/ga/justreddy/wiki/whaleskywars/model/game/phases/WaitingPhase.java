@@ -12,7 +12,6 @@ public class WaitingPhase implements IPhase {
     @Override
     public void onEnable(IGame game) {
         game.setGameState(GameState.STARTING);
-        game.getStartingTimer().start();
     }
 
     @Override

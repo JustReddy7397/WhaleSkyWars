@@ -14,4 +14,9 @@ public class KitLayoutRequest implements KitRequest {
     public IGamePlayer getGamePlayer() {
         return null;
     }
+
+    @Override
+    public String getKitName() {
+        return "";
+    }
 }

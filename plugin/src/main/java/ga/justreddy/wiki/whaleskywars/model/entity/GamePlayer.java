@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.ICombatLog;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
@@ -28,6 +29,7 @@ public class GamePlayer implements IGamePlayer {
     private IPlayerStats stats;
     private IGame game;
     private IGameTeam gameTeam;
+    private ICombatLog combatLog;
     private boolean dead;
 
     public GamePlayer(UUID uniqueId, String name) {
@@ -36,6 +38,7 @@ public class GamePlayer implements IGamePlayer {
         this.player = Optional.ofNullable(Bukkit.getPlayer(uniqueId));
         this.cosmetics = new PlayerCosmetics();
         this.stats = new PlayerStats();
+        this.combatLog = new CombatLog(this);
         this.game = null;
         this.gameTeam = null;
         this.dead = false;
@@ -98,6 +101,16 @@ public class GamePlayer implements IGamePlayer {
     @Override
     public void setGameTeam(IGameTeam team) {
         this.gameTeam = team;
+    }
+
+    @Override
+    public ICombatLog getCombatLog() {
+        return combatLog;
+    }
+
+    @Override
+    public void setCombatLog(ICombatLog combatLog) {
+        this.combatLog = combatLog;
     }
 
     @Override

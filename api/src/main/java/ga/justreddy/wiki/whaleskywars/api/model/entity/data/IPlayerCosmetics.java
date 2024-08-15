@@ -43,4 +43,28 @@ public interface IPlayerCosmetics {
 
     Set<String> getOwnedKits();
 
+    int getSelectedPerk();
+
+    void setSelectedPerk(int selectedPerk);
+
+    boolean addCachedPerk(int perk);
+
+    boolean removeCachedPerk(int perk);
+
+    boolean hasCachedPerk(int perk);
+
+    Set<Integer> getOwnedPerks();
+
+    int getSelectedBalloon();
+
+    void setSelectedBalloon(int selectedBalloon);
+
+    boolean addCachedBalloon(int balloon);
+
+    boolean removeCachedBalloon(int balloon);
+
+    boolean hasCachedBalloon(int balloon);
+
+    Set<Integer> getOwnedBalloons();
+
 }

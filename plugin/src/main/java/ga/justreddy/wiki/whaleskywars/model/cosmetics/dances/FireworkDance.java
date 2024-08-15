@@ -24,6 +24,14 @@ public class FireworkDance extends VictoryDance {
 
     private final Map<UUID, Integer> tasks = new HashMap<>();
 
+    /**
+     * Initializes a new instance of the VictoryDance class with the specified name,
+     * ID, and cost.
+     *
+     * @param name The name of the victory dance.
+     * @param id The unique identifier of the victory dance.
+     * @param cost The cost of the victory dance.
+     */
     public FireworkDance() {
         super("Fireworks", 0, 0);
     }
@@ -75,6 +83,11 @@ public class FireworkDance extends VictoryDance {
     public void stop(IGamePlayer player) {
         int taskId = tasks.get(player.getUniqueId());
         Bukkit.getScheduler().cancelTask(taskId);
+    }
+
+    @Override
+    public VictoryDance clone() {
+        return new FireworkDance();
     }
 
     private void launchFirework(Location location) {

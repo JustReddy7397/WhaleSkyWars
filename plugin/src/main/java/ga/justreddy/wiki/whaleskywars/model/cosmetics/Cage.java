@@ -25,7 +25,7 @@ public class Cage extends Cosmetic implements ICage {
     @Override
     public void createSmall(Location location) {
         WhaleSkyWars.getInstance()
-                .getSchematic().paste(WhaleSkyWars.getInstance().getSchematic().get(big, location.getWorld()), location);
+                .getSchematic().paste(WhaleSkyWars.getInstance().getSchematic().get(small, location.getWorld()), location);
     }
 
     @Override

@@ -61,7 +61,7 @@ lines = [
 lines = [
     "&7&m-------------------",
     "",
-    "&f<event>",
+    "&f{event}",
     "&fKills: &a{kills}",
     "",
     "&fPlayers: &a{players}/{max-players}",
@@ -76,7 +76,7 @@ lines = [
 lines = [
     "&7&m-------------------",
     "",
-    "&f<event>",
+    "&f{event}",
     "&fKills: &a{kills}",
     "",
     "&fPlayers: &a{players}/{max-players}",

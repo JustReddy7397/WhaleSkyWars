@@ -87,4 +87,9 @@ public interface IGameTeam {
      */
     Location getSpawnLocation();
 
+    /**
+     * Spawns a balloon for the GameTeam.
+     */
+    void spawnBalloon();
+
 }
