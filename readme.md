@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="https://media.discordapp.net/attachments/859708062724915222/1272248944558342164/love.png?ex=66cf61a9&is=66ce1029&hm=93b9701e055e5f06150a60e17861ff31eed42a32e6ab9fa156ada6059b8d702f&=&format=webp&quality=lossless&width=1120&height=406" alt="Header">
+  <img src="https://urmom.wants-to.party/whaleskywars.png" alt="Header">
   <p align="center">
     Honestly, it's just another SkyWars plugin..
     <br />
