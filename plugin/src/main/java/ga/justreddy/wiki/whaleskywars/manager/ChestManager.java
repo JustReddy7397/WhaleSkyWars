@@ -1,7 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
+import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.chest.AChestType;
+import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;
+import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlReader;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
@@ -14,6 +19,7 @@ public class ChestManager {
 
     private final Map<String, AChestType> chests;
     private final File folder;
+    private final boolean isUsingToml = WhaleSkyWars.getInstance().getSettingsConfig().getBoolean("modules.toml-for-chests", true);
 
     public ChestManager() {
         this.chests = new HashMap<>();
@@ -24,9 +30,32 @@ public class ChestManager {
     public void start() {
         File[] chests = folder.listFiles();
         if (chests == null) return;
-        
+        for (File file : chests) {
+            String name = file.getName();
+            if (name.endsWith(".toml") && isUsingToml) {
+                loadTomlChest(file);
+            } else if (name.endsWith(".yml") && !isUsingToml) {
+                loadYamlChest(file);
+            }
+        }
+    }
+
+    private void loadTomlChest(File file) {
+        String name = file.getName().replaceAll(".toml", "");
+        CustomTomlReader reader = CustomTomlReader.of(new Toml().read(file));
+        CustomChest customChest = new CustomChest(name, reader, reader.getInt("min-amount"), reader.getInt("max-amount"));
+        this.chests.put(name, customChest);
+    }
+
+    private void loadYamlChest(File file) {
+        String name = file.getName().replaceAll(".yml", "");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        CustomChest customChest = new CustomChest(name, config, config.getInt("min-amount"), config.getInt("max-amount"));
+        this.chests.put(name, customChest);
     }
 
 
-
+    public Map<String, AChestType> getChests() {
+        return chests;
+    }
 }

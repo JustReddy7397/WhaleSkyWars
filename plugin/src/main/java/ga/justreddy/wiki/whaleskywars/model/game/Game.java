@@ -63,6 +63,7 @@ public class Game implements IGame {
     private int teamSize;
     private PhaseHandler phaseHandler;
     private World world;
+    private String defaultChestType;
 
     private BungeeGame bungeeGame;
 
@@ -285,6 +286,8 @@ public class Game implements IGame {
         }
 
         // TODO chests!!
+
+        this.defaultChestType = config.getString("settings.defaultChestType", "normal");
 
         this.maximumPlayers = this.teams.size() * this.teamSize;
 
