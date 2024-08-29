@@ -1,9 +1,15 @@
 package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 
+import de.tr7zw.changeme.nbtapi.NBTBlock;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTEntity;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -287,17 +293,136 @@ public final class v1_8_R3 implements INms {
     }
 
     @Override
-    public void setNbtValue(ItemStack itemStack, String key, Object value) {
-        // TODO ?
+    public void setNbtValue(Object object, String key, Object value) {
+        if (object instanceof Block) {
+            NBTBlock block = new NBTBlock((Block) object);
+            // Ugly start
+            NBTCompound compound = block.getData();
+            if (value instanceof Integer) {
+                compound.setInteger(key, (Integer) value);
+            }
+            if (value instanceof String) {
+                compound.setString(key, (String) value);
+            }
+            if (value instanceof Double) {
+                compound.setDouble(key, (Double) value);
+            }
+            if (value instanceof Float) {
+                compound.setFloat(key, (Float) value);
+            }
+            if (value instanceof Long) {
+                compound.setLong(key, (Long) value);
+            }
+            if (value instanceof Short) {
+                compound.setShort(key, (Short) value);
+            }
+            if (value instanceof Byte) {
+                compound.setByte(key, (Byte) value);
+            }
+            if (value instanceof Boolean) {
+                compound.setBoolean(key, (Boolean) value);
+            }
+            if (value instanceof Enum<?>) {
+                compound.setEnum(key, (Enum<?>) value);
+            }
+            // Ugly end
+        }
+        if (object instanceof ItemStack) {
+            NBTItem item = new NBTItem((ItemStack) object);
+            // Ugly start
+            if (value instanceof Integer) {
+                item.setInteger(key, (Integer) value);
+            }
+            if (value instanceof String) {
+                item.setString(key, (String) value);
+            }
+            if (value instanceof Double) {
+                item.setDouble(key, (Double) value);
+            }
+            if (value instanceof Float) {
+                item.setFloat(key, (Float) value);
+            }
+            if (value instanceof Long) {
+                item.setLong(key, (Long) value);
+            }
+            if (value instanceof Short) {
+                item.setShort(key, (Short) value);
+            }
+            if (value instanceof Byte) {
+                item.setByte(key, (Byte) value);
+            }
+            if (value instanceof Boolean) {
+                item.setBoolean(key, (Boolean) value);
+            }
+            if (value instanceof Enum<?>) {
+                item.setEnum(key, (Enum<?>) value);
+            }
+            // Ugly End
+        }
+        if (object instanceof Entity) {
+            NBTEntity entity = new NBTEntity((Entity) object);
+            if (value instanceof Integer) {
+                entity.setInteger(key, (Integer) value);
+            }
+            if (value instanceof String) {
+                entity.setString(key, (String) value);
+            }
+            if (value instanceof Double) {
+                entity.setDouble(key, (Double) value);
+            }
+            if (value instanceof Float) {
+                entity.setFloat(key, (Float) value);
+            }
+            if (value instanceof Long) {
+                entity.setLong(key, (Long) value);
+            }
+            if (value instanceof Short) {
+                entity.setShort(key, (Short) value);
+            }
+            if (value instanceof Byte) {
+                entity.setByte(key, (Byte) value);
+            }
+            if (value instanceof Boolean) {
+                entity.setBoolean(key, (Boolean) value);
+            }
+            if (value instanceof Enum<?>) {
+                entity.setEnum(key, (Enum<?>) value);
+            }
+            // Ugly End
+        }
     }
 
     @Override
-    public boolean hasNbtValue(ItemStack itemStack, String key) {
+    public boolean hasNbtValue(Object object, String key) {
+        if (object instanceof Block) {
+            NBTBlock block = new NBTBlock((Block) object);
+            return block.getData().hasTag(key);
+        }
+        if (object instanceof ItemStack) {
+            NBTItem item = new NBTItem((ItemStack) object);
+            return item.hasTag(key);
+        }
+        if (object instanceof Entity) {
+            NBTEntity entity = new NBTEntity((Entity) object);
+            return entity.hasTag(key);
+        }
         return false;
     }
 
     @Override
-    public Object getNbtValue(ItemStack itemStack, String key) {
+    public <V> V getNbtValue(V value, String key) {
+        if (value instanceof Block) {
+            NBTBlock block = new NBTBlock((Block) value);
+            return (V) block.getData().get(key, NBTHandlers.STORE_READABLE_TAG);
+        }
+        if (value instanceof ItemStack) {
+            NBTItem item = new NBTItem((ItemStack) value);
+            return (V) item.get(key, NBTHandlers.STORE_READABLE_TAG);
+        }
+        if (value instanceof Entity) {
+            NBTEntity entity = new NBTEntity((Entity) value);
+            return (V) entity.get(key, NBTHandlers.STORE_READABLE_TAG);
+        }
         return null;
     }
 
@@ -305,5 +430,6 @@ public final class v1_8_R3 implements INms {
     public ItemStack getItemInHand(Player player) {
         return player.getItemInHand();
     }
+
 
 }
