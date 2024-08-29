@@ -64,6 +64,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private KitRequestManager kitRequestManager;
     private KitManager kitManager;
     private BalloonManager balloonManager;
+    private HookManager hookManager;
     // Configs
     private TomlConfig settingsConfig;
     private TomlConfig databaseConfig;
@@ -263,6 +264,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         kitManager.loadKits();
         victoryDanceManager.start();
         balloonManager.start();
+        this.hookManager = new HookManager();
 
     }
 
@@ -286,4 +288,9 @@ public final class WhaleSkyWars extends JavaPlugin {
         writer.set("spawn", LocationUtil.toLocation(spawn));
         writer.write();
     }
+
+    public boolean isHooked(String hookId) {
+        return hookManager.isHooked(hookId);
+    }
+
 }
