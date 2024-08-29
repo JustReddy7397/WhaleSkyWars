@@ -19,12 +19,18 @@ repositories {
     maven {
         url = "https://maven.enginehub.org/repo/"
     }
+    maven {
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
     compileOnly "org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT"
     compileOnly project(':plugin')
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT"
+    implementation("de.tr7zw:item-nbt-api:2.13.2")
+
 }
 
 def targetJavaVersion = 8
