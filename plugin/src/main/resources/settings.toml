@@ -24,6 +24,7 @@ config-version = 1
 [modules]
 slimeworldmanager = false # Recommended
 mode = "MULTI_ARENA" # MULTI_ARENA, BUNGEE, LOBBY
+toml-for-chests = true # Recommended, change to false to use YML files
 
 [modules.leaderboards]
 enabled = false
