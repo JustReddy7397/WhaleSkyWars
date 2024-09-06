@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api;
 
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
@@ -27,6 +28,8 @@ public interface SkyWarsAPI {
     List<IGame> getGamesWithSimilarNames(String name);
 
     List<IGame> getGames();
+
+    void registerVictoryDance(VictoryDance dance);
 
     void registerGameEvent(GameEvent event);
 

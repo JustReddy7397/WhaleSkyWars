@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.api;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
@@ -50,6 +51,11 @@ public class ApiProvider implements SkyWarsAPI {
     @Override
     public List<IGame> getGames() {
         return new ArrayList<>(WhaleSkyWars.getInstance().getGameManager().getGames());
+    }
+
+    @Override
+    public void registerVictoryDance(VictoryDance dance) {
+        WhaleSkyWars.getInstance().getVictoryDanceManager().register(dance);
     }
 
     @Override
