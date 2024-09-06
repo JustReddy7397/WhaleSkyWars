@@ -36,13 +36,11 @@ public class PreGamePhase implements IPhase {
                     Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
                     gameSpawn.setCage(cage);
                     team.spawnBalloon();
-                    switch (game.getGameMode()) {
-                        case SOLO:
-                            cage.createSmall(team.getSpawnLocation());
-                            break;
-                        case TEAM:
-                            cage.createBig(team.getSpawnLocation());
-                            break;
+                    if (cage == null) return;
+                    if (game.getGameMode().isTeamGame()) {
+                        cage.createBig(team.getSpawnLocation());
+                    } else {
+                        cage.createSmall(team.getSpawnLocation());
                     }
 
                     team.getPlayers().forEach(gamePlayer -> {

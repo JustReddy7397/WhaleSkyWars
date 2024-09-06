@@ -1,12 +1,10 @@
 package ga.justreddy.wiki.whaleskywars.model.creator;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlReader;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
+import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import org.bukkit.Bukkit;
@@ -61,14 +59,14 @@ public class GameCreator implements Listener {
             }
         }
 
-        Toml toml = load(file);
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.set("settings.displayName", name);
-        writer.set("settings.teamSize", 1);
-        writer.set("settings.gameMode", GameMode.SOLO.toString());
-        writer.set("settings.minimumPlayers", 2);
-        writer.set("settings.enabled", false);
-        writer.write();
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+        config.set("settings.displayName", name);
+        config.set("settings.teamSize", 1);
+        config.set("settings.gameMode", "solo");
+        config.set("settings.minimumPlayers", 2);
+        config.set("settings.enabled", false);
+        config.save();
+
         setup.put(player.getUniqueId(), name);
         World world = WhaleSkyWars.getInstance().getWorldManager()
                 .createNewWorld(name);
@@ -89,13 +87,9 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
-
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-
-        writer.set("settings", "displayName", displayName);
-
-        writer.write();
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+        config.set("settings.displayName", displayName);
+        config.save();
 
         // TODO
         player.sendMessage("Display name set to: " + displayName);
@@ -112,13 +106,11 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        config.set("settings.teamSize", teamSize);
 
-        writer.set("settings", "teamSize", teamSize);
-
-        writer.write();
+        config.save();
 
         // TODO
         player.sendMessage("Team size set to: " + teamSize);
@@ -135,13 +127,11 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        config.set("settings.minimumPlayers", minimumPlayers);
 
-        writer.set("settings", "minimumPlayers", minimumPlayers);
-
-        writer.write();
+        config.save();
 
         // TODO
         player.sendMessage("Minimum players set to: " + minimumPlayers);
@@ -158,16 +148,16 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
-
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
         // Player can never be null :D
+
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
 
-        writer.set("waiting-location", LocationUtil.toLocation(location));
-        writer.write();
+        config.set("waiting-location", LocationUtil.toLocation(location));
+
+        config.save();
         // TODO
         player.sendMessage("Waiting spawn set");
     }
@@ -182,16 +172,17 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
-
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
         // Player can never be null :D
+
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
 
-        writer.set("spectator-location", LocationUtil.toLocation(location));
-        writer.write();
+        config.set("spectator-location", LocationUtil.toLocation(location));
+
+        config.save();
+
         // TODO
         player.sendMessage("Spectator spawn set");
 
@@ -207,15 +198,16 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-        CustomTomlReader islands = reader.getTable("islands");
-        int island = getCurrentIsland(toml);
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.set("islands." + island + ".spawn", "");
-        writer.set("islands." + island + ".balloon", "");
-        writer.write(file);
+        int island = getCurrentIsland(config);
+
+        config.set("islands." + island + ".spawn", "");
+
+        config.set("islands." + island + ".balloon", "");
+
+        config.save();
+
         player.sendMessage("Island " + island + " created");
     }
 
@@ -229,24 +221,24 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-        CustomTomlReader islands = reader.getTable("islands");
-        Map<String, Object> values = islands.getTable();
+        ConfigurationSection section = config.getSection("islands." + islandId);
 
-        if (values == null || !values.containsKey(islandId + "")) {
+        if (section == null) {
             // TODO
             player.sendMessage("Island " + islandId + " does not exist");
             return;
         }
+
         // Player can never be null :D
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        // TODO
-        writer.set("islands." + islandId + ".spawn", LocationUtil.toLocation(location));
-        writer.write();
+
+        section.set("spawn", LocationUtil.toLocation(location));
+
+        config.save();
+
         player.sendMessage("Island " + islandId + " spawn set");
     }
 
@@ -260,23 +252,26 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-        CustomTomlReader islands = reader.getTable("islands");
-        Map<String, Object> values = islands.getTable();
-        if (!values.containsKey(islandId + "")) {
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
             // TODO
             player.sendMessage("Island " + islandId + " does not exist");
             return;
         }
+
         // Player can never be null :D
+
         @SuppressWarnings("OptionalGetWithoutIsPresent")
         Location location = player.getPlayer().get().getLocation();
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        // TODO
-        writer.set("islands." + islandId + ".balloon", LocationUtil.toLocation(location));
-        writer.write();
+
+        section.set("balloon", LocationUtil.toLocation(location));
+
+        config.save();
+
+
         player.sendMessage("Island " + islandId + " balloon set");
     }
 
@@ -290,19 +285,21 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-        CustomTomlReader islands = reader.getTable("islands");
-        Map<String, Object> values = islands.getTable();
-        if (!values.containsKey(islandId + "")) {
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
             // TODO
             player.sendMessage("Island " + islandId + " does not exist");
             return;
         }
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.remove("islands", islandId + "");
-        writer.write(file);
+
+        config.set("islands." + islandId, null);
+
+        config.save();
+
         player.sendMessage("Island " + islandId + " cleared");
     }
 
@@ -316,11 +313,9 @@ public class GameCreator implements Listener {
 
         File file = getFile(name);
 
-        Toml toml = load(file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-
-        if (!isEverythingSettedUp(reader)) {
+        if (!isEverythingSettedUp(config)) {
             // TODO
             player.sendMessage("Not everything is set up");
             return;
@@ -328,6 +323,7 @@ public class GameCreator implements Listener {
 
         World world = Bukkit.getServer().getWorld(name);
 
+        player.getPlayer().ifPresent(bukkitPlayer -> bukkitPlayer.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation()));
 
         // TODO
         player.sendMessage("Game saved");
@@ -352,22 +348,20 @@ public class GameCreator implements Listener {
 
         String name = setup.get(player.getUniqueId());
         File file = getFile(name);
-        Toml toml = load(file);
-        CustomTomlReader reader = CustomTomlReader.of(toml);
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
         if (event.getClickedBlock() == null) return;
         if (itemStack.getType() == Material.STICK) {
             String location = LocationUtil.toLocation(event.getClickedBlock().getLocation());
             switch (event.getAction()) {
                 case LEFT_CLICK_BLOCK:
-                    writer.set("waiting-cuboid", "high", location);
-                    writer.write();
+                    config.set("waiting-cuboid.high", location);
+                    config.save();
                     player.sendMessage("High location set for waiting cuboid");
                     event.setCancelled(true);
                     break;
                 case RIGHT_CLICK_BLOCK:
-                    writer.set("waiting-cuboid", "low", location);
-                    writer.write();
+                    config.set("waiting-cuboid.low", location);
+                    config.save();
                     player.sendMessage("Low location set for waiting cuboid");
                     event.setCancelled(true);
                     break;
@@ -377,14 +371,14 @@ public class GameCreator implements Listener {
             String location = LocationUtil.toLocation(event.getClickedBlock().getLocation());
             switch (event.getAction()) {
                 case LEFT_CLICK_BLOCK:
-                    writer.set("game-cuboid", "high", location);
-                    writer.write();
+                    config.set("game-cuboid.high", location);
+                    config.save();
                     player.sendMessage("High location set for game cuboid");
                     event.setCancelled(true);
                     break;
                 case RIGHT_CLICK_BLOCK:
-                    writer.set("waiting-cuboid", "low", location);
-                    writer.write();
+                    config.set("waiting-cuboid.low", location);
+                    config.save();
                     player.sendMessage("game location set for game cuboid");
                     event.setCancelled(true);
                     break;
@@ -393,23 +387,22 @@ public class GameCreator implements Listener {
 
     }
 
-    private boolean isEverythingSettedUp(CustomTomlReader reader) {
-        return reader.isSet("game-cuboid.high")
-                && reader.isSet("game-cuboid.low")
-                && reader.isSet("spectator-location")
-                && reader.isSet("islands");
+    private boolean isEverythingSettedUp(TempConfig config) {
+        return config.isSet("game-cuboid.high")
+                && config.isSet("game-cuboid.low")
+                && config.isSet("spectator-location")
+                && config.isSet("islands");
     }
 
-    private int getCurrentIsland(Toml toml) {
-        CustomTomlReader reader = CustomTomlReader.of(toml);
+    private int getCurrentIsland(TempConfig config) {
 
-        if (!reader.isSet("islands")) {
+        if (!config.isSet("islands")) {
             return 1;
         }
 
         int count = 1;
 
-        CustomTomlReader islands = reader.getTable("islands");
+        ConfigurationSection islands = config.getSection("islands");
 
         Set<String> keys = islands.keys();
 
@@ -420,9 +413,6 @@ public class GameCreator implements Listener {
         return new File(GAMES_FOLDER, name + ".toml");
     }
 
-    private Toml load(File file) {
-        return new Toml().read(file);
-    }
 
     private boolean isSettingUp(IGamePlayer player) {
         UUID uniqueId = player.getUniqueId();

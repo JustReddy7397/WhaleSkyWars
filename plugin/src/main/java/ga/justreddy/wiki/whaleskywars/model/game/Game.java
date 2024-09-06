@@ -5,19 +5,16 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
-import ga.justreddy.wiki.whaleskywars.api.model.game.ICuboid;
-import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
-import ga.justreddy.wiki.whaleskywars.api.model.game.KillPath;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
+import ga.justreddy.wiki.whaleskywars.api.model.game.*;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
-import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
+import ga.justreddy.wiki.whaleskywars.model.game.modes.SoloGameMode;
+import ga.justreddy.wiki.whaleskywars.model.game.modes.TeamGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
 import ga.justreddy.wiki.whaleskywars.model.game.team.GameTeam;
 import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
@@ -198,13 +195,8 @@ public class Game implements IGame {
     }
 
     @Override
-    public void setGameMode(GameMode gameMode) {
-        mode = gameMode;
-    }
-
-    @Override
-    public boolean isGameMode(GameMode gameMode) {
-        return mode == gameMode;
+    public boolean isGameMode(String identifier) {
+        return mode.getIdentifier().equalsIgnoreCase(identifier);
     }
 
     @Override
@@ -245,11 +237,19 @@ public class Game implements IGame {
 
         teamSize = config.getLong("settings.teamSize").intValue();
         this.minimumPlayers = config.getLong("settings.minimumPlayers").intValue();
-        if (teamSize == 1) {
-            mode = GameMode.SOLO;
+
+        String gameMode = config.getString("settings.gameMode", null);
+
+        if (gameMode == null) {
+            if (teamSize == 1) {
+                mode = new SoloGameMode();
+            } else {
+                mode = new TeamGameMode();
+            }
         } else {
-            mode = GameMode.TEAM;
+          // TODO
         }
+
 
         Location boundHigh;
         Location boundLow;
@@ -374,13 +374,10 @@ public class Game implements IGame {
             if (!team.getPlayers().isEmpty()) {
                 Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
                 gameSpawn.setCage(cage);
-                switch (getGameMode()) {
-                    case SOLO:
-                        cage.createSmall(team.getSpawnLocation());
-                        break;
-                    case TEAM:
-                        cage.createBig(team.getSpawnLocation());
-                        break;
+                if (getGameMode().isTeamGame()) {
+                    cage.createBig(team.getSpawnLocation());
+                } else {
+                    cage.createSmall(team.getSpawnLocation());
                 }
             }
             bukkitPlayer.teleport(team.getSpawnLocation());

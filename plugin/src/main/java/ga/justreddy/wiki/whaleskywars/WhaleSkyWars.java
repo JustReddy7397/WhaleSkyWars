@@ -11,7 +11,6 @@ import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
 import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
@@ -202,7 +201,6 @@ public final class WhaleSkyWars extends JavaPlugin {
         }
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
-
     }
 
     @Override
@@ -236,7 +234,7 @@ public final class WhaleSkyWars extends JavaPlugin {
             defaultConfig = new TomlConfig("config.toml");
             loading = "balloons.toml";
             balloonsConfig = new TomlConfig("balloons.toml");
-        } catch (IOException e) {
+        } catch (Exception e) {
             TextUtil.error(e, "Failed to load config " + loading, true);
             return false;
         }
@@ -284,9 +282,8 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     public void setSpawn(Location spawn) {
         this.spawn = spawn;
-        CustomTomlWriter writer = new CustomTomlWriter(defaultConfig.getToml(), defaultConfig.getFile());
-        writer.set("spawn", LocationUtil.toLocation(spawn));
-        writer.write();
+        defaultConfig.set("spawn", LocationUtil.toLocation(spawn));
+        defaultConfig.save();
     }
 
     public boolean isHooked(String hookId) {

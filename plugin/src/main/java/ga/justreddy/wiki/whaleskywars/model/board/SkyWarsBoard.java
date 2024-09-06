@@ -4,7 +4,6 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.ScoreBoardCreator;
@@ -96,7 +95,7 @@ public class SkyWarsBoard {
                 line = line.replace("{players}", game.getAlivePlayers().size() + "");
                 line = line.replace("{max-players}", game.getMaximumPlayers() + "");
                 line = line.replace("{map}", game.getDisplayName());
-                line = line.replace("{mode}", game.getGameMode().name());
+                line = line.replace("{mode}", game.getGameMode().getDisplayName());
                 line = line.replace("{date}", dateFormat.format(System.currentTimeMillis()));
                 line = line.replace("{kills}", String.valueOf(game.getKills(player)));
                 String currentEvent = config.getString("events.no-event");
@@ -141,13 +140,8 @@ public class SkyWarsBoard {
             creator.setLines(config.getStringList("game-board.waiting.lines")
                     .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
         } else {
-            if (player.getGame().getGameMode() == GameMode.SOLO) {
-                creator.setLines(config.getStringList("game-board.playing-solo.lines")
-                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
-            } else {
-                creator.setLines(config.getStringList("game-board.playing-team.lines")
-                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
-            }
+            creator.setLines(config.getStringList("game-board.playing-" + player.getGame().getGameMode().getIdentifier() + ".lines")
+                    .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
         }
 
         creators.put(player.getUniqueId(), creator);
@@ -175,13 +169,8 @@ public class SkyWarsBoard {
             creator.setLines(config.getStringList("game-board.waiting.lines")
                     .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
         } else {
-            if (player.getGame().getGameMode() == GameMode.SOLO) {
-                creator.setLines(config.getStringList("game-board.playing-solo.lines")
-                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
-            } else {
-                creator.setLines(config.getStringList("game-board.playing-team.lines")
-                        .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
-            }
+            creator.setLines(config.getStringList("game-board.playing-" + player.getGame().getGameMode().getIdentifier() + ".lines")
+                    .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
         }
     }
 

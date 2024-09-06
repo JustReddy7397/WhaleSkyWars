@@ -1,9 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.model.chests;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.api.model.chest.ILootItem;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlReader;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -23,17 +21,19 @@ public class LootItem implements ILootItem {
     private final double chance;
     private final int amount;
 
-    public LootItem(CustomTomlReader tomlReader) {
+    public LootItem(ga.justreddy.wiki.whaleskywars.model.config
+                            .toml.ConfigurationSection tomlReader) {
         this.material = XMaterial.matchXMaterial(
                 tomlReader.getString("material"))
                 .orElseGet(() -> XMaterial.AIR)
                 .parseMaterial();
-        this.id = (byte) tomlReader.getInt("id");
+        this.id = (byte) tomlReader.getInteger("id");
         this.enchants = new HashMap<>();
 
-        CustomTomlReader enchantments = tomlReader.getTable("enchants");
-        if (enchantments != null && !enchantments.entries().isEmpty()) {
-            for (Map.Entry<String, Object> entry : enchantments.getTable().entrySet()) {
+        ga.justreddy.wiki.whaleskywars.model.config
+                .toml.ConfigurationSection enchantments = tomlReader.getSection("enchants");
+        if (enchantments != null && !enchantments.data().isEmpty()) {
+            for (Map.Entry<String, Object> entry : enchantments.data().entrySet()) {
                 Enchantment enchantment = Enchantment.getByName(entry.getKey());
                 if (enchantment != null) {
                     enchants.put(enchantment, (int) entry.getValue());
@@ -42,7 +42,7 @@ public class LootItem implements ILootItem {
         }
 
         this.chance = tomlReader.getDouble("chance");
-        this.amount = tomlReader.getInt("amount");
+        this.amount = tomlReader.getInteger("amount");
     }
 
     public LootItem(ConfigurationSection section) {

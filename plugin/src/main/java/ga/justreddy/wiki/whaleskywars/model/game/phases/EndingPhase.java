@@ -4,14 +4,10 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameStateChangeEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
-import ga.justreddy.wiki.whaleskywars.manager.VictoryDanceManager;
-import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import ga.justreddy.wiki.whaleskywars.util.PlayerUtil;
 import org.bukkit.Bukkit;
@@ -50,13 +46,13 @@ public class EndingPhase implements IPhase {
                 if (player.getGame().getName().equalsIgnoreCase(game.getName())) {
                     PlayerUtil.refresh(player);
                 }
-                if (game.isGameMode(GameMode.SOLO)) {
+                if (game.getGameMode().isTeamGame()) {
                     winnerText.append(player.getName());
                 } else {
                     winnerText.append(player.getName())
                             .append(++i == winnerSize ? "" : ", ");
                 }
-                player.getStats().addWin(game.getGameMode());
+                player.getStats().addWin(game.getGameMode().isTeamGame());
                 final VictoryDance dance = WhaleSkyWars.getInstance().getVictoryDanceManager().copyOf(
                         player.getCosmetics().getSelectedVictoryDance()
                 );

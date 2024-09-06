@@ -1,7 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.model.entity.data;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 
 /**
  * @author JustReddy
@@ -120,50 +119,38 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void addWin(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloWins++;
-                break;
-            case TEAM:
-                teamWins++;
-                break;
+    public void addWin(boolean teamGame) {
+        if (teamGame) {
+            teamWins++;
+        } else {
+            soloWins++;
         }
     }
 
     @Override
-    public void addDeath(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloDeaths++;
-                break;
-            case TEAM:
-                teamDeaths++;
-                break;
+    public void addDeath(boolean teamGame) {
+        if (teamGame) {
+            teamDeaths++;
+        } else {
+            soloDeaths++;
         }
     }
 
     @Override
-    public void addKill(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloKills++;
-                break;
-            case TEAM:
-                teamKills++;
-                break;
+    public void addKill(boolean teamGame) {
+        if (teamGame) {
+            teamKills++;
+        } else {
+            soloKills++;
         }
     }
 
     @Override
-    public void addGamePlayed(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloGamesPlayed++;
-                break;
-            case TEAM:
-                teamGamesPlayed++;
-                break;
+    public void addGamePlayed(boolean teamGame) {
+        if (teamGame) {
+            teamGamesPlayed++;
+        } else {
+            soloGamesPlayed++;
         }
     }
 
@@ -203,50 +190,38 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void removeWin(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloWins--;
-                break;
-            case TEAM:
-                teamWins--;
-                break;
+    public void removeWin(boolean teamGame) {
+        if (teamGame) {
+            teamWins--;
+        } else {
+            soloWins--;
         }
     }
 
     @Override
-    public void removeDeath(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloDeaths--;
-                break;
-            case TEAM:
-                teamDeaths--;
-                break;
+    public void removeDeath(boolean teamGame) {
+        if (teamGame) {
+            teamDeaths--;
+        } else {
+            soloDeaths--;
         }
     }
 
     @Override
-    public void removeKill(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloKills--;
-                break;
-            case TEAM:
-                teamKills--;
-                break;
+    public void removeKill(boolean teamGame) {
+        if (teamGame) {
+            teamKills--;
+        } else {
+            soloKills--;
         }
     }
 
     @Override
-    public void removeGamePlayed(GameMode mode) {
-        switch (mode) {
-            case SOLO:
-                soloGamesPlayed--;
-                break;
-            case TEAM:
-                teamGamesPlayed--;
-                break;
+    public void removeGamePlayed(boolean teamGame) {
+        if (teamGame) {
+            teamGamesPlayed--;
+        } else {
+            soloGamesPlayed--;
         }
     }
 
@@ -296,14 +271,11 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void setTotalWins(GameMode mode, int totalWins) {
-        switch (mode) {
-            case SOLO:
-                setSoloWins(totalWins);
-                break;
-            case TEAM:
-                setTeamWins(totalWins);
-                break;
+    public void setTotalWins(boolean teamGame, int totalWins) {
+        if (teamGame) {
+            setTeamWins(totalWins);
+        } else {
+            setSoloWins(totalWins);
         }
     }
 
@@ -318,58 +290,49 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void setTotalDeaths(GameMode mode, int totalDeaths) {
-        switch (mode) {
-            case SOLO:
-                setSoloDeaths(totalDeaths);
-                break;
-            case TEAM:
-                setTeamDeaths(totalDeaths);
-                break;
+    public void setTotalDeaths(boolean teamGame, int totalDeaths) {
+        if (teamGame) {
+            setTeamDeaths(totalDeaths);
+        } else {
+            setSoloDeaths(totalDeaths);
         }
     }
 
     @Override
     public void setSoloKills(int soloKills) {
-
+        this.soloKills = soloKills;
     }
 
     @Override
     public void setTeamKills(int teamKills) {
-
+        this.teamKills = teamKills;
     }
 
     @Override
-    public void setTotalKills(GameMode mode, int totalKills) {
-        switch (mode) {
-            case SOLO:
-                setSoloKills(totalKills);
-                break;
-            case TEAM:
-                setTeamKills(totalKills);
-                break;
+    public void setTotalKills(boolean teamGame, int totalKills) {
+        if (teamGame) {
+            setTeamKills(totalKills);
+        } else {
+            setSoloKills(totalKills);
         }
     }
 
     @Override
     public void setSoloGamesPlayed(int soloGamesPlayed) {
-
+        this.soloGamesPlayed = soloGamesPlayed;
     }
 
     @Override
     public void setTeamGamesPlayed(int teamGamesPlayed) {
-
+        this.teamGamesPlayed = teamGamesPlayed;
     }
 
     @Override
-    public void setTotalGamesPlayed(GameMode mode, int totalGamesPlayed) {
-        switch (mode) {
-            case SOLO:
-                setSoloGamesPlayed(totalGamesPlayed);
-                break;
-            case TEAM:
-                setTeamGamesPlayed(totalGamesPlayed);
-                break;
+    public void setTotalGamesPlayed(boolean teamGame, int totalGamesPlayed) {
+        if (teamGame) {
+            setTeamGamesPlayed(totalGamesPlayed);
+        } else {
+            setSoloGamesPlayed(totalGamesPlayed);
         }
     }
 
@@ -428,7 +391,7 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void resetStats(GameMode mode) {
+    public void resetStats(boolean teamGame) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

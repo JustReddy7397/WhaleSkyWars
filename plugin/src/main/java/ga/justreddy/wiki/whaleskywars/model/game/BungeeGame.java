@@ -1,6 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
+import ga.justreddy.wiki.whaleskywars.api.model.game.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,8 +43,8 @@ public class BungeeGame {
         return this.gameState == gameState;
     }
 
-    public boolean isGameMode(GameMode gameMode) {
-        return this.gameMode == gameMode;
+    public boolean isGameMode(String gameMode) {
+        return this.gameMode.getIdentifier().equalsIgnoreCase(gameMode);
     }
 
     public boolean isFull() {

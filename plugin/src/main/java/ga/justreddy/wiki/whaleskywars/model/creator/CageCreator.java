@@ -4,7 +4,7 @@ import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlWriter;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.ISchematic;
 import org.bukkit.Location;
@@ -52,6 +52,8 @@ public class CageCreator {
             return;
         }
 
+
+
         Toml toml = new Toml().read(file);
 
         Map<String, Object> contents = new HashMap<>(toml.toMap());
@@ -88,12 +90,13 @@ public class CageCreator {
             return;
         }
 
+        File folder = new File(WhaleSkyWars.getInstance().getDataFolder().getAbsolutePath() + "/cages/" + name);
 
+        TempConfig config = new TempConfig(folder, name + ".toml");
 
-        Toml toml = new Toml().read(file);
-        CustomTomlWriter writer = CustomTomlWriter.of(toml, file);
-        writer.set("cost", cost);
-        writer.write();
+        config.set("cost", cost);
+
+        config.save();
         player.sendMessage("&aSuccessfully set cost of cage " + name + " to " + cost);
     }
 

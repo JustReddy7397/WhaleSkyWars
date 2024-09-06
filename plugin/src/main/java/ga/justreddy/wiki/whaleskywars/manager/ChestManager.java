@@ -4,7 +4,7 @@ import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.chest.AChestType;
 import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;
-import ga.justreddy.wiki.whaleskywars.model.config.CustomTomlReader;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -42,8 +42,8 @@ public class ChestManager {
 
     private void loadTomlChest(File file) {
         String name = file.getName().replaceAll(".toml", "");
-        CustomTomlReader reader = CustomTomlReader.of(new Toml().read(file));
-        CustomChest customChest = new CustomChest(name, reader, reader.getInt("min-amount"), reader.getInt("max-amount"));
+        TempConfig reader = new TempConfig(folder, name + ".toml");
+        CustomChest customChest = new CustomChest(name, reader, reader.getInteger("min-amount"), reader.getInteger("max-amount"));
         this.chests.put(name, customChest);
     }
 

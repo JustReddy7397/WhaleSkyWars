@@ -128,4 +128,64 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     public Set<String> getOwnedKits() {
         return new HashSet<>();
     }
+
+    @Override
+    public int getSelectedPerk() {
+        return 0;
+    }
+
+    @Override
+    public void setSelectedPerk(int selectedPerk) {
+
+    }
+
+    @Override
+    public boolean addCachedPerk(int perk) {
+        return false;
+    }
+
+    @Override
+    public boolean removeCachedPerk(int perk) {
+        return false;
+    }
+
+    @Override
+    public boolean hasCachedPerk(int perk) {
+        return false;
+    }
+
+    @Override
+    public Set<Integer> getOwnedPerks() {
+        return new HashSet<>();
+    }
+
+    @Override
+    public int getSelectedBalloon() {
+        return 0;
+    }
+
+    @Override
+    public void setSelectedBalloon(int selectedBalloon) {
+
+    }
+
+    @Override
+    public boolean addCachedBalloon(int balloon) {
+        return false;
+    }
+
+    @Override
+    public boolean removeCachedBalloon(int balloon) {
+        return false;
+    }
+
+    @Override
+    public boolean hasCachedBalloon(int balloon) {
+        return false;
+    }
+
+    @Override
+    public Set<Integer> getOwnedBalloons() {
+        return new HashSet<>();
+    }
 }

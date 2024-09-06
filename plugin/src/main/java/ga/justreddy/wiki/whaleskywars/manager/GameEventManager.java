@@ -29,10 +29,8 @@ public class GameEventManager {
         File[] files = folder.listFiles();
         if (files == null) return;
         for (File file : files) {
-            System.out.println("Found file: " + file.getName());
             if (file.isDirectory()) continue;
             if (!file.getName().endsWith(".jar")) continue;
-            System.out.println("Hit jar file: " + file.getName());
             String name = file.getName().replace(".jar", "");
             register(name, file);
         }
@@ -41,10 +39,8 @@ public class GameEventManager {
     private void register(String name, File file) {
         try {
             List<Class<? extends GameEvent>> events = ClassUtil.findClasses(file, GameEvent.class);
-            System.out.println("Found " + events.size() + " classes in file: " + file.getName());
             for (Class<? extends GameEvent> event : events) {
                 GameEvent gameEvent = event.getConstructor().newInstance();
-                System.out.println("Found class: " + gameEvent.getClass() + " WITH NAME: " + gameEvent.getName());
                 register(gameEvent);
             }
         } catch (Exception e) {

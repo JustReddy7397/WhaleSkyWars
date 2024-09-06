@@ -22,15 +22,13 @@ public class BalloonManager {
     }
 
     public void start() {
-        config.getTable("balloons").entrySet()
-                .forEach(entry -> {
-                    String name = entry.getKey();
-                    int id = config.getInteger("balloons." + name + ".id");
-                    int cost = config.getInteger("balloons." + name + ".cost");
-                    String texture = config.getString("balloons." + name + ".texture");
-                    Balloon balloon = new Balloon(name, id, cost, texture);
-                    balloons.put(id, balloon);
-                });
+        config.getSection("balloons").data().forEach((name, value) -> {
+            int id = config.getInteger("balloons." + name + ".id");
+            int cost = config.getInteger("balloons." + name + ".cost");
+            String texture = config.getString("balloons." + name + ".texture");
+            Balloon balloon = new Balloon(name, id, cost, texture);
+            balloons.put(id, balloon);
+        });
     }
 
     public void die() {

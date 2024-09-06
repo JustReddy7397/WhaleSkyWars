@@ -35,14 +35,14 @@ public class StrengthPerk extends Perk {
     public void onSkyWarsPlayerKill(SkyWarsGameKillEvent event) {
         IGamePlayer killer = event.getKiller();
         if (canActivate(killer)) {
-             killer.getPlayer().ifPresent(player -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,
-                        20 * 10, 1));
-             });
+             killer.getPlayer().ifPresent(player -> player
+                     .addPotionEffect(new
+                             PotionEffect(PotionEffectType.INCREASE_DAMAGE,
+                             20 * 10, 1)));
         }
     }
 
-    // Using Bukkit events
+    /*// Using Bukkit events
     @EventHandler
     public void onSkyWarsPlayerKill(PlayerDeathEvent event) {
         Player killer = event.getEntity().getKiller();
@@ -55,6 +55,6 @@ public class StrengthPerk extends Perk {
             killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,
                     20 * 10, 1));
         }
-    }
+    }*/
 
 }
