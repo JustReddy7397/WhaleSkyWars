@@ -1,7 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
@@ -64,9 +63,7 @@ public interface IGame {
 
     GameMode getGameMode();
 
-    void setGameMode(GameMode gameMode);
-
-    boolean isGameMode(GameMode gameMode);
+    boolean isGameMode(String identifier);
 
     AbstractTimer getStartingTimer();
 

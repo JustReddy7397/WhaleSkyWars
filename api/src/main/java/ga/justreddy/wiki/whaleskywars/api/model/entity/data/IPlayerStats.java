@@ -1,7 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.api.model.entity.data;
 
-import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameMode;
-
 /**
  * @author JustReddy
  */
@@ -45,13 +43,13 @@ public interface IPlayerStats {
 
     int getDamageTaken();
 
-    void addWin(GameMode mode);
+    void addWin(boolean teamGame);
 
-    void addDeath(GameMode mode);
+    void addDeath(boolean teamGame);
 
-    void addKill(GameMode mode);
+    void addKill(boolean teamGame);
 
-    void addGamePlayed(GameMode mode);
+    void addGamePlayed(boolean teamGame);
 
     void addArrowsShot(int arrowsShot);
 
@@ -67,13 +65,13 @@ public interface IPlayerStats {
 
     void addDamageTaken(int damageTaken);
 
-    void removeWin(GameMode mode);
+    void removeWin(boolean teamGame);
 
-    void removeDeath(GameMode mode);
+    void removeDeath(boolean teamGame);
 
-    void removeKill(GameMode mode);
+    void removeKill(boolean teamGame);
 
-    void removeGamePlayed(GameMode mode);
+    void removeGamePlayed(boolean teamGame);
 
     void removeArrowsShot(int arrowsShot);
 
@@ -93,25 +91,25 @@ public interface IPlayerStats {
 
     void setTeamWins(int teamWins);
 
-    void setTotalWins(GameMode mode, int totalWins);
+    void setTotalWins(boolean teamGame, int totalWins);
 
     void setSoloDeaths(int soloDeaths);
 
     void setTeamDeaths(int teamDeaths);
 
-    void setTotalDeaths(GameMode mode, int totalDeaths);
+    void setTotalDeaths(boolean teamGame, int totalDeaths);
 
     void setSoloKills(int soloKills);
 
     void setTeamKills(int teamKills);
 
-    void setTotalKills(GameMode mode, int totalKills);
+    void setTotalKills(boolean teamGame, int totalKills);
 
     void setSoloGamesPlayed(int soloGamesPlayed);
 
     void setTeamGamesPlayed(int teamGamesPlayed);
 
-    void setTotalGamesPlayed(GameMode mode, int totalGamesPlayed);
+    void setTotalGamesPlayed(boolean teamGame, int totalGamesPlayed);
 
     void setArrowsShot(int arrowsShot);
 
@@ -129,6 +127,6 @@ public interface IPlayerStats {
 
     void resetStats();
 
-    void resetStats(GameMode mode);
+    void resetStats(boolean teamGame);
 
 }
