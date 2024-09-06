@@ -47,17 +47,17 @@ public class BaseCommand implements CommandExecutor {
 
         SkyWarsCommand command = commands.get(args[0]);
         if (command == null) {
-            TextUtil.sendMessage(sender, "&cUnknown command.");
+            TextUtil.errorCommand(sender, "&cUnknown command.");
             return true;
         }
 
         if (command.isPlayerOnly() && !(sender instanceof Player)) {
-            TextUtil.sendMessage(sender, "&cThis command is only available for players.");
+            TextUtil.errorCommand(sender, "&cThis command is only available for players.");
             return true;
         }
 
         if (!sender.hasPermission(command.getPermission())) {
-            TextUtil.sendMessage(sender, "&cYou do not have permission to execute this command.");
+            TextUtil.errorCommand(sender, "&cYou do not have permission to execute this command.");
             return true;
         }
 
