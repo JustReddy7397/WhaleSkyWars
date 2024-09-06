@@ -1,28 +1,15 @@
+---
+description: The home of for documentations of JustReddy's resources
+---
 
-<div align="center">
-  <img src="https://urmom.wants-to.party/whaleskywars.png" alt="Header">
-  <p align="center">
-    Honestly, it's just another SkyWars plugin..
-    <br />
-    <br />
-    <a href="https://jsutreddy.tech">Website</a>
-    ·
-    <a href="https://www.spigotmc.org/members/justreddy.860803//">SpigotMC Profile</a>
-    ·
-    <a href="https://discord.gg/x2tEZcShKn">Discord</a>
+# Home
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a2fbd5acea474fd58bc896503d0aa140)](https://app.codacy.com/gh/JustReddy7397/WhaleSkyWars/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-  </p>
+Welcome to my wiki! here u can find all the information and documentations for my resources.                     &#x20;
 
-[![Stargazers][stars-shield]][stars-url]
-[![Forks][forks-shield]][forks-url]
-[![Issues][issues-shield]][issues-url]
+You can  navigate through it using the sidebar on the left!
 
-</div>
+## Contact
 
-[forks-shield]: https://img.shields.io/github/forks/JustReddy7397/WhaleSkyWars.svg?style=for-the-badge
-[forks-url]: https://github.com/JustReddy7397/WhaleSkyWars/network/members
-[stars-shield]: https://img.shields.io/github/stars/JustReddy7397/WhaleSkyWars.svg?style=for-the-badge
-[stars-url]: https://github.com/ItsLewizzz/JustReddy7397/stargazers
-[issues-shield]: https://img.shields.io/github/issues/JustReddy7397/WhaleSkyWars.svg?style=for-the-badge
-[issues-url]: https://github.com/JustReddy7397/WhaleSkyWars/issues
+You can get support from our support team by join the [Discord](https://discord.gg/kejxcKK5QR), this is the best and quickest way we can give you support!
+
+© JustReddy 2021 | All rights reserved.&#x20;
