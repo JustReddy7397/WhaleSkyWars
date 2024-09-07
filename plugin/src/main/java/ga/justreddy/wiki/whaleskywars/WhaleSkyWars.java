@@ -3,7 +3,6 @@ package ga.justreddy.wiki.whaleskywars;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
-import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
@@ -15,7 +14,6 @@ import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
-import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
@@ -33,8 +31,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {

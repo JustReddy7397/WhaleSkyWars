@@ -1,7 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
 
 import java.io.File;
@@ -59,16 +59,16 @@ public class CageManager {
                 if (!file.getName().endsWith(".toml")) {
                     continue;
                 }
-                Toml toml = new Toml().read(file);
-                register(folder.getName(), toml);
+                TempConfig config = new TempConfig(folder, file.getName());
+                register(file.getName().replace(".toml", ""), config);
             }
         }
     }
 
-    public void register(String name, Toml toml) {
-        String actualname = toml.getString("name", name);
-        int id = toml.getLong("id").intValue();
-        int cost = toml.getLong("cost").intValue();
+    public void register(String name, TempConfig config) {
+        String actualname = config.getString("name", name);
+        int id = config.getInteger("id");
+        int cost = config.getInteger("cost");
         File smallSchematic = new File(WhaleSkyWars
                 .getInstance().getDataFolder(),
                 "cages/" + name + "/small.schematic");

@@ -1,11 +1,10 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.internal.bind.JsonTreeReader;
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 
@@ -43,9 +42,8 @@ public class GameManager {
 
             String name = file.getName().replace(".toml", "");
             if (games.containsKey(name)) continue;
-            Toml toml = new Toml().read(file);
-            register(name, toml);
-
+            TempConfig config = new TempConfig(gamesFolder, name + ".toml");
+            register(name, config);
         }
     }
 
@@ -53,8 +51,8 @@ public class GameManager {
         games.clear();
     }
 
-    public void register(String name, Toml toml) {
-        IGame game = new Game(name, toml);
+    public void register(String name, TempConfig tempConfig) {
+        IGame game = new Game(name, tempConfig);
         games.put(name, game);
         if (WhaleSkyWars.getInstance().getServerMode() != ServerMode.LOBBY) {
             WhaleSkyWars.getInstance().getGameMap().onEnable(game);

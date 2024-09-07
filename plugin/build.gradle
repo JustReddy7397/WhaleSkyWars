@@ -43,7 +43,7 @@ dependencies {
     compileOnly files("libs/slimeworldmanager-plugin-2.2.1.jar")
     compileOnly "org.projectlombok:lombok:1.18.20"
     annotationProcessor("org.projectlombok:lombok:1.18.20")
-    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+    compileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.2'
     implementation "com.alessiodp.libby:libby-bukkit:2.0.0-SNAPSHOT"
     compileOnly "org.mongodb:mongodb-driver:3.12.12"
     compileOnly "redis.clients:jedis:5.1.1"

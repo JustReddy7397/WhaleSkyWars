@@ -29,7 +29,34 @@ public class LibraryManager {
                 .repository("https://repo.codemc.io/repository/maven-public")
                 .relocate("ga.justreddy.wiki.whaleskywars.libs.nbtapi", "de.tr7zw")
                 .build();
-        libraryManager.loadLibraries(sqlite, mongo_driver, mongo_core, mongo_bson, rabbit, xseries, redis, nbt_api);
+        /**
+         * com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.2
+         */
+        Library jackson = Library.builder()
+                .groupId("com.fasterxml.jackson.dataformat")
+                .artifactId("jackson-dataformat-toml")
+                .version("2.17.2")
+                .loaderId("JacksonToml")
+                .build();
+        Library jackson_databind = Library.builder()
+                .groupId("com.fasterxml.jackson.core")
+                .artifactId("jackson-databind")
+                .version("2.17.2")
+                .loaderId("JacksonDatabind")
+                .build();
+        Library jackson_core = Library.builder()
+                .groupId("com.fasterxml.jackson.core")
+                .artifactId("jackson-core")
+                .version("2.17.2")
+                .loaderId("JacksonCore")
+                .build();
+        Library jackson_annotations = Library.builder()
+                .groupId("com.fasterxml.jackson.core")
+                .artifactId("jackson-annotations")
+                .version("2.17.2")
+                .loaderId("JacksonAnnotations")
+                .build();
+        libraryManager.loadLibraries(sqlite, mongo_driver, mongo_core, mongo_bson, rabbit, xseries, redis, nbt_api, jackson, jackson_databind, jackson_core, jackson_annotations);
     }
 
     private Library create(String groupId, String artifactId, String version, String loaderId) {

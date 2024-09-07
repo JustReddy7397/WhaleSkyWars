@@ -377,9 +377,9 @@ public class GameCreator implements Listener {
                     event.setCancelled(true);
                     break;
                 case RIGHT_CLICK_BLOCK:
-                    config.set("waiting-cuboid.low", location);
+                    config.set("game-cuboid.low", location);
                     config.save();
-                    player.sendMessage("game location set for game cuboid");
+                    player.sendMessage("Low location set for game cuboid");
                     event.setCancelled(true);
                     break;
             }

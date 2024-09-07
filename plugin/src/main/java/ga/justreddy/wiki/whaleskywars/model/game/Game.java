@@ -1,6 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
@@ -12,6 +11,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
+import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
+import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.SoloGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.TeamGameMode;
@@ -43,7 +44,7 @@ public class Game implements IGame {
     private final String name;
     private final String displayName;
     private final ITeamAssigner assigner = new TeamAssigner();
-    private final Toml config;
+    private final TempConfig config;
     private GameState state;
     private GameMode mode;
     private final List<IGamePlayer> players;
@@ -68,7 +69,7 @@ public class Game implements IGame {
     private AbstractTimer endingTimer;
     private AbstractTimer preGameTimer;
 
-    public Game(String name, Toml config) {
+    public Game(String name, TempConfig config) {
         this.name = name;
         this.config = config;
         this.displayName = config.getString("settings.displayName", name);
@@ -235,8 +236,8 @@ public class Game implements IGame {
     public void init(World world) {
         this.world = world;
 
-        teamSize = config.getLong("settings.teamSize").intValue();
-        this.minimumPlayers = config.getLong("settings.minimumPlayers").intValue();
+        teamSize = config.getInteger("settings.teamSize");
+        this.minimumPlayers = config.getInteger("settings.minimumPlayers");
 
         String gameMode = config.getString("settings.gameMode", null);
 
@@ -254,7 +255,7 @@ public class Game implements IGame {
         Location boundHigh;
         Location boundLow;
 
-        if (config.contains("waiting-location")) {
+        if (config.isSet("waiting-location")) {
             waitingSpawn = LocationUtil.getLocation(config.getString("waiting-location"));
             if (waitingSpawn != null) {
                 boundHigh = LocationUtil.getLocation(config.getString("waiting-cuboid.high"));
@@ -273,17 +274,18 @@ public class Game implements IGame {
 
         spectatorSpawn = LocationUtil.getLocation(config.getString("spectator-location"));
 
-        Toml islands = config.getTable("islands");
-        if (islands != null) {
-            for (Map.Entry<String, Object> entry : islands.entrySet()) {
-                Toml island = config.getTable("islands." + entry.getKey());
+        ConfigurationSection section = config.getSection("islands");
+        if (section != null) {
+            for (String key : section.keys()) {
+                ConfigurationSection island = section.getSection(key);
                 if (island == null) continue;
                 Location location = LocationUtil.getLocation(island.getString("spawn"));
                 if (location == null) continue;
                 Location balloon = LocationUtil.getLocation(island.getString("balloon"));
-                teams.add(new GameTeam(entry.getKey(), location, balloon));
+                teams.add(new GameTeam(key, location, balloon));
             }
         }
+
 
         // TODO chests!!
 

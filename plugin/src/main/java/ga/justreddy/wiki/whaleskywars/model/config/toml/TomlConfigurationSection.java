@@ -305,7 +305,7 @@ public class TomlConfigurationSection implements ConfigurationSection {
     @Override
     public int getInteger(String path, int alternative) {
         Object object = get(path);
-        return object instanceof Long ? ((Long)object).intValue() : alternative;
+        return object instanceof Integer ? (int) object : alternative;
     }
 
     @Override
@@ -327,13 +327,7 @@ public class TomlConfigurationSection implements ConfigurationSection {
     @Override
     public double getDouble(String path, double alternative) {
         Object object = get(path);
-        if (object instanceof Double) {
-            return (double) object;
-        }
-        if (object instanceof Float) {
-            return ((Float)object).doubleValue();
-        }
-        return alternative;
+        return object instanceof Double ? (double) object : alternative;
     }
 
     @Override
@@ -344,13 +338,7 @@ public class TomlConfigurationSection implements ConfigurationSection {
     @Override
     public float getFloat(String path, float alternative) {
         Object object = get(path);
-        if (object instanceof Float) {
-            return (float) object;
-        }
-        if (object instanceof Double) {
-            return ((Double)object).floatValue();
-        }
-        return alternative;
+        return object instanceof Float ? (float) object : alternative;
     }
 
     @Override
@@ -372,13 +360,7 @@ public class TomlConfigurationSection implements ConfigurationSection {
     @Override
     public short getShort(String path, short alternative) {
         Object object = get(path);
-        if (object instanceof Short) {
-            return (short) object;
-        }
-        if (object instanceof Long) {
-            return ((Long)object).shortValue();
-        }
-        return alternative;
+        return object instanceof Short ? (short) object : alternative;
     }
 
     @Override
@@ -389,13 +371,7 @@ public class TomlConfigurationSection implements ConfigurationSection {
     @Override
     public byte getByte(String path, byte alternative) {
         Object object = get(path);
-        if (object instanceof Byte) {
-            return (byte) object;
-        }
-        if (object instanceof Long) {
-            return ((Long)object).byteValue();
-        }
-        return alternative;
+        return object instanceof Byte ? (byte) object : alternative;
     }
 
     @Override

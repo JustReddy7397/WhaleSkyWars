@@ -1,14 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.model.config.toml;
 
-import com.google.gson.GsonBuilder;
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
+import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @author JustReddy
@@ -71,8 +69,8 @@ public abstract class TomlConfiguration extends TomlConfigurationSection impleme
         }
 
         try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-            Toml toml = new Toml();
-            data = toml.read(inputStream).toMap();
+            TomlMapper mapper = new TomlMapper();
+            data = mapper.readValue(inputStream, LinkedHashMap.class);
         } catch (IOException exception) {
             exception.printStackTrace();
             return false;
@@ -81,14 +79,14 @@ public abstract class TomlConfiguration extends TomlConfigurationSection impleme
     }
 
     public boolean save() {
-        TomlWriter writer = new TomlWriter();
-        try (Writer fileWriter = new FileWriter(new File(folder, file.getName()))) {
-            writer.write(data, fileWriter);
-            return true;
+        try (OutputStream outputStream = Files.newOutputStream(file.toPath())) {
+            TomlMapper mapper = new TomlMapper();
+            mapper.writeValue(outputStream, data);
         } catch (IOException exception) {
             exception.printStackTrace();
             return false;
         }
+        return true;
     }
 
 }

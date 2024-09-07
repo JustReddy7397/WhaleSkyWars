@@ -1,6 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
-import com.moandjiezana.toml.Toml;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.chest.AChestType;
 import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;

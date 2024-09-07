@@ -1,7 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.model.creator;
 
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
@@ -54,22 +52,13 @@ public class CageCreator {
 
 
 
-        Toml toml = new Toml().read(file);
+        TempConfig config = new TempConfig(folder, name + ".toml");
 
-        Map<String, Object> contents = new HashMap<>(toml.toMap());
+        config.set("name", name);
+        config.set("id", data.size());
+        config.set("cost", 0);
+        config.save();
 
-        TomlWriter writer = new TomlWriter();
-
-        contents.put("name", name);
-        contents.put("id", data.size());
-        contents.put("cost", 0);
-
-        try {
-            writer.write(contents, file);
-        } catch (IOException e) {
-            TextUtil.error(e, "Failed to write cage file " + file.getName(), false);
-            return;
-        }
         player.sendMessage("&aSuccessfully created cage " + name);
         this.data.put(uuid, name);
     }
