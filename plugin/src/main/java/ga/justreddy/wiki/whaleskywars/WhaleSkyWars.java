@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
+import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
@@ -14,6 +15,7 @@ import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
@@ -64,6 +66,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private KitManager kitManager;
     private BalloonManager balloonManager;
     private HookManager hookManager;
+    private CustomPlayerDataManager customPlayerDataManager;
     // Configs
     private TomlConfig settingsConfig;
     private TomlConfig databaseConfig;
@@ -263,6 +266,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         victoryDanceManager.start();
         balloonManager.start();
         this.hookManager = new HookManager();
+        this.customPlayerDataManager = new CustomPlayerDataManager();
 
     }
 

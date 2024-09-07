@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.api;
 
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +33,8 @@ public interface SkyWarsAPI {
     void registerVictoryDance(VictoryDance dance);
 
     void registerGameEvent(GameEvent event);
+
+    void registerCustomPlayerData(ICustomPlayerData playerData);
 
     JavaPlugin getPlugin();
 

@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.entity;
 
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
@@ -7,6 +8,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -178,5 +180,7 @@ public interface IGamePlayer {
      * @param pitch  the pitch of the sound
      */
     void sendSound(String sound, float volume, float pitch);
+
+    <T extends ICustomPlayerData> T getCustomPlayerData(String id);
 
 }

@@ -1,21 +1,22 @@
 package ga.justreddy.wiki.whaleskywars.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.ICombatLog;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author JustReddy
@@ -31,6 +32,7 @@ public class GamePlayer implements IGamePlayer {
     private IGameTeam gameTeam;
     private ICombatLog combatLog;
     private boolean dead;
+    private Map<String, ICustomPlayerData> customPlayerData;
 
     public GamePlayer(UUID uniqueId, String name) {
         this.uniqueId = uniqueId;
@@ -38,6 +40,8 @@ public class GamePlayer implements IGamePlayer {
         this.player = Optional.ofNullable(Bukkit.getPlayer(uniqueId));
         this.cosmetics = new PlayerCosmetics();
         this.stats = new PlayerStats();
+        this.customPlayerData = new HashMap<>();
+        this.customPlayerData.putAll(WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData());
         this.combatLog = new CombatLog(this);
         this.game = null;
         this.gameTeam = null;
@@ -161,5 +165,17 @@ public class GamePlayer implements IGamePlayer {
     public void sendSound(String sound, float volume, float pitch) {
 
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ICustomPlayerData> T getCustomPlayerData(String id) {
+        if (!customPlayerData.containsKey(id)) {
+            return null;
+        }
+        ICustomPlayerData playerData = customPlayerData.get(id);
+
+        return (T) playerData;
+    }
+
 
 }
