@@ -6,6 +6,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
@@ -17,7 +18,10 @@ import ga.justreddy.wiki.whaleskywars.storage.entities.PlayerEntity;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,8 +34,12 @@ public class SequalStorage implements IStorage {
 
     private Dao<PlayerEntity, String> playerDao;
     private Dao<KitEntity, String> kitDao;
+    private final String type;
+    private final String database;
 
     public SequalStorage(String type, String host, String database, String username, String password, int port) {
+        this.type = type;
+        this.database = database;
         try {
             ConnectionSource connectionSource = null;
 
@@ -130,7 +138,7 @@ public class SequalStorage implements IStorage {
                 );
                 kits.add(kit);
             }
-        }catch (SQLException ex) {
+        } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to load kits", false);
             return new ArrayList<>();
         }
@@ -141,7 +149,7 @@ public class SequalStorage implements IStorage {
     public void deleteKit(Kit kit) {
         try {
             kitDao.delete(new KitEntity(kit));
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -159,6 +167,30 @@ public class SequalStorage implements IStorage {
     @Override
     public void saveKits(List<Kit> kits) {
 
+    }
+
+    @Override
+    public boolean doesColumnExist(String table, String column) {
+        String SQL;
+        if (type.equalsIgnoreCase("postgresql")) {
+            SQL = "SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "' AND column_name = '" + column + "'";
+        } else {
+            SQL = "SELECT * FROM information_schema.COLUMNS WHERE TABLE_NAME = '" + table + "' AND COLUMN_NAME = '" + column + "'";
+        }
+        try (DatabaseConnection connection = playerDao.getConnectionSource().getReadWriteConnection(table);
+             Connection conn = connection.getUnderlyingConnection();
+             Statement statement = conn.createStatement();
+             ResultSet result = statement.executeQuery(SQL)) {
+            return result.next();
+        } catch (Exception e) {
+            TextUtil.error(e, "Failed to check if column exists: " + column + " in table: " + table, false);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean doesTableExist(String table) {
+        return false;
     }
 
 }

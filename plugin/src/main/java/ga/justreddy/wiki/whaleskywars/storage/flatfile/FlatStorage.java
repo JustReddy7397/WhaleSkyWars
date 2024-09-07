@@ -79,4 +79,14 @@ public class FlatStorage implements IStorage {
 
     }
 
+    @Override
+    public boolean doesColumnExist(String table, String column) {
+        return false;
+    }
+
+    @Override
+    public boolean doesTableExist(String table) {
+        return false;
+    }
+
 }

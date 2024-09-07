@@ -38,5 +38,8 @@ public interface IStorage {
 
     void saveKits(List<Kit> kits);
 
+    boolean doesColumnExist(String table, String column);
+
+    boolean doesTableExist(String table);
 
 }
