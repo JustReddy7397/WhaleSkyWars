@@ -10,5 +10,6 @@ import java.io.File;
 public class TempConfig extends TomlConfiguration {
     public TempConfig(File folder, String path) {
         super(folder, path);
+        reload();
     }
 }

@@ -82,7 +82,7 @@ public abstract class TomlConfiguration extends TomlConfigurationSection impleme
 
     public boolean save() {
         TomlWriter writer = new TomlWriter();
-        try (Writer fileWriter = new FileWriter(file)) {
+        try (Writer fileWriter = new FileWriter(new File(folder, file.getName()))) {
             writer.write(data, fileWriter);
             return true;
         } catch (IOException exception) {
