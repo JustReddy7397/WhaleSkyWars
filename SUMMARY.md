@@ -10,3 +10,4 @@
     * [Events](resources/whaleskywars/developer-api/events.md)
     * [Cosmetics](resources/whaleskywars/developer-api/cosmetics/README.md)
       * [Victory Dances](resources/whaleskywars/developer-api/cosmetics/victory-dances.md)
+    * [Custom Player Data](resources/whaleskywars/developer-api/custom-player-data.md)
