@@ -19,10 +19,22 @@ public abstract class VictoryDance extends Cosmetic implements Cloneable {
         super(name, id, cost);
     }
 
+    /**
+     * Called when the game is starting the victory dance.
+     * @param player The player of the victory dance.
+     */
     public abstract void start(IGamePlayer player);
 
+    /**
+     * Called when the game stops the victory dance.
+     * @param player The player of the victory dance.
+     */
     public abstract void stop(IGamePlayer player);
 
+    /**
+     * Clones the instance of the victory dance.
+     * @return The cloned instance of the victory dance.
+     */
     public abstract VictoryDance clone();
 
 }

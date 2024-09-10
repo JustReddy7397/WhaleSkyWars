@@ -63,6 +63,8 @@ public class Game implements IGame {
     private World world;
     private String defaultChestType;
 
+    private boolean teamGame = false;
+
     private BungeeGame bungeeGame;
 
     private AbstractTimer startingTimer;
@@ -77,7 +79,7 @@ public class Game implements IGame {
         this.teams = new ArrayList<>();
         this.spectators = new ArrayList<>();
         this.kills = new HashMap<>();
-        this.events = new ArrayList<>();
+        this.events = new LinkedList<>();
     }
 
     @Override
@@ -241,11 +243,13 @@ public class Game implements IGame {
 
         String gameMode = config.getString("settings.gameMode", null);
 
+        teamGame = teamSize > 1;
+
         if (gameMode == null) {
-            if (teamSize == 1) {
-                mode = new SoloGameMode();
-            } else {
+            if (teamGame) {
                 mode = new TeamGameMode();
+            } else {
+                mode = new SoloGameMode();
             }
         } else {
           // TODO
@@ -298,6 +302,22 @@ public class Game implements IGame {
         startingTimer = new StartingTimer(10, this);
         endingTimer = new EndingTimer(10, this);
         preGameTimer = new PreGameTimer(10, this);
+
+        List<String> events = WhaleSkyWars.getInstance().getSettingsConfig().getStringList("game-options.events");
+        events.forEach(event -> {
+            String[] split = event.split(";");
+            String name = split[0];
+            int timer = Integer.parseInt(split[1]);
+            GameEvent gameEvent = WhaleSkyWars.getInstance().getGameEventManager().copyOf(name);
+            if (gameEvent == null) {
+                System.out.println("Event " + name + " does not exist.");
+                return;
+            }
+            gameEvent.setTimer(timer);
+            gameEvent.setEnabled(true);
+            this.events.add(gameEvent);
+            System.out.println("Added event " + name + " with timer " + timer + " to game " + this.name);
+        });
 
         // LAST
         phaseHandler = new PhaseHandler(this);
@@ -376,7 +396,7 @@ public class Game implements IGame {
             if (!team.getPlayers().isEmpty()) {
                 Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
                 gameSpawn.setCage(cage);
-                if (getGameMode().isTeamGame()) {
+                if (teamGame) {
                     cage.createBig(team.getSpawnLocation());
                 } else {
                     cage.createSmall(team.getSpawnLocation());
@@ -394,12 +414,69 @@ public class Game implements IGame {
 
     @Override
     public void onGamePlayerJoin(IGamePlayer player, IGameTeam team) {
-        // TODO
+        SkyWarsGameJoinEvent event = new SkyWarsGameJoinEvent(player, this);
+        event.call();
+
+        Player bukkitPlayer = player.getPlayer().get();
+
+        bukkitPlayer.setAllowFlight(false);
+        bukkitPlayer.setFlying(false);
+
+        players.add(player);
+        player.setGame(this);
+        kills.put(player.getUniqueId(), 0);
+        bukkitPlayer.getInventory().setHeldItemSlot(4);
+        bukkitPlayer.getInventory().clear();
+        bukkitPlayer.setGameMode(org.bukkit.GameMode.ADVENTURE);
+
+        if (waitingSpawn != null && waitingCuboid != null) {
+            bukkitPlayer.teleport(waitingSpawn);
+            player.setGameTeam(team);
+        } else {
+            player.setGameTeam(team);
+            IGameSpawn gameSpawn = team.getGameSpawn();
+            if (gameSpawn.isUsed()) {
+                bukkitPlayer.teleport(team.getSpawnLocation());
+                return;
+            }
+            gameSpawn.setUsed(true);
+
+            if (!team.getPlayers().isEmpty()) {
+                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                gameSpawn.setCage(cage);
+                if (teamGame) {
+                    cage.createBig(team.getSpawnLocation());
+                } else {
+                    cage.createSmall(team.getSpawnLocation());
+                }
+            }
+            bukkitPlayer.teleport(team.getSpawnLocation());
+            WhaleSkyWars.getInstance().getSkyWarsBoard()
+                    .removeScoreboard(player);
+            WhaleSkyWars.getInstance().getSkyWarsBoard()
+                    .setGameBoard(player);
+        }
     }
 
     @Override
     public void onGamePlayerSpectate(IGamePlayer player) {
-
+        player.setGame(this);
+        spectators.add(player);
+        player.setGameTeam(null);
+        player.setDead(false);
+        player.getPlayer().ifPresent(bukkitPlayer -> {
+            bukkitPlayer.setGameMode(org.bukkit.GameMode.SPECTATOR);
+            bukkitPlayer.setAllowFlight(true);
+            bukkitPlayer.setFlying(true);
+            WhaleSkyWars.getInstance().getNms().setCollideWithEntities(bukkitPlayer, false);
+            bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 0, false, false));
+            bukkitPlayer.teleport(spectatorSpawn);
+            for (IGamePlayer gamePlayer : getPlayers()) {
+                gamePlayer.getPlayer().ifPresent(bukkitPlayer::hidePlayer);
+            }
+        });
+        WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
+        PlayerUtil.refresh(player);
     }
 
     @Override
@@ -482,6 +559,7 @@ public class Game implements IGame {
         kills.clear();
         teams.clear();
         events.clear();
+
         WhaleSkyWars.getInstance().getGameMap().onRestart(this);
     }
 

@@ -30,8 +30,8 @@ public class StartingPhase implements IPhase {
         }
 
         if (startingTimer.getTicksExceed() <= 0) {
-            ((Game) game).getPhaseHandler().nextPhase();
             startingTimer.stop();
+            ((Game) game).getPhaseHandler().nextPhase();
         }
 
     }

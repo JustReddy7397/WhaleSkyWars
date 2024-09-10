@@ -20,6 +20,7 @@ import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
+import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
@@ -31,6 +32,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
@@ -198,6 +202,8 @@ public final class WhaleSkyWars extends JavaPlugin {
         if (defaultConfig.getString("spawn") != null && !defaultConfig.getString("spawn").equalsIgnoreCase("null")) {
             spawn = LocationUtil.getLocation(defaultConfig.getString("spawn"));
         }
+
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
     }

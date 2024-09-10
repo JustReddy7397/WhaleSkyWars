@@ -177,5 +177,9 @@ public class GamePlayer implements IGamePlayer {
         return (T) playerData;
     }
 
+    public void addCustomPlayerData(ICustomPlayerData customPlayerData) {
+        this.customPlayerData.put(customPlayerData.getId(), customPlayerData);
+    }
+
 
 }

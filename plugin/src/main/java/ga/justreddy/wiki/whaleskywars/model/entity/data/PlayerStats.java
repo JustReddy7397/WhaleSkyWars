@@ -357,7 +357,7 @@ public class PlayerStats implements IPlayerStats {
     }
 
     @Override
-    public void setTravelledBlocks(int travelledBlocks) {
+    public void setTraveledBlocks(int travelledBlocks) {
         this.travelledBlocks = travelledBlocks;
     }
 

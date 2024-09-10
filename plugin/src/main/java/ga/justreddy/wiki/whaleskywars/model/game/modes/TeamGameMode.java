@@ -16,8 +16,4 @@ public class TeamGameMode extends GameMode {
         return "Team";
     }
 
-    @Override
-    public boolean isTeamGame() {
-        return true;
-    }
 }

@@ -46,13 +46,13 @@ public class EndingPhase implements IPhase {
                 if (player.getGame().getName().equalsIgnoreCase(game.getName())) {
                     PlayerUtil.refresh(player);
                 }
-                if (game.getGameMode().isTeamGame()) {
+                if (((Game)game).isTeamGame()) {
                     winnerText.append(player.getName());
                 } else {
                     winnerText.append(player.getName())
                             .append(++i == winnerSize ? "" : ", ");
                 }
-                player.getStats().addWin(game.getGameMode().isTeamGame());
+                player.getStats().addWin(((Game)game).isTeamGame());
                 final VictoryDance dance = WhaleSkyWars.getInstance().getVictoryDanceManager().copyOf(
                         player.getCosmetics().getSelectedVictoryDance()
                 );

@@ -32,8 +32,6 @@ public interface SkyWarsAPI {
 
     void registerVictoryDance(VictoryDance dance);
 
-    void registerGameEvent(GameEvent event);
-
     void registerCustomPlayerData(ICustomPlayerData playerData);
 
     JavaPlugin getPlugin();

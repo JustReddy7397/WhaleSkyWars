@@ -60,11 +60,6 @@ public class ApiProvider implements SkyWarsAPI {
     }
 
     @Override
-    public void registerGameEvent(GameEvent event) {
-        WhaleSkyWars.getInstance().getGameEventManager().register(event);
-    }
-
-    @Override
     public void registerCustomPlayerData(ICustomPlayerData playerData) {
         WhaleSkyWars.getInstance().getCustomPlayerDataManager().addCustomPlayerData(playerData);
     }

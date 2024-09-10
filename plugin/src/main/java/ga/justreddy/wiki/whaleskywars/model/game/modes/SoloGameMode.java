@@ -16,8 +16,4 @@ public class SoloGameMode extends GameMode {
         return "Solo";
     }
 
-    @Override
-    public boolean isTeamGame() {
-        return false;
-    }
 }

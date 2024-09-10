@@ -37,7 +37,7 @@ public class PreGamePhase implements IPhase {
                     gameSpawn.setCage(cage);
                     team.spawnBalloon();
                     if (cage == null) return;
-                    if (game.getGameMode().isTeamGame()) {
+                    if (((Game)game).isTeamGame()) {
                         cage.createBig(team.getSpawnLocation());
                     } else {
                         cage.createSmall(team.getSpawnLocation());

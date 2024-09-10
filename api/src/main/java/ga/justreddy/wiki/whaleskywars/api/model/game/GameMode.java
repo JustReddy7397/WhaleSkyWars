@@ -17,6 +17,4 @@ public abstract class GameMode implements Listener {
 
     public abstract String getDisplayName();
 
-    public abstract boolean isTeamGame();
-
 }

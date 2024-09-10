@@ -9,3 +9,4 @@ gradle.properties
 /*/gradle.properties
 /runtime/*
 /*/libs/*
+/api/docs/*

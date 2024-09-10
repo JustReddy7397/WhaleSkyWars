@@ -2,29 +2,23 @@ package ga.justreddy.wiki.whaleskywars.storage.remote;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.GsonBuilder;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.table.TableUtils;
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
+import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.adapters.ItemStackAdapter;
 import ga.justreddy.wiki.whaleskywars.storage.adapters.ListItemStackAdapter;
 import ga.justreddy.wiki.whaleskywars.storage.entities.KitEntity;
-import ga.justreddy.wiki.whaleskywars.storage.entities.PlayerEntity;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -32,46 +26,46 @@ import java.util.concurrent.CompletableFuture;
  */
 public class SequalStorage implements IStorage {
 
-    private Dao<PlayerEntity, String> playerDao;
-    private Dao<KitEntity, String> kitDao;
+    private Map<String, List<String>> customColumns = new HashMap<>();
     private final String type;
+    private final String host;
+    private final String username;
+    private final String password;
+    private final int port;
     private final String database;
 
     public SequalStorage(String type, String host, String database, String username, String password, int port) {
         this.type = type;
+        this.host = host;
+        this.username = username;
+        this.password = password;
+        this.port = port;
         this.database = database;
+    }
+
+    Connection getConnection() {
         try {
-            ConnectionSource connectionSource = null;
-
-            switch (type) {
-                case "mysql":
-                    connectionSource = new JdbcConnectionSource("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true&characterEncoding=utf8", username, password);
-                    break;
-                case "postgresql":
-                    connectionSource = new JdbcConnectionSource("jdbc:postgresql://" + host + ":" + port + "/" + database + "?autoReconnect=true&characterEncoding=utf8", username, password);
-                    break;
-                case "mariadb":
-                    connectionSource = new JdbcConnectionSource("jdbc:mariadb://" + host + ":" + port + "/" + database + "?autoReconnect=true&characterEncoding=utf8", username, password);
-                    break;
-                default:
-                    TextUtil.error(new IllegalArgumentException("Invalid storage type: " + type), "Failed to connect to the database: Invalid database type: " + type, true);
-                    return;
+            try (Connection connection = DriverManager.getConnection("jdbc:" + type + "://" + host + ":" + port + "/" + database, username, password)) {
+                return connection;
             }
-
-            TableUtils.createTableIfNotExists(connectionSource, PlayerEntity.class);
-            playerDao = DaoManager.createDao(connectionSource, PlayerEntity.class);
-            TableUtils.createTableIfNotExists(connectionSource, KitEntity.class);
-            kitDao = DaoManager.createDao(connectionSource, KitEntity.class);
-        } catch (SQLException ex) {
-            TextUtil.error(ex, "Failed to connect to the database", true);
-            return;
+        } catch (SQLException e) {
+            TextUtil.error(e, "Failed to get connection", false);
+            return null;
         }
     }
 
-
     @Override
     public void createData() {
-
+        Connection connection = getConnection();
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS wsw_player_data (" +
+                    "uuid VARCHAR(36) PRIMARY KEY NOT NULL," +
+                    "name VARCHAR(16), " +
+                    "cosmetics LONGTEXT,"
+                    + " stats LONGTEXT");
+        } catch (SQLException e) {
+            TextUtil.error(e, "Failed to create data", false);
+        }
     }
 
     @Override
@@ -81,39 +75,148 @@ public class SequalStorage implements IStorage {
 
     @Override
     public boolean doesPlayerExist(IGamePlayer player) {
-        return false;
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM wsw_player_data WHERE uuid=?")) {
+            statement.setString(0, player.getUniqueId().toString());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to check if player exists: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+            return false;
+        }
     }
 
     @Override
     public void savePlayer(IGamePlayer player) {
-
+        Connection connection = getConnection();
+        StringBuilder builder = new StringBuilder("UPDATE wsw_player_data SET name=?,cosmetics=?,stats=?");
+        int currentIndex = 4;
+        for (String column : customColumns.get("wsw_player_data")) {
+            builder.append(",").append(column).append("=?");
+        }
+        builder.append(" WHERE uuid=?");
+        try (PreparedStatement statement = connection.prepareStatement(builder.toString())) {
+            statement.setString(1, player.getName());
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(List.class, new ListItemStackAdapter());
+            gsonBuilder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
+            for (ICustomPlayerData customPlayerData : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData().values()) {
+                gsonBuilder.registerTypeAdapter(ICustomPlayerData.class, customPlayerData);
+            }
+            statement.setString(2, gsonBuilder.create().toJson(player.getCosmetics(), PlayerCosmetics.class));
+            statement.setString(3, gsonBuilder.create().toJson(player.getStats(), PlayerStats.class));
+            for (String id : customColumns.keySet()) {
+                ICustomPlayerData playerData = player.getCustomPlayerData(id);
+                if (playerData != null) {
+                    statement.setString(currentIndex, gsonBuilder.create().toJson(playerData, playerData.getClass()));
+                } else {
+                    statement.setString(currentIndex, null);
+                }
+                currentIndex++;
+            }
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to save player: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+        }
     }
 
     @Override
     public void deletePlayer(IGamePlayer player) {
-
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM wsw_player_data WHERE uuid=?")) {
+            statement.setString(1, player.getUniqueId().toString());
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to delete player: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+        }
     }
 
     @Override
     public IGamePlayer loadPlayer(UUID uuid) {
-        return null;
+        IGamePlayer player = WhaleSkyWars.getInstance().getPlayerManager().get(uuid);
+        Connection connection = getConnection();
+        try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE uuid=?")) {
+            statement.setString(1, uuid.toString());
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if(resultSet.next()) {
+                    if (player == null) player = new GamePlayer(uuid, resultSet.getString("name"));
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    gsonBuilder.registerTypeAdapter(List.class,
+                            new ListItemStackAdapter());
+                    gsonBuilder.registerTypeAdapter(ItemStack.class
+                            , new ItemStackAdapter());
+                    for(ICustomPlayerData customPlayerData :
+                            WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData().values()) {
+                        gsonBuilder.registerTypeAdapter(
+                                ICustomPlayerData.class, customPlayerData);
+                    }
+                    player.setCosmetics(gsonBuilder.create().
+                            fromJson(resultSet.getString("cosmetics"),
+                                    PlayerCosmetics.class));
+                    player.setStats(gsonBuilder.create().
+                            fromJson(resultSet.getString("stats"),
+                                    PlayerStats.class));
+                    for(String id : customColumns.keySet()) {
+                        ICustomPlayerData playerData = gsonBuilder.
+                                create().fromJson(resultSet.getString(id),
+                                        ICustomPlayerData.class);
+                        if(playerData != null) {
+                            ((GamePlayer)playerData).addCustomPlayerData(playerData);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to load player: " + uuid, false);
+        }
+        return player;
     }
 
     @Override
     public CompletableFuture<IGamePlayer> loadOfflinePlayer(UUID uuid) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> loadPlayer(uuid));
     }
 
     @Override
     public CompletableFuture<IGamePlayer> loadPlayer(String name) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> {
+            Connection connection = getConnection();
+            try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE name=?")) {
+                statement.setString(1, name);
+                try(ResultSet resultSet = statement.executeQuery()) {
+                    if(resultSet.next()) {
+                        return loadPlayer(UUID.fromString(resultSet.getString("uuid")));
+                    }
+                }
+            } catch (SQLException ex) {
+                TextUtil.error(ex, "Failed to load player: " + name, false);
+            }
+            return null;
+        });
     }
 
     @Override
     public void saveKit(Kit kit) {
-        KitEntity entity = new KitEntity(kit);
-        try {
-            kitDao.create(entity);
+
+        Connection connection = getConnection();
+        String SQL = "INERT INTO wsw_kits (name, kitItems, kitArmor, guiKitItem, isDefault) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE kitItems=?, kitArmor=?, guiKitItem=?, isDefault=?";
+        try (PreparedStatement statement = connection.prepareStatement(
+                SQL
+        )) {
+            statement.setString(1, kit.getName());
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(List.class, new ListItemStackAdapter());
+            builder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
+            statement.setString(2, builder.create().toJson(kit.getKitItems(), List.class));
+            statement.setString(3, builder.create().toJson(kit.getArmorItems(), List.class));
+            statement.setString(4, builder.create().toJson(kit.getGuiKitItem(), ItemStack.class));
+            statement.setBoolean(5, kit.isDefault());
+            statement.setString(6, builder.create().toJson(kit.getKitItems(), List.class));
+            statement.setString(7, builder.create().toJson(kit.getArmorItems(), List.class));
+            statement.setString(8, builder.create().toJson(kit.getGuiKitItem(), ItemStack.class));
+            statement.setBoolean(9, kit.isDefault());
+            statement.executeUpdate();
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to save kit: " + kit.getName(), false);
         }
@@ -122,20 +225,24 @@ public class SequalStorage implements IStorage {
     @Override
     public List<Kit> getKits() {
         List<Kit> kits = new ArrayList<>();
-        try {
 
-            List<KitEntity> entities = kitDao.queryForAll();
-            GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(List.class, new ListItemStackAdapter());
-            builder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
-            for (KitEntity entity : entities) {
-                Kit kit = new Kit(
-                        entity.name,
-                        builder.create().fromJson(entity.kitItems, List.class),
-                        builder.create().fromJson(entity.kitArmor, List.class),
-                        XMaterial.matchXMaterial(builder.create().fromJson(entity.guiKitItem, ItemStack.class)),
-                        entity.isDefault
-                );
+        Connection connection = getConnection();
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM wsw_kits)");
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Kit kit = new Kit(resultSet.getString("name"),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        XMaterial.matchXMaterial(Material.STONE));
+                GsonBuilder builder = new GsonBuilder();
+                builder.registerTypeAdapter(List.class, new ListItemStackAdapter());
+                builder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
+                kit.setKitItems(builder.create().fromJson(resultSet.getString("kitItems"), List.class));
+                kit.setArmorItems(builder.create().fromJson(resultSet.getString("kitArmor"), List.class));
+                kit.setGuiKitItem(XMaterial.matchXMaterial(builder.create().fromJson(resultSet.getString("guiKitItem"), ItemStack.class)));
+                kit.setDefault(resultSet.getBoolean("isDefault"));
                 kits.add(kit);
             }
         } catch (SQLException ex) {
@@ -147,26 +254,27 @@ public class SequalStorage implements IStorage {
 
     @Override
     public void deleteKit(Kit kit) {
-        try {
-            kitDao.delete(new KitEntity(kit));
-        } catch (SQLException e) {
-            e.printStackTrace();
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM wsw_kits WHERE name=?"
+        )) {
+            statement.setString(1, kit.getName());
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to delete kit: " + kit.getName(), false);
         }
     }
 
     @Override
     public void updateKit(Kit kit) {
-        try {
-            KitEntity entity = new KitEntity(kit);
-            kitDao.update(entity);
-        } catch (SQLException ex) {
-            TextUtil.error(ex, "Failed to update kit: " + kit.getName(), false);
-        }
+        saveKit(kit);
     }
 
     @Override
     public void saveKits(List<Kit> kits) {
-
+        for (Kit kit : kits) {
+            saveKit(kit);
+        }
     }
 
     @Override
@@ -177,12 +285,11 @@ public class SequalStorage implements IStorage {
         } else {
             SQL = "SELECT * FROM information_schema.COLUMNS WHERE TABLE_NAME = '" + table + "' AND COLUMN_NAME = '" + column + "'";
         }
-        try (DatabaseConnection connection = playerDao.getConnectionSource().getReadWriteConnection(table);
-             Connection conn = connection.getUnderlyingConnection();
-             Statement statement = conn.createStatement();
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
              ResultSet result = statement.executeQuery(SQL)) {
             return result.next();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             TextUtil.error(e, "Failed to check if column exists: " + column + " in table: " + table, false);
             return false;
         }
@@ -190,7 +297,49 @@ public class SequalStorage implements IStorage {
 
     @Override
     public boolean doesTableExist(String table) {
-        return false;
+        String SQL = "SHOW TABLES LIKE '" + table + "'";
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(SQL)) {
+            return result.next();
+        } catch (SQLException e) {
+            TextUtil.error(e, "Failed to check if table exists: " + table, false);
+            return false;
+        }
+    }
+
+    @Override
+    public List<String> getCustomColumns(String table) {
+        return customColumns.getOrDefault(table, new ArrayList<>());
+    }
+
+    @Override
+    public void addCustomColumn(String table, String column) {
+        List<String> columns = customColumns.getOrDefault(table, new ArrayList<>());
+        columns.add(column);
+        customColumns.put(table, columns);
+    }
+
+    @Override
+    public boolean hasCustomColumn(String table, String column) {
+        return customColumns.getOrDefault(table, new ArrayList<>()).contains(column);
+    }
+
+    @Override
+    public void removeCustomColumn(String table, String column) {
+        List<String> columns = customColumns.getOrDefault(table, new ArrayList<>());
+        columns.remove(column);
+        customColumns.put(table, columns);
+    }
+
+    @Override
+    public void createCustomColumn(String column) {
+        Connection connection = getConnection();
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("ALTER TABLE wsw_player_data ADD COLUMN " + column + " LONGTEXT");
+        } catch (SQLException e) {
+            TextUtil.error(e, "Failed to create custom column: " + column, false);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.storage;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 
 import java.util.List;
@@ -42,4 +43,13 @@ public interface IStorage {
 
     boolean doesTableExist(String table);
 
+    List<String> getCustomColumns(String table);
+
+    void addCustomColumn(String table, String column);
+
+    boolean hasCustomColumn(String table, String column);
+
+    void removeCustomColumn(String table, String column);
+
+    void createCustomColumn(String column);
 }

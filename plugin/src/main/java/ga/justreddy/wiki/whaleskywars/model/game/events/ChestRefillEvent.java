@@ -8,8 +8,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
  */
 public class ChestRefillEvent extends GameEvent {
 
-    public ChestRefillEvent(String name, boolean enabled) {
-        super(name, enabled);
+    public ChestRefillEvent(boolean enabled) {
+        super("refill", enabled);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ChestRefillEvent extends GameEvent {
 
     @Override
     public ChestRefillEvent clone() {
-        return new ChestRefillEvent(name, enabled);
+        return new ChestRefillEvent(enabled);
     }
 
 }

@@ -89,4 +89,29 @@ public class FlatStorage implements IStorage {
         return false;
     }
 
+    @Override
+    public List<String> getCustomColumns(String table) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void addCustomColumn(String table, String column) {
+
+    }
+
+    @Override
+    public boolean hasCustomColumn(String table, String column) {
+        return false;
+    }
+
+    @Override
+    public void removeCustomColumn(String table, String column) {
+
+    }
+
+    @Override
+    public void createCustomColumn(String column) {
+
+    }
+
 }

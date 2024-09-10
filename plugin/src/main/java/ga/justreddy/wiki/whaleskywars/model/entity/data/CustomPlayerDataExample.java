@@ -4,6 +4,8 @@ import com.google.gson.*;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author JustReddy
@@ -46,5 +48,12 @@ public class CustomPlayerDataExample implements ICustomPlayerData {
         // Adding the key "sexy" with the value of the "sexy" field
         object.addProperty("sexy", sexy);
         return object;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("sexy", sexy);
+        return objectMap;
     }
 }

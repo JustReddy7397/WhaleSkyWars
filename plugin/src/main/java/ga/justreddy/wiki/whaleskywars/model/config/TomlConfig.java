@@ -28,7 +28,6 @@ public class TomlConfig extends TomlConfiguration {
      * @return True if the config is outdated, false otherwise
      */
     public boolean isOutdated(final int currentVersion) {
-        System.out.println(getInteger(VERSION_KEY, -1));
         if (getInteger(VERSION_KEY, -1) < currentVersion) {
             TextUtil.error(null, "Configuration file " + file.getName()  + " is outdated! Shutting down plugin.", true);
             Bukkit.getPluginManager().disablePlugin(WhaleSkyWars.getInstance());

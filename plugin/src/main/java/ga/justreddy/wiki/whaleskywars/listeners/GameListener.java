@@ -7,6 +7,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.KillPath;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Trails;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -201,7 +202,7 @@ public class GameListener implements Listener {
             game.onGamePlayerDeath(killerPlayer, deathPlayer, path);
         } else {
             game.getKills().put(killerPlayer.getUniqueId(), game.getKills().get(killerPlayer.getUniqueId()) + 1);
-            killerPlayer.getStats().addKill(game.getGameMode().isTeamGame());
+            killerPlayer.getStats().addKill(((Game)game).isTeamGame());
             game.onGamePlayerDeath(killerPlayer, deathPlayer, path);
             // TODO killeffect ?
         }

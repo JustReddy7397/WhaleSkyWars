@@ -144,7 +144,7 @@ public class SkyWarsBoard {
                     .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
         }
 
-        creators.put(player.getUniqueId(), creator);
+        creators.putIfAbsent(player.getUniqueId(), creator);
         data.put(player.getUniqueId(), -1);
     }
 
@@ -165,7 +165,6 @@ public class SkyWarsBoard {
         ScoreBoardCreator creator = creators.get(player.getUniqueId());
         String title = config.getString("game-board.title");
         creator.setTitle(title);
-        System.out.println(player.getGame().getGameState());
         if (player.getGame().getGameState() == GameState.WAITING) {
             creator.setLines(config.getStringList("game-board.waiting.lines")
                     .stream().map(creator::setPlaceHolders).collect(Collectors.toList()));
