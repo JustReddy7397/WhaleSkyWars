@@ -39,11 +39,11 @@ public interface INms {
 
     void seWorldRule(World world, String rule, boolean value);
 
-    void setNbtValue(Object object, String key, Object value);
+    <V> V setNbtValue(V object, String key, Object value);
 
     boolean hasNbtValue(Object object, String key);
 
-    <V> V getNbtValue(V value, String key);
+    Object getNbtValue(Object value, String key);
 
     ItemStack getItemInHand(Player player);
 

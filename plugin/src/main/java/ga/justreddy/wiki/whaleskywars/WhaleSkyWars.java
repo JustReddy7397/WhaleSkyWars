@@ -14,6 +14,8 @@ import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerRanked;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
@@ -202,6 +204,9 @@ public final class WhaleSkyWars extends JavaPlugin {
         if (defaultConfig.getString("spawn") != null && !defaultConfig.getString("spawn").equalsIgnoreCase("null")) {
             spawn = LocationUtil.getLocation(defaultConfig.getString("spawn"));
         }
+
+        customPlayerDataManager.addCustomPlayerData(new CustomPlayerDataExample());
+        customPlayerDataManager.addCustomPlayerData(new PlayerRanked());
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
 

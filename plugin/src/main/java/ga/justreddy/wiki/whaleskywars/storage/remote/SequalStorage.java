@@ -7,14 +7,15 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
+import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerRanked;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.adapters.ItemStackAdapter;
 import ga.justreddy.wiki.whaleskywars.storage.adapters.ListItemStackAdapter;
-import ga.justreddy.wiki.whaleskywars.storage.entities.KitEntity;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
@@ -45,9 +46,10 @@ public class SequalStorage implements IStorage {
 
     Connection getConnection() {
         try {
-            try (Connection connection = DriverManager.getConnection("jdbc:" + type + "://" + host + ":" + port + "/" + database, username, password)) {
-                return connection;
-            }
+            return DriverManager.getConnection("jdbc:"
+                    + type + "://" + host + ":" + port + "/" + database
+                    + "?useSSL=false&autoReconnect=true" +
+                    "&useUnicode=true&characterEncoding=utf8", username, password);
         } catch (SQLException e) {
             TextUtil.error(e, "Failed to get connection", false);
             return null;
@@ -58,18 +60,67 @@ public class SequalStorage implements IStorage {
     public void createData() {
         Connection connection = getConnection();
         try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS wsw_player_data (" +
-                    "uuid VARCHAR(36) PRIMARY KEY NOT NULL," +
-                    "name VARCHAR(16), " +
-                    "cosmetics LONGTEXT,"
-                    + " stats LONGTEXT");
+            String SQL = "CREATE TABLE IF NOT EXISTS wsw_player_data (" +
+                    "uuid VARCHAR(36) PRIMARY KEY," +
+                    "name VARCHAR(16)," +
+                    "cosmetics LONGTEXT," +
+                    "`stats` LONGTEXT)";
+            statement.execute(SQL);
         } catch (SQLException e) {
             TextUtil.error(e, "Failed to create data", false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
     @Override
     public void createPlayer(IGamePlayer player) {
+        Connection connection = getConnection();
+        StringBuilder builder = new StringBuilder("INSERT INTO wsw_player_data (uuid,name,cosmetics,stats");
+        for (String column : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
+            builder.append(",").append(column);
+        }
+        builder.append(") VALUES (?,?,?,?");
+        for (int i = 0; i < customColumns.get("wsw_player_data").size(); i++) {
+            builder.append(",?");
+        }
+        builder.append(")");
+        try (PreparedStatement statement = connection.prepareStatement(builder.toString())) {
+            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(2, player.getName());
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(List.class, new ListItemStackAdapter());
+            gsonBuilder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
+            for (ICustomPlayerData customPlayerData : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData().values()) {
+                gsonBuilder.registerTypeAdapter(ICustomPlayerData.class, customPlayerData);
+            }
+            statement.setString(3, gsonBuilder.create().toJson(player.getCosmetics(), PlayerCosmetics.class));
+            statement.setString(4, gsonBuilder.create().toJson(player.getStats(), PlayerStats.class));
+            int current = 5;
+            for (String id : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
+                System.out.println("Hello bitches");
+                ICustomPlayerData playerData = player.getCustomPlayerData(id);
+                if (playerData != null) {
+                    statement.setString(current, gsonBuilder.create().toJson(playerData, playerData.getClass()));
+                } else {
+                    statement.setString(current, null);
+                }
+                current++;
+            }
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            TextUtil.error(ex, "Failed to create player: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
+        }
 
     }
 
@@ -77,13 +128,19 @@ public class SequalStorage implements IStorage {
     public boolean doesPlayerExist(IGamePlayer player) {
         Connection connection = getConnection();
         try (PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM wsw_player_data WHERE uuid=?")) {
-            statement.setString(0, player.getUniqueId().toString());
+            statement.setString(1, player.getUniqueId().toString());
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
             }
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to check if player exists: " + player.getName() + " (" + player.getUniqueId() + ")", false);
             return false;
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
@@ -92,7 +149,7 @@ public class SequalStorage implements IStorage {
         Connection connection = getConnection();
         StringBuilder builder = new StringBuilder("UPDATE wsw_player_data SET name=?,cosmetics=?,stats=?");
         int currentIndex = 4;
-        for (String column : customColumns.get("wsw_player_data")) {
+        for (String column : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
             builder.append(",").append(column).append("=?");
         }
         builder.append(" WHERE uuid=?");
@@ -106,18 +163,25 @@ public class SequalStorage implements IStorage {
             }
             statement.setString(2, gsonBuilder.create().toJson(player.getCosmetics(), PlayerCosmetics.class));
             statement.setString(3, gsonBuilder.create().toJson(player.getStats(), PlayerStats.class));
-            for (String id : customColumns.keySet()) {
+            for (String id : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
                 ICustomPlayerData playerData = player.getCustomPlayerData(id);
                 if (playerData != null) {
                     statement.setString(currentIndex, gsonBuilder.create().toJson(playerData, playerData.getClass()));
                 } else {
                     statement.setString(currentIndex, null);
                 }
-                currentIndex++;
+                ++currentIndex;
             }
+            statement.setString(currentIndex, player.getUniqueId().toString());
             statement.executeUpdate();
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to save player: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
@@ -129,6 +193,12 @@ public class SequalStorage implements IStorage {
             statement.executeUpdate();
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to delete player: " + player.getName() + " (" + player.getUniqueId() + ")", false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
@@ -136,17 +206,17 @@ public class SequalStorage implements IStorage {
     public IGamePlayer loadPlayer(UUID uuid) {
         IGamePlayer player = WhaleSkyWars.getInstance().getPlayerManager().get(uuid);
         Connection connection = getConnection();
-        try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE uuid=?")) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE uuid=?")) {
             statement.setString(1, uuid.toString());
-            try(ResultSet resultSet = statement.executeQuery()) {
-                if(resultSet.next()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
                     if (player == null) player = new GamePlayer(uuid, resultSet.getString("name"));
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     gsonBuilder.registerTypeAdapter(List.class,
                             new ListItemStackAdapter());
                     gsonBuilder.registerTypeAdapter(ItemStack.class
                             , new ItemStackAdapter());
-                    for(ICustomPlayerData customPlayerData :
+                    for (ICustomPlayerData customPlayerData :
                             WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData().values()) {
                         gsonBuilder.registerTypeAdapter(
                                 ICustomPlayerData.class, customPlayerData);
@@ -157,18 +227,26 @@ public class SequalStorage implements IStorage {
                     player.setStats(gsonBuilder.create().
                             fromJson(resultSet.getString("stats"),
                                     PlayerStats.class));
-                    for(String id : customColumns.keySet()) {
-                        ICustomPlayerData playerData = gsonBuilder.
+                    for (String id : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
+                        ICustomPlayerData playerData = (ICustomPlayerData) gsonBuilder.
                                 create().fromJson(resultSet.getString(id),
-                                        ICustomPlayerData.class);
-                        if(playerData != null) {
-                            ((GamePlayer)playerData).addCustomPlayerData(playerData);
+                                        WhaleSkyWars.getInstance()
+                                                .getCustomPlayerDataManager()
+                                                .getCustomPlayerDataObj(id).getClass());
+                        if (playerData != null) {
+                            ((GamePlayer) player).addCustomPlayerData(playerData);
                         }
                     }
                 }
             }
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to load player: " + uuid, false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
         return player;
     }
@@ -182,15 +260,21 @@ public class SequalStorage implements IStorage {
     public CompletableFuture<IGamePlayer> loadPlayer(String name) {
         return CompletableFuture.supplyAsync(() -> {
             Connection connection = getConnection();
-            try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE name=?")) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM wsw_player_data WHERE name=?")) {
                 statement.setString(1, name);
-                try(ResultSet resultSet = statement.executeQuery()) {
-                    if(resultSet.next()) {
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
                         return loadPlayer(UUID.fromString(resultSet.getString("uuid")));
                     }
                 }
             } catch (SQLException ex) {
                 TextUtil.error(ex, "Failed to load player: " + name, false);
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    TextUtil.error(e, "Failed to close connection", false);
+                }
             }
             return null;
         });
@@ -219,6 +303,12 @@ public class SequalStorage implements IStorage {
             statement.executeUpdate();
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to save kit: " + kit.getName(), false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
@@ -248,6 +338,12 @@ public class SequalStorage implements IStorage {
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to load kits", false);
             return new ArrayList<>();
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
         return kits;
     }
@@ -262,6 +358,12 @@ public class SequalStorage implements IStorage {
             statement.executeUpdate();
         } catch (SQLException ex) {
             TextUtil.error(ex, "Failed to delete kit: " + kit.getName(), false);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                TextUtil.error(e, "Failed to close connection", false);
+            }
         }
     }
 
@@ -322,7 +424,14 @@ public class SequalStorage implements IStorage {
 
     @Override
     public boolean hasCustomColumn(String table, String column) {
-        return customColumns.getOrDefault(table, new ArrayList<>()).contains(column);
+        String query = "SELECT " + column + " FROM " + table;
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(query)) {
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     @Override

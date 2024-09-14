@@ -22,15 +22,24 @@ public class MainListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         IGamePlayer player = WhaleSkyWars.getInstance().getPlayerManager().add(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-        player.sendMessage("&bWelcome to WhaleSkyWars!");
-        WhaleSkyWars.getInstance().getSkyWarsBoard().setLobbyBoard(player);
+        Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
+            if (!WhaleSkyWars.getInstance().getStorage().doesPlayerExist(player)) {
+                WhaleSkyWars.getInstance().getStorage().createPlayer(player);
+            } else {
+                WhaleSkyWars.getInstance().getStorage().loadPlayer(player.getUniqueId());
+            }
+        });
+        Player bukkitPlayer = event.getPlayer();
+        if (inLobbyWorld(bukkitPlayer)) {
+            WhaleSkyWars.getInstance().getSkyWarsBoard().setLobbyBoard(player);
+        }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        IGamePlayer player = WhaleSkyWars.getInstance().getPlayerManager().get(event.getPlayer().getUniqueId());
+        GamePlayer player = (GamePlayer) WhaleSkyWars.getInstance().getPlayerManager().get(event.getPlayer().getUniqueId());
         WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
-        WhaleSkyWars.getInstance().getPlayerManager().remove(event.getPlayer().getUniqueId());
+        player.saveAndRemove();
     }
 
     @EventHandler

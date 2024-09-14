@@ -181,5 +181,20 @@ public class GamePlayer implements IGamePlayer {
         this.customPlayerData.put(customPlayerData.getId(), customPlayerData);
     }
 
+    public void save() {
+        if (Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), this::save);
+            return;
+        }
+        WhaleSkyWars.getInstance().getStorage().savePlayer(this);
+    }
+
+    public void saveAndRemove() {
+        save();
+        synchronized (WhaleSkyWars.getInstance().getPlayerManager().getPlayers()) {
+            WhaleSkyWars.getInstance().getPlayerManager().getPlayers().remove(uniqueId);
+        }
+    }
+
 
 }

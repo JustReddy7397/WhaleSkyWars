@@ -47,4 +47,7 @@ public class PlayerManager {
         players.clear();
     }
 
+    public Map<UUID, IGamePlayer> getPlayers() {
+        return players;
+    }
 }

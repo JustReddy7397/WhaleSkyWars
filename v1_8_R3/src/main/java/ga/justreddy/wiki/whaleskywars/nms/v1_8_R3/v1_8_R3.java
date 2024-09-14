@@ -293,40 +293,7 @@ public final class v1_8_R3 implements INms {
     }
 
     @Override
-    public void setNbtValue(Object object, String key, Object value) {
-        if (object instanceof Block) {
-            NBTBlock block = new NBTBlock((Block) object);
-            // Ugly start
-            NBTCompound compound = block.getData();
-            if (value instanceof Integer) {
-                compound.setInteger(key, (Integer) value);
-            }
-            if (value instanceof String) {
-                compound.setString(key, (String) value);
-            }
-            if (value instanceof Double) {
-                compound.setDouble(key, (Double) value);
-            }
-            if (value instanceof Float) {
-                compound.setFloat(key, (Float) value);
-            }
-            if (value instanceof Long) {
-                compound.setLong(key, (Long) value);
-            }
-            if (value instanceof Short) {
-                compound.setShort(key, (Short) value);
-            }
-            if (value instanceof Byte) {
-                compound.setByte(key, (Byte) value);
-            }
-            if (value instanceof Boolean) {
-                compound.setBoolean(key, (Boolean) value);
-            }
-            if (value instanceof Enum<?>) {
-                compound.setEnum(key, (Enum<?>) value);
-            }
-            // Ugly end
-        }
+    public <V> V setNbtValue(V object, String key, Object value) {
         if (object instanceof ItemStack) {
             NBTItem item = new NBTItem((ItemStack) object);
             // Ugly start
@@ -357,6 +324,7 @@ public final class v1_8_R3 implements INms {
             if (value instanceof Enum<?>) {
                 item.setEnum(key, (Enum<?>) value);
             }
+            return (V) item.getItem();
             // Ugly End
         }
         if (object instanceof Entity) {
@@ -388,16 +356,14 @@ public final class v1_8_R3 implements INms {
             if (value instanceof Enum<?>) {
                 entity.setEnum(key, (Enum<?>) value);
             }
+            return object;
             // Ugly End
         }
+        return null;
     }
 
     @Override
     public boolean hasNbtValue(Object object, String key) {
-        if (object instanceof Block) {
-            NBTBlock block = new NBTBlock((Block) object);
-            return block.getData().hasTag(key);
-        }
         if (object instanceof ItemStack) {
             NBTItem item = new NBTItem((ItemStack) object);
             return item.hasTag(key);
@@ -410,18 +376,14 @@ public final class v1_8_R3 implements INms {
     }
 
     @Override
-    public <V> V getNbtValue(V value, String key) {
-        if (value instanceof Block) {
-            NBTBlock block = new NBTBlock((Block) value);
-            return (V) block.getData().get(key, NBTHandlers.STORE_READABLE_TAG);
-        }
+    public Object getNbtValue(Object value, String key) {
         if (value instanceof ItemStack) {
             NBTItem item = new NBTItem((ItemStack) value);
-            return (V) item.get(key, NBTHandlers.STORE_READABLE_TAG);
+            return item.get(key, NBTHandlers.STORE_READABLE_TAG);
         }
         if (value instanceof Entity) {
             NBTEntity entity = new NBTEntity((Entity) value);
-            return (V) entity.get(key, NBTHandlers.STORE_READABLE_TAG);
+            return entity.get(key, NBTHandlers.STORE_READABLE_TAG);
         }
         return null;
     }

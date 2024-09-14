@@ -22,7 +22,7 @@ public class KitManager {
     }
 
     public void loadKits() {
-        Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
+        /*Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
             synchronized (kits) {
                 kits.clear();
                 WhaleSkyWars.getInstance().getStorage().getKits()
@@ -30,7 +30,7 @@ public class KitManager {
                             kits.put(kit.getName(), kit);
                         });
             }
-        });
+        });*/
         assureDefaultKitExists();
     }
 
@@ -46,7 +46,9 @@ public class KitManager {
                     )), new ArrayList<>(), XMaterial.IRON_SWORD, true);
             kits.put("default", kit);
             Kit finalKit = kit;
+/*
             Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> WhaleSkyWars.getInstance().getStorage().saveKit(finalKit));
+*/
             // TODO
         }
     }

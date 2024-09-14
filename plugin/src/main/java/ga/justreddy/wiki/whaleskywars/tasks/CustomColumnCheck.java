@@ -23,11 +23,12 @@ public class CustomColumnCheck implements Runnable {
         List<String> columns = storage.getCustomColumns("wsw_player_data");
         new HashMap<>(WhaleSkyWars.getInstance().getCustomPlayerDataManager()
                 .getCustomPlayerData()).forEach((id, value) -> {
-                    if (columns.contains(id)) return;
-                    storage.addCustomColumn("wsw_player_data", id);
-                    if (!storage.hasCustomColumn("wsw_player_data", id)) {
-                        storage.createCustomColumn(id);
-                    }
-                });
+            if (columns.contains(id)) return;
+            storage.addCustomColumn("wsw_player_data", id);
+            System.out.println("a");
+            if (!storage.hasCustomColumn("wsw_player_data", id)) {
+                storage.createCustomColumn(id);
+            }
+        });
     }
 }
