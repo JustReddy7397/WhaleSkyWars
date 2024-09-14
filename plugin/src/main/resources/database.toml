@@ -33,3 +33,5 @@ password = "none"
 
 [storage.mongodb]
 uri = "mongodb://localhost:27017"
+
+disable-joining-until-custom-data-is-loaded = true

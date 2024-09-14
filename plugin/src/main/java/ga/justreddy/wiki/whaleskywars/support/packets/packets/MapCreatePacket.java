@@ -17,12 +17,12 @@ public class MapCreatePacket extends Packet implements Serializable {
 
     private final String gameName;
     private final Map<String, Object> data;
-    private final File file;
+    private final File worldFile;
 
-    public MapCreatePacket(String gameName, Map<String, Object> data, File file) {
+    public MapCreatePacket(String gameName, Map<String, Object> data, File worldFile) {
         super(PacketType.CLIENT_MAP_CREATE);
         this.gameName = gameName;
         this.data = data;
-        this.file = file;
+        this.worldFile = worldFile;
     }
 }

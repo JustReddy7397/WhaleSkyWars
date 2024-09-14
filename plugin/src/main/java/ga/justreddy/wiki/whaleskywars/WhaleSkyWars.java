@@ -6,8 +6,6 @@ import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
-import ga.justreddy.wiki.whaleskywars.listeners.GameListener;
-import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
 import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
@@ -22,6 +20,7 @@ import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
+import ga.justreddy.wiki.whaleskywars.support.IMessenger;
 import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
@@ -34,9 +33,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
@@ -80,22 +76,26 @@ public final class WhaleSkyWars extends JavaPlugin {
     private GameCreator gameCreator;
     // Bungee
     private ServerMode serverMode;
+    private IMessenger<WhaleSkyWars> messenger;
 
     private IStorage storage;
 
     private Location spawn;
+
 
     @Override
     public void onLoad() {
         instance = this;
         LibraryManager libraryManager = new LibraryManager();
         libraryManager.loadDependencies();
+        if (!loadConfigs()) {
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
 
     @Override
     public void onEnable() {
         // Plugin startup logic
-        if (!loadConfigs()) return;
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading WhaleSkyWars v" + getDescription().getVersion() + " by JustReddy");
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aFinding NMS version...");
         try {
@@ -195,8 +195,6 @@ public final class WhaleSkyWars extends JavaPlugin {
 
         // TODO load db etc
 
-        Bukkit.getServer().getPluginManager().registerEvents(new MainListener(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new GameListener(), this);
         getCommand("whaleskywars").setExecutor(new BaseCommand());
 
         Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20);

@@ -25,6 +25,10 @@ config-version = 1
 slimeworldmanager = false # Recommended
 mode = "MULTI_ARENA" # MULTI_ARENA, BUNGEE, LOBBY
 toml-for-chests = true # Recommended, change to false to use YML files
+# Recommended for BUNGEE mode
+# When you create a new map, it will be automatically added to all the servers.
+# If you want to disable this feature, set this option to false.
+map-sync = false
 
 [modules.leaderboards]
 enabled = false
