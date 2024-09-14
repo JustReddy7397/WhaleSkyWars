@@ -20,7 +20,10 @@ allprojects {
         }
 
     }
+
 }
+
+
 
 group = 'ga.justreddy.wiki'
 version = '1.0.0'
