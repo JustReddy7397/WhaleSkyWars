@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.api.model.cosmetics;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author JustReddy
@@ -23,13 +24,13 @@ public abstract class VictoryDance extends Cosmetic implements Cloneable {
      * Called when the game is starting the victory dance.
      * @param player The player of the victory dance.
      */
-    public abstract void start(IGamePlayer player);
+    public abstract void start(@NotNull IGamePlayer player);
 
     /**
      * Called when the game stops the victory dance.
      * @param player The player of the victory dance.
      */
-    public abstract void stop(IGamePlayer player);
+    public abstract void stop(@NotNull IGamePlayer player);
 
     /**
      * Clones the instance of the victory dance.

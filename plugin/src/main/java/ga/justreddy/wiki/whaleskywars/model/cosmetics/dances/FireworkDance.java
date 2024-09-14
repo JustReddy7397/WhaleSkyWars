@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class FireworkDance extends VictoryDance {
     }
 
     @Override
-    public void start(IGamePlayer player) {
+    public void start(@NotNull IGamePlayer player) {
 
         final IGame game = player.getGame();
 
@@ -80,7 +81,7 @@ public class FireworkDance extends VictoryDance {
     }
 
     @Override
-    public void stop(IGamePlayer player) {
+    public void stop(@NotNull IGamePlayer player) {
         int taskId = tasks.get(player.getUniqueId());
         Bukkit.getScheduler().cancelTask(taskId);
     }

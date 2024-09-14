@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.api.model.cosmetics;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author JustReddy
@@ -23,12 +24,13 @@ public abstract class KillEffect extends Cosmetic implements Cloneable {
      * @param killer The player who killed the other player.
      * @param victim The player who was killed.
      */
-    public abstract void onKill(IGamePlayer killer, IGamePlayer victim);
+    public abstract void onKill(@NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
     /**
      * Clones the instance of the kill effect.
      * @return The cloned instance of the kill effect.
      */
+    @NotNull
     public abstract KillEffect clone();
 
 

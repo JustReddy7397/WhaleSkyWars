@@ -1,5 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.api.model.cosmetics;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a cosmetic in the game.
  * This class is abstract and cannot be instantiated.
@@ -33,6 +35,7 @@ public abstract class Cosmetic {
      * Returns the name of the cosmetic.
      * @return The name of the cosmetic.
      */
+    @NotNull
     public String getName() {
         return name;
     }
