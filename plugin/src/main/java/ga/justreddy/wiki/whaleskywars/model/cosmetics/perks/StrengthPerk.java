@@ -1,13 +1,9 @@
-package ga.justreddy.wiki.whaleskywars.model.cosmetics;
+package ga.justreddy.wiki.whaleskywars.model.cosmetics.perks;
 
-import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
-import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameKillEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.perk.Perk;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
