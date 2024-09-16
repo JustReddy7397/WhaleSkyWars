@@ -10,9 +10,9 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.TomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.support.packets.packets.MapCreatePacket;
+import ga.justreddy.wiki.whaleskywars.util.FileUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
@@ -333,6 +333,10 @@ public class GameCreator implements Listener {
 
         world.save();
 
+        for (Player players : world.getPlayers()) {
+            players.teleport(WhaleSkyWars.getInstance().getSpawn());
+        }
+
         Bukkit.unloadWorld(world, false);
 
         config.set("settings.enabled", enable);
@@ -343,44 +347,61 @@ public class GameCreator implements Listener {
 
         if (WhaleSkyWars.getInstance().isHooked("SlimeWorldManager")) {
             Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
-               try {
-                   WhaleSkyWars.getInstance().getSlimePlugin()
-                           .importWorld(world.getWorldFolder(),
-                                   world.getName(),
-                                   WhaleSkyWars.getInstance().getSlimeLoader());
-               } catch (InvalidWorldException | WorldLoadedException
-                        | IOException | WorldAlreadyExistsException |
-                        WorldTooBigException ex) {
-                   setup.remove(player.getUniqueId());
-                   TextUtil.error(ex, "Failed to save game " + name, false);
-                   return;
-               }
+                try {
+                    WhaleSkyWars.getInstance().getSlimePlugin()
+                            .importWorld(world.getWorldFolder(),
+                                    world.getName(),
+                                    WhaleSkyWars.getInstance().getSlimeLoader());
+                } catch (InvalidWorldException | WorldLoadedException
+                         | IOException | WorldAlreadyExistsException |
+                         WorldTooBigException ex) {
+                    setup.remove(player.getUniqueId());
+                    TextUtil.error(ex, "Failed to save game " + name, false);
+                    return;
+                }
 
-               Bukkit.getScheduler().runTask(WhaleSkyWars.getInstance(), () -> {
-                  WhaleSkyWars.getInstance().getWorldManager().removeWorld(world);
-                  if (mapSync && WhaleSkyWars.getInstance().getServerMode() == ServerMode.LOBBY) {
-                      // TODO message
-                      File worldFile = new File("slime_worlds/" + world.getName() + ".slime");
-                      Map<String, Object> data = new TempConfig(GAMES_FOLDER, name + ".toml").data();
-                      MapCreatePacket packet = new MapCreatePacket(name, data, worldFile);
-                      WhaleSkyWars.getInstance()
-                              .getMessenger().getSender().sendPacket(
-                                packet
-                              );
-                  } else {
-                      WhaleSkyWars.getInstance().getWorldManager().copySlimeWorld(world.getName());
-                  }
-               });
+                Bukkit.getScheduler().runTask(WhaleSkyWars.getInstance(), () -> {
+                    WhaleSkyWars.getInstance().getWorldManager().removeWorld(world);
+                    WhaleSkyWars.getInstance().getWorldManager().copySlimeWorld(world.getName());
+                    if (mapSync && WhaleSkyWars.getInstance().getServerMode() == ServerMode.LOBBY) {
+                        // TODO message
+                        File worldFile = new File("slime_worlds/" + world.getName() + ".slime");
+                        Map<String, Object> data = new TempConfig(GAMES_FOLDER, name + ".toml").data();
+                        MapCreatePacket packet = new MapCreatePacket(name, data, worldFile);
+                        WhaleSkyWars.getInstance()
+                                .getMessenger().getSender().sendPacket(
+                                        packet
+                                );
+                    } else {
+                        FileUtil.delete(new File("slime_worlds/" + world.getName() + ".slime"));
+                    }
+                });
 
             });
+        } else {
+            WhaleSkyWars.getInstance().getWorldManager().copyWorld(world.getName());
+            if (mapSync && WhaleSkyWars.getInstance().getServerMode() == ServerMode.LOBBY) {
+                // TODO message
+                File worldFile = new File(WhaleSkyWars.getInstance().getDataFolder(), "/data/worlds/" + name);
+                Map<String, Object> data = new TempConfig(GAMES_FOLDER, name + ".toml").data();
+                MapCreatePacket packet = new MapCreatePacket(name, data, worldFile);
+                WhaleSkyWars.getInstance()
+                        .getMessenger().getSender().sendPacket(
+                                packet
+                        );
+            } else {
+                FileUtil.delete(world.getWorldFolder());
+            }
         }
 
-        /*player.getPlayer().ifPresent(bukkitPlayer -> bukkitPlayer.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation()));
+        if (enable) {
+            WhaleSkyWars.getInstance().getGameManager().register(name, config);
+        }
 
         // TODO
         player.sendMessage("Game saved");
 
-        setup.remove(player.getUniqueId());*/
+        setup.remove(player.getUniqueId());
     }
 
     @EventHandler

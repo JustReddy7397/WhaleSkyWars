@@ -23,14 +23,14 @@ import java.util.List;
  */
 public abstract class HotBarItem implements Listener {
 
-    private HotBarManager manager;
-    private ItemStack itemStack;
-    private ConfigurationSection section;
-    private String key;
-    private int slot;
-    private HotBarType type;
-    private boolean allowMovement;
-    private List<String> actions;
+    protected final HotBarManager manager;
+    protected final ItemStack itemStack;
+    protected final ConfigurationSection section;
+    protected final String key;
+    protected final int slot;
+    protected final HotBarType type;
+    protected final boolean allowMovement;
+    protected final List<String> actions;
 
     public HotBarItem(HotBarManager manager, ConfigurationSection section, ItemStack item, int slot, String key, HotBarType type, List<String> actions) {
         this.manager = manager;

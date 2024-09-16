@@ -1,8 +1,7 @@
-package ga.justreddy.wiki.whaleskywars.manager;
+package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
-import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
 
 import java.io.File;
@@ -39,9 +38,9 @@ public class VictoryDanceManager {
 
     private void register(String name, File file) {
         try {
-            List<Class<? extends VictoryDance>> events = ClassUtil.findClasses(file, VictoryDance.class);
-            for (Class<? extends VictoryDance> event : events) {
-                VictoryDance victoryDance = event.getConstructor().newInstance();
+            List<Class<? extends VictoryDance>> dances = ClassUtil.findClasses(file, VictoryDance.class);
+            for (Class<? extends VictoryDance> dance : dances) {
+                VictoryDance victoryDance = dance.getConstructor().newInstance();
                 register(victoryDance);
             }
         } catch (Exception e) {
@@ -55,6 +54,10 @@ public class VictoryDanceManager {
 
     public void die() {
         dances.clear();
+    }
+
+    public boolean exists(int id) {
+        return dances.containsKey(id);
     }
 
     public VictoryDance copyOf(int id) {

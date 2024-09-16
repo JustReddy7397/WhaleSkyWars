@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.util;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ShuffleUtil {
 
-    /*public static void shuffleBungee(List<BungeeGame> games) {
+    public static void shuffleBungee(List<BungeeGame> games) {
         games.sort(Comparator.comparing(value -> value.getPlayers().size()));
         Collections.reverse(games);
         int startIndex = 0;
@@ -46,7 +47,7 @@ public class ShuffleUtil {
             int j = start + --size;
             Collections.swap(list, i, j);
         }
-    }*/
+    }
 
     public static void shuffle(List<IGame> games) {
 

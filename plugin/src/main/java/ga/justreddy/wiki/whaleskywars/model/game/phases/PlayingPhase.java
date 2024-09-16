@@ -32,8 +32,8 @@ public class PlayingPhase implements IPhase {
                     kit = WhaleSkyWars.getInstance().getKitManager().getDefaultKit();
                 }
                 kit.equipKit(player);
-                bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10, 5));
                 bukkitPlayer.setGameMode(GameMode.SURVIVAL);
+                bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10, 5));
             });
         });
 

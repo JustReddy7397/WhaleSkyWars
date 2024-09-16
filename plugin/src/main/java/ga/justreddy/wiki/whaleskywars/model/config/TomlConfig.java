@@ -5,6 +5,7 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.TomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 
@@ -15,9 +16,10 @@ public class TomlConfig extends TomlConfiguration {
 
     private static final String VERSION_KEY = "config-version";
 
-    public TomlConfig(String fileName) {
-        super(WhaleSkyWars.getInstance().getDataFolder(), fileName);
+    public TomlConfig(String fileName, int currentVersion) {
+        super(WhaleSkyWars.getInstance().getDataFolder(), fileName.endsWith(".toml") ? fileName : fileName + ".toml");
         reload();
+        isOutdated(currentVersion);
     }
 
 

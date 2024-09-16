@@ -8,11 +8,12 @@ import com.cryptomorin.xseries.profiles.objects.Profileable;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -35,43 +36,43 @@ public class ItemStackBuilder {
 
     private ItemStack ITEM_STACK;
 
-
     public ItemStackBuilder(ItemStack item) {
         this.ITEM_STACK = item;
     }
 
-    public static ItemStackBuilder getItemStack(ConfigurationSection section, Player player) {
+    public static ItemStackBuilder getItemStack(ConfigurationSection section, IGamePlayer player) {
+
         ItemStack item = XMaterial.matchXMaterial(section.getString("material").toUpperCase()).get().parseItem();
 
         ItemStackBuilder builder = new ItemStackBuilder(item);
 
-        if (section.contains("amount")) {
-            builder.withAmount(section.getInt("amount"));
+        if (section.isSet("amount")) {
+            builder.withAmount(section.getInteger("amount"));
         }
 
-        if (section.contains("username") && player != null) {
+        if (section.isSet("username") && player != null) {
             builder.setSkullOwner(section.getString("username").replace("<player>", player.getName()));
         }
 
-        if (section.contains("texture")) {
+        if (section.isSet("texture")) {
             builder.setTexture(section.getString("texture"));
         }
 
-        if (section.contains("displayname")) {
-            if (player != null) builder.withName(section.getString("displayname"), player);
+        if (section.isSet("displayname")) {
+            if (player != null && player.getPlayer().isPresent()) builder.withName(section.getString("displayname"), player.getPlayer().get());
             else builder.withName(section.getString("displayname"));
         }
 
-        if (section.contains("lore")) {
-            if (player != null) builder.withLore(section.getStringList("lore"), player);
+        if (section.isSet("lore")) {
+            if (player != null && player.getPlayer().isPresent()) builder.withLore(section.getStringList("lore"), player.getPlayer().get());
             else builder.withLore(section.getStringList("lore"));
         }
 
-        if (section.contains("glow") && section.getBoolean("glow")) {
+        if (section.isSet("glow") && section.getBoolean("glow")) {
             builder.withGlow();
         }
 
-        if (section.contains("item_flags")) {
+        if (section.isSet("item_flags")) {
             List<ItemFlag> flags = new ArrayList<>();
             section.getStringList("item_flags").forEach(text -> {
                 try {
@@ -89,7 +90,6 @@ public class ItemStackBuilder {
     public static ItemStackBuilder getItemStack(ConfigurationSection section) {
         return getItemStack(section, null);
     }
-
 
     public ItemStackBuilder withAmount(int amount) {
         ITEM_STACK.setAmount(amount);
@@ -324,6 +324,5 @@ public class ItemStackBuilder {
     public ItemStack build() {
         return ITEM_STACK;
     }
-
 
 }

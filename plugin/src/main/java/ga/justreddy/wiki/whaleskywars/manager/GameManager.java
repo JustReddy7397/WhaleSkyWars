@@ -3,10 +3,12 @@ package ga.justreddy.wiki.whaleskywars.manager;
 import com.google.common.collect.ImmutableList;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
+import ga.justreddy.wiki.whaleskywars.util.ShuffleUtil;
 
 import java.io.File;
 import java.util.*;
@@ -56,11 +58,22 @@ public class GameManager {
         games.put(name, game);
         if (WhaleSkyWars.getInstance().getServerMode() != ServerMode.LOBBY) {
             WhaleSkyWars.getInstance().getGameMap().onEnable(game);
+            System.out.println("Game " + name + " has been enabled.");
         }
     }
 
     public ImmutableList<IGame> getGames() {
         return ImmutableList.copyOf(games.values());
+    }
+
+    public IGame getRandomGame() {
+        List<IGame> gameList = new ArrayList<>(games.values());
+        gameList.removeIf(game -> game.isGameState(GameState.DISABLED));
+        gameList.removeIf(game -> !game.isGameState(GameState.WAITING) || !game.isGameState(GameState.STARTING));
+        gameList.removeIf(game -> game.getPlayers().size() >= game.getMaximumPlayers());
+        ShuffleUtil.shuffle(gameList);
+        if (gameList.isEmpty()) return null;
+        return gameList.get(0);
     }
 
     public IGame getGameByName(String name) {
@@ -71,6 +84,14 @@ public class GameManager {
         try (Stream<IGame> gameStream = games.values().stream()) {
             try (Stream<IGame> filteredStream = gameStream.filter(game -> game.getName().contains(name))) {
                 return filteredStream.collect(Collectors.toList());
+            }
+        }
+    }
+
+    public List<BungeeGame> getBungeeGamesBySimilarNames(String name) {
+        try (Stream<IGame> gameStream = games.values().stream()) {
+            try (Stream<IGame> filteredStream = gameStream.filter(game -> game.getName().contains(name))) {
+                return filteredStream.map(game -> ((Game)game).getBungeeGame()).collect(Collectors.toList());
             }
         }
     }

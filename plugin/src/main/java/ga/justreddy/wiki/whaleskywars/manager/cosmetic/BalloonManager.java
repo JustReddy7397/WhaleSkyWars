@@ -1,7 +1,6 @@
-package ga.justreddy.wiki.whaleskywars.manager;
+package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
-import ga.justreddy.wiki.whaleskywars.api.model.game.team.IBalloon;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Balloon;
 
@@ -37,6 +36,10 @@ public class BalloonManager {
 
     public Balloon getById(int id) {
         return balloons.getOrDefault(id, null);
+    }
+
+    public boolean exists(int id) {
+        return balloons.containsKey(id);
     }
 
     public Map<Integer, Balloon> getBalloons() {

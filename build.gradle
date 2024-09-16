@@ -28,7 +28,7 @@ allprojects {
 group = 'ga.justreddy.wiki'
 version = '1.0.0'
 
-def targetJavaVersion = 8
+def targetJavaVersion = 11
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

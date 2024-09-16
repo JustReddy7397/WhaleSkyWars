@@ -22,8 +22,10 @@ import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
+import ga.justreddy.wiki.whaleskywars.support.BungeeUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.PlayerUtil;
+import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -252,9 +254,13 @@ public class Game implements IGame {
                 mode = new SoloGameMode();
             }
         } else {
-          // TODO
+          GameMode mode = WhaleSkyWars.getInstance().getGameModeManager().of(gameMode);
+            if (mode == null) {
+                TextUtil.error(null, "Game " + name + " has an invalid game mode " + gameMode + "!", true);
+                return;
+            }
+            this.mode = mode;
         }
-
 
         Location boundHigh;
         Location boundLow;
@@ -480,7 +486,7 @@ public class Game implements IGame {
     }
 
     @Override
-    public void onGamePlayerLeave(IGamePlayer player, boolean isSilent) {
+    public void onGamePlayerLeave(IGamePlayer player, boolean isSilent, boolean kick) {
         SkyWarsGameLeaveEvent leaveEvent = new SkyWarsGameLeaveEvent(player, this);
         leaveEvent.call();
         spectators.removeIf(gamePlayer -> gamePlayer.getUniqueId().equals(player.getUniqueId()));
@@ -496,17 +502,20 @@ public class Game implements IGame {
         WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
         PlayerUtil.refresh(player);
 
-        if (WhaleSkyWars.getInstance().getServerMode() == ServerMode.BUNGEE) {
-            // TODO
-        } else {
-            player.getPlayer().ifPresent(bukkitPlayer -> {
-                bukkitPlayer.teleport(Bukkit.getWorld("world").getSpawnLocation());
-            });
+        if (kick) {
+            if (WhaleSkyWars.getInstance().getServerMode() == ServerMode.BUNGEE) {
+                BungeeUtil.sendBackToServer(player);
+            } else {
+                player.getPlayer().ifPresent(bukkitPlayer -> {
+                    bukkitPlayer.teleport(WhaleSkyWars.getInstance().getSpawn());
+                });
+            }
         }
 
 
         if (isSilent) return;
         // TODO
+
     }
 
     @Override

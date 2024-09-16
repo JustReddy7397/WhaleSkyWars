@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.whaleskywars.manager;
+package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
@@ -76,6 +76,10 @@ public class CageManager {
                 "cages/" + name + "/big.schematic");
         Cage cage = new Cage(actualname, id, cost, smallSchematic, bigSchematic);
         data.put(id, cage);
+    }
+
+    public boolean exists(int id) {
+        return data.containsKey(id);
     }
 
     public Cage getById(int id) {

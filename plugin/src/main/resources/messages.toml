@@ -14,7 +14,18 @@
 # that's designed to be straightforward to read due to its obvious semantics.
 # Documentation: https://toml.io/en/
 #
-# Welcome to the config.toml file.
-# This file is used to store stuff for the plugin, for example, lobby location.
+# Welcome to the messages.toml file.
+# This file is used to set your messages.
 # Nothing here requires a server restart to take effect.
-spawn = "null"
+
+# DO NOT TOUCH THIS!
+config-version = 1
+
+prefix = "&dWhaleSkyWars &8» "
+
+general.building.enabled = "&aBuilding mode enabled."
+general.building.disabled = "&cBuilding mode disabled."
+general.no-permission = "&cYou do not have permission to do this."
+general.no-player = "&cThis player is not online."
+general.lobby-set = "&aLobby set."
+general.reloaded = "&aPlugin reloaded."

@@ -25,7 +25,6 @@ public class CustomColumnCheck implements Runnable {
                 .getCustomPlayerData()).forEach((id, value) -> {
             if (columns.contains(id)) return;
             storage.addCustomColumn("wsw_player_data", id);
-            System.out.println("a");
             if (!storage.hasCustomColumn("wsw_player_data", id)) {
                 storage.createCustomColumn(id);
             }

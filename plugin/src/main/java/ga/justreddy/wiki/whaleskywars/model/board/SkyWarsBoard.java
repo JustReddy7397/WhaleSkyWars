@@ -160,6 +160,7 @@ public class SkyWarsBoard {
 
     public void updateGameScoreboard(IGamePlayer player) {
         if (!creators.containsKey(player.getUniqueId())) return;
+        System.out.println("hola");
         TomlConfig config = WhaleSkyWars.getInstance().getScoreboardConfig();
         if (!config.getBoolean("game-board.enabled")) return;
         ScoreBoardCreator creator = creators.get(player.getUniqueId());

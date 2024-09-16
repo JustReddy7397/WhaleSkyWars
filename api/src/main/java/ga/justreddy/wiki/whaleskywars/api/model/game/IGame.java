@@ -95,7 +95,7 @@ public interface IGame {
 
     void onGamePlayerSpectate(IGamePlayer player);
 
-    void onGamePlayerLeave(IGamePlayer player, boolean isSilent);
+    void onGamePlayerLeave(IGamePlayer player, boolean isSilent, boolean kick);
 
     void onGamePlayerDeath(IGamePlayer killer, IGamePlayer victim, KillPath path);
 

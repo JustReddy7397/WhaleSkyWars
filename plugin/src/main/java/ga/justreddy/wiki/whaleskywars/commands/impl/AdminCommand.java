@@ -4,6 +4,8 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
+import ga.justreddy.wiki.whaleskywars.manager.cache.CacheManager;
+import ga.justreddy.wiki.whaleskywars.model.Messages;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Location;
 
@@ -56,6 +58,12 @@ public class AdminCommand implements SkyWarsCommand {
             case "setlobby":
                 setLobbyCommand(player);
                 return;
+            case "build":
+                buildCommand(player);
+                return;
+            case "reload":
+                reloadCommand(player);
+                return;
         }
     }
 
@@ -63,9 +71,25 @@ public class AdminCommand implements SkyWarsCommand {
         player.getPlayer().ifPresent(bukkitPlayer -> {
             Location location = bukkitPlayer.getLocation();
             WhaleSkyWars.getInstance().setSpawn(location);
-            // TODO
-            player.sendMessage("Lobby set successfully");
+            player.sendMessage(Messages.GENERAL_LOBBY_SET.toString());
         });
+    }
+
+    private void buildCommand(IGamePlayer player) {
+        CacheManager cacheManager = WhaleSkyWars.getInstance().getCacheManager();
+
+        if (cacheManager.isBuilding(player.getUniqueId())) {
+            cacheManager.removeBuilding(player.getUniqueId());
+            player.sendMessage(Messages.GENERAL_BUILDING_DISABLED.toString());
+        } else {
+            cacheManager.addBuilding(player.getUniqueId());
+            player.sendMessage(Messages.GENERAL_BUILDING_ENABLED.toString());
+        }
+    }
+
+    private void reloadCommand(IGamePlayer player) {
+        WhaleSkyWars.getInstance().reload();
+        player.sendMessage(Messages.GENERAL_RELOADED.toString());
     }
 
 }

@@ -22,7 +22,7 @@ public class RestartingPhase implements IPhase {
 
         World world = game.getWorld();
         game.getPlayers().forEach(player -> {
-            game.onGamePlayerLeave(player, true);
+            game.onGamePlayerLeave(player, true, true);
         });
         if (world != null) {
 

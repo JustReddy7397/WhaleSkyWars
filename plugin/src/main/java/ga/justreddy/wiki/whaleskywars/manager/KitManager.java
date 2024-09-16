@@ -75,6 +75,10 @@ public class KitManager {
         Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> WhaleSkyWars.getInstance().getStorage().saveKit(kitFromPlayer));
     }
 
+    public boolean exists(String name) {
+        return kits.containsKey(name);
+    }
+
     public Map<String, Kit> getKits() {
         return kits;
     }
