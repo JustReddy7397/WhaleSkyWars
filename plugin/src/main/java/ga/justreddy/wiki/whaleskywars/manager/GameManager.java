@@ -58,7 +58,6 @@ public class GameManager {
         games.put(name, game);
         if (WhaleSkyWars.getInstance().getServerMode() != ServerMode.LOBBY) {
             WhaleSkyWars.getInstance().getGameMap().onEnable(game);
-            System.out.println("Game " + name + " has been enabled.");
         }
     }
 

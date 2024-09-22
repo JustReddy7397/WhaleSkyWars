@@ -13,7 +13,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
  * So it can be properly saved and loaded.
  * @author JustReddy
  */
-public interface ICustomPlayerData extends JsonSerializer<ICustomPlayerData>, JsonDeserializer<ICustomPlayerData>, ConfigurationSerializable {
+public interface ICustomPlayerData extends JsonSerializer<ICustomPlayerData>, JsonDeserializer<ICustomPlayerData> {
 
     /**
      * Returns the id of the custom player data.

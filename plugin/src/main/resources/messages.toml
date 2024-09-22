@@ -29,3 +29,51 @@ general.no-permission = "&cYou do not have permission to do this."
 general.no-player = "&cThis player is not online."
 general.lobby-set = "&aLobby set."
 general.reloaded = "&aPlugin reloaded."
+
+game.joined = "&d<player> &7joined the game. &8(&d<players> &7/ &d<max-players>&8)"
+game.left = "&d<player> &7left the game. &8(&d<players> &7/ &d<max-players>&8)"
+game.starting = "&aGame starting in &d<seconds> &aseconds."
+game.started = "&aGame started."
+game.ended = "&aGame ended."
+game.winners = [
+    "",
+    "&dWinners: &7<winners>",
+    "",
+    "&c&l1st Killer &7- &d<killer_1> &7- &d<kills_1>",
+    "&c&l2nd Killer &7- &d<killer_2> &7- &d<kills_2>",
+    "&c&l3rd Killer &7- &d<killer_3> &7- &d<kills_3>",
+    ""
+]
+
+error.player-only = "&cOnly players can use this command."
+error.player-not-found = "&cPlayer not found."
+error.invalid-command  = "&cThe command you entered is invalid."
+error.invalid-permission = "&cYou do not have permission to do this."
+error.no-lobby = "&cThe lobby has not been set. Use &d/ws admin setlobby &cto set the lobby."
+
+setup.created = "&aSuccessfully created the game: &d<name>&a."
+setup.already-in-progress = "&cYou are already in the progress of setting up a game."
+setup.not-in-progress = "&cYou are not in the progress of setting up a game."
+setup.not-exists = "&cA game with the name &d<name> &cdoes not exist."
+setup.already-created = "&cA game with the name &d<name> &chas already been created."
+setup.success = "&aGame setup successfully."
+setup.missing-components = "&cYou are missing components to save the game. Write &d/ws game info &cto see what you are missing."
+setup.displayname-set = "&aDisplay name set to &d<displayname>&a."
+setup-teamsize-set = "&aTeam size set to &d<teamsize>&a."
+setup.min-players-set = "&aMinimum players set to &d<min-players>&a."
+setup.waitingspawn-set = "&aWaiting spawn set."
+setup.spectatorspawn-set = "&aSpectator spawn set."
+setup.island.created = "&aIsland &d<island> &acreated."
+setup.island.deleted = "&aIsland &d<island> &adeleted."
+setup.island.spawn-set = "&aSpawn set for island &d<island>&a."
+setup.island.balloon-set = "&aBalloon set for island &d<island>&a."
+setup.island.chest-add = "&aChest added for island &d<island>&a."
+setup.island.chest-remove = "&aChest removed for island &d<island>&a."
+setup.island.chest-already-exists = "&cChest already exists at this location for island &d<island>&c."
+setup.island.not-found = "&cIsland &d<island> &cnot found."
+setup.island.already-exists = "&cIsland &d<island> &calready exists."
+setup.bounds.waiting.high = "&aHigh location set for waiting bounds."
+setup.bounds.waiting.low = "&aLow location set for waiting bounds."
+setup.bounds.game.high = "&aHigh location set for game bounds."
+setup.bounds.game.low = "&aLow location set for game bounds."
+setup.chest.not-found = "&cChest &d<chest> &cnot found."

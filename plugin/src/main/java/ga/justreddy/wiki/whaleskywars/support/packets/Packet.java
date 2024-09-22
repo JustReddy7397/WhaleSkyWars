@@ -15,6 +15,10 @@ import java.io.Serializable;
 public class Packet implements Serializable {
 
     protected String server;
-    private final PacketType packetType;
+    private PacketType packetType;
+
+    public Packet(PacketType packetType) {
+        this.packetType = packetType;
+    }
 
 }

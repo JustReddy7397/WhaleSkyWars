@@ -5,6 +5,10 @@ package ga.justreddy.wiki.whaleskywars.support.packets;
  */
 public enum PacketType {
 
+    // SELF -> CLIENT
+    // CLIENT -> SERVER
+    // SERVER -> CLIENT
+
     CLIENT_BACK_TO_SERVER,
     CLIENT_GAME_UPDATE,
     CLIENT_GAME_REMOVE,
@@ -17,6 +21,7 @@ public enum PacketType {
     SERVER_GAMES_REMOVE,
     SERVER_GAMES_ADD,
     SERVER_GAMES_SEND,
+    SERVER_GAME_JOIN,
 
 
 }

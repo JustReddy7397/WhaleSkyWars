@@ -201,7 +201,7 @@ public class GameListener implements Listener {
         if (killerPlayer == null) {
             game.onGamePlayerDeath(killerPlayer, deathPlayer, path);
         } else {
-            game.getKills().put(killerPlayer.getUniqueId(), game.getKills().get(killerPlayer.getUniqueId()) + 1);
+            game.getKills().put(killerPlayer, game.getKills().get(killerPlayer) + 1);
             killerPlayer.getStats().addKill(((Game)game).isTeamGame());
             game.onGamePlayerDeath(killerPlayer, deathPlayer, path);
             // TODO killeffect ?

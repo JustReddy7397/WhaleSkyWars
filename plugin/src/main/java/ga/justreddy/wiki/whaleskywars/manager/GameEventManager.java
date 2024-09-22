@@ -40,8 +40,6 @@ public class GameEventManager {
             register(file);
         }
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoaded " + events.size() + " events.");
-        System.out.println(events);
-        System.out.println(events.keySet());
     }
 
     private void register(File file) {

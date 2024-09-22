@@ -23,7 +23,7 @@ public class JoinAction implements IAction {
 
     @Override
     public String getIdentifier() {
-        return "[JOIN]";
+        return "JOIN";
     }
 
     @Override

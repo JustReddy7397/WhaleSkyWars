@@ -28,7 +28,6 @@ public class PlayerRanked implements ICustomPlayerData {
     public ICustomPlayerData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject object = jsonElement.getAsJsonObject();
         PlayerRanked playerRanked = new PlayerRanked();
-        System.out.println(object);
         playerRanked.elo = object.get("elo").getAsInt();
         return playerRanked;
     }
@@ -39,12 +38,7 @@ public class PlayerRanked implements ICustomPlayerData {
         object.addProperty("elo", elo);
         return object;
     }
-
-    @Override
-    public Map<String, Object> serialize() {
-        return new HashMap<>();
-    }
-
+    
     public int getElo() {
         return elo;
     }

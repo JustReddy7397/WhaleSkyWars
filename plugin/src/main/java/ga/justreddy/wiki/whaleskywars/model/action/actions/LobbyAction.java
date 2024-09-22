@@ -14,7 +14,7 @@ import ga.justreddy.wiki.whaleskywars.support.BungeeUtil;
 public class LobbyAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[LOBBY]";
+        return "LOBBY";
     }
 
     @Override

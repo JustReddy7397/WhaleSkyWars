@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
  */
 public abstract class GameMode implements Listener {
 
+    private IGame game;
+
     public GameMode() {
         Bukkit.getPluginManager().registerEvents(this, SkyWarsProvider.get().getPlugin());
     }
@@ -16,5 +18,13 @@ public abstract class GameMode implements Listener {
     public abstract String getIdentifier();
 
     public abstract String getDisplayName();
+
+    public final void setGame(IGame game) {
+        this.game = game;
+    }
+
+    public boolean isGameMode() {
+        return getIdentifier().equals(game.getGameMode().getIdentifier());
+    }
 
 }

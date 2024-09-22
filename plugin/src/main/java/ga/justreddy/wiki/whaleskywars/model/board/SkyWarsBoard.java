@@ -106,7 +106,7 @@ public class SkyWarsBoard {
                         break;
                     case STARTING:
                         currentEvent = config.getString("events.starting")
-                                .replace("{time}", NumberUtil.toFormat(game.getStartingTimer().getTicksExceed()));
+                                .replaceAll("\\{time}", NumberUtil.toFormat(game.getStartingTimer().getTicksExceed()));
                         break;
                     case PREGAME:
                         currentEvent = config.getString("events.pregame")
@@ -160,7 +160,6 @@ public class SkyWarsBoard {
 
     public void updateGameScoreboard(IGamePlayer player) {
         if (!creators.containsKey(player.getUniqueId())) return;
-        System.out.println("hola");
         TomlConfig config = WhaleSkyWars.getInstance().getScoreboardConfig();
         if (!config.getBoolean("game-board.enabled")) return;
         ScoreBoardCreator creator = creators.get(player.getUniqueId());

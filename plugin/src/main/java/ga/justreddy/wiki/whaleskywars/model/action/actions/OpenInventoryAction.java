@@ -12,7 +12,7 @@ import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 public class OpenInventoryAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[INVENTORY]";
+        return "INVENTORY";
     }
 
     @Override

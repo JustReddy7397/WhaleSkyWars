@@ -6,6 +6,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
+import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import ga.justreddy.wiki.whaleskywars.model.kits.Kit;
 import org.bukkit.GameMode;
 import org.bukkit.potion.PotionEffect;
@@ -33,7 +34,8 @@ public class PlayingPhase implements IPhase {
                 }
                 kit.equipKit(player);
                 bukkitPlayer.setGameMode(GameMode.SURVIVAL);
-                bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10, 5));
+                bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5 * 20, 5));
+
             });
         });
 
@@ -42,7 +44,7 @@ public class PlayingPhase implements IPhase {
     @Override
     public void onTick(IGame game) {
 
-        /*if (game.getAliveTeams().size() == 1) {
+        if (game.getAliveTeams().size() == 1) {
             ((Game)game).getPhaseHandler().setPhase(new EndingPhase(game.getAliveTeams().get(0)));
             return;
         } else if (game.getAliveTeams().isEmpty()) {
@@ -59,10 +61,8 @@ public class PlayingPhase implements IPhase {
                 game.goToNextPhase();
             }
             return;
-        }*/
-        GameEvent event = game.getCurrentEvent();
+        }
 
-        if (event == null) return;
 
         if (event.isEnabled()) event.update();
 

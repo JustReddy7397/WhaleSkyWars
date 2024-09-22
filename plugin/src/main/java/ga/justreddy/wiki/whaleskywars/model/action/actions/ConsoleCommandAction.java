@@ -10,7 +10,7 @@ import ga.justreddy.wiki.whaleskywars.model.action.IAction;
 public class ConsoleCommandAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[CONSOLE]";
+        return "CONSOLE";
     }
 
     @Override

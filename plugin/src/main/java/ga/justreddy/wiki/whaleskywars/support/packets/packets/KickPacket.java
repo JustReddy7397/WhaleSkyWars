@@ -17,7 +17,6 @@ public class KickPacket extends Packet implements Serializable {
     private final String player;
     private final String target;
 
-
     public KickPacket(BungeeGame game, String player, String target) {
         super(PacketType.CLIENT_GAME_REMOVE);
         this.game = game;

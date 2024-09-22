@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
  * @author JustReddy
@@ -37,6 +38,14 @@ public class LobbyListener implements Listener {
         if (cacheManager.isBuilding(player.getUniqueId())) return;
         event.setCancelled(true);
     }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        if (!inLobbyWorld(entity)) return;
+        event.setCancelled(true);
+    }
+
 
 
     private boolean inLobbyWorld(Player player) {

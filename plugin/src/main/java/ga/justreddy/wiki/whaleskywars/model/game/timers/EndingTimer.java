@@ -15,6 +15,9 @@ public class EndingTimer extends AbstractTimer {
 
     @Override
     protected void onTick() {
+        game.getPlayers()
+                .forEach(WhaleSkyWars.getInstance().getSkyWarsBoard()
+                        ::updateGameScoreboard);
 
     }
 

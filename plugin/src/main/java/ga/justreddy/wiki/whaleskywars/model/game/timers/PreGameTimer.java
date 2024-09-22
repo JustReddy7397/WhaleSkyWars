@@ -3,8 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.game.timers;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
-
-import java.util.AbstractMap;
+import ga.justreddy.wiki.whaleskywars.model.Messages;
 
 /**
  * @author JustReddy
@@ -18,10 +17,15 @@ public class PreGameTimer extends AbstractTimer {
     @Override
     protected void onTick() {
         if (ticksExceed <= 5) {
-            game.sendMessage(game.getAlivePlayers(), "The game will start in " + ticksExceed + " seconds");
+            game.sendMessage(game.getPlayers(), Messages.GAME_STARTING.toString()
+                    .replace("<seconds>", String.valueOf(ticksExceed)));
         }
+        game.getPlayers()
+                .forEach(WhaleSkyWars.getInstance().getSkyWarsBoard()
+                        ::updateGameScoreboard);
     }
 
     @Override
-    protected void onEnd() {}
+    protected void onEnd() {
+    }
 }

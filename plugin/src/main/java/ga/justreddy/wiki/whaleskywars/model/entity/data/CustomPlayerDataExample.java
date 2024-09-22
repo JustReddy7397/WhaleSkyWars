@@ -50,10 +50,4 @@ public class CustomPlayerDataExample implements ICustomPlayerData {
         return object;
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put("sexy", sexy);
-        return objectMap;
-    }
 }

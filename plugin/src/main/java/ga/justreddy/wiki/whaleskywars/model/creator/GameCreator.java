@@ -7,6 +7,7 @@ import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
 import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.model.Messages;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
@@ -14,6 +15,7 @@ import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.support.packets.packets.MapCreatePacket;
 import ga.justreddy.wiki.whaleskywars.util.FileUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
+import ga.justreddy.wiki.whaleskywars.util.Replaceable;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author JustReddy
@@ -47,17 +50,20 @@ public class GameCreator implements Listener {
 
     public void createGame(IGamePlayer player, String name) {
 
+        if (WhaleSkyWars.getInstance().getSpawn() == null) {
+            player.sendMessage(Messages.ERROR_NO_LOBBY.toString());
+            return;
+        }
+
         if (setup.containsKey(player.getUniqueId())) {
-            // TODO
-            player.sendMessage("You are already in the setup process");
+            player.sendMessage(Messages.SETUP_ALREADY_IN_PROGRESS.toString());
             return;
         }
 
         File file = getFile(name);
 
         if (file.exists()) {
-            // TODO
-            player.sendMessage("Game already exists");
+            player.sendMessage(Messages.SETUP_ALREADY_CREATED.toString());
             return;
         } else {
             try {
@@ -81,8 +87,7 @@ public class GameCreator implements Listener {
         // :D
         world.getSpawnLocation().getBlock().setType(XMaterial.BEDROCK.parseMaterial());
         player.getPlayer().ifPresent(bukkitPlayer -> bukkitPlayer.teleport(world.getSpawnLocation()));
-        // TODO
-        player.sendMessage("You are now in the setup process");
+        player.sendMessage(Messages.SETUP_CREATED.toString(Replaceable.of("<name>", name)));
     }
 
     public void setDisplayName(IGamePlayer player, String displayName) {
@@ -100,8 +105,7 @@ public class GameCreator implements Listener {
         config.save();
 
         // TODO
-        player.sendMessage("Display name set to: " + displayName);
-
+        player.sendMessage(Messages.SETUP_DISPLAYNAME_SET.toString(Replaceable.of("<displayname>", displayName)));
     }
 
     public void setTeamSize(IGamePlayer player, int teamSize) {
@@ -121,7 +125,7 @@ public class GameCreator implements Listener {
         config.save();
 
         // TODO
-        player.sendMessage("Team size set to: " + teamSize);
+        player.sendMessage(Messages.SETUP_TEAMSIZE_SET.toString(Replaceable.of("<teamsize>", String.valueOf(teamSize))));
 
     }
 
@@ -142,7 +146,7 @@ public class GameCreator implements Listener {
         config.save();
 
         // TODO
-        player.sendMessage("Minimum players set to: " + minimumPlayers);
+        player.sendMessage(Messages.SETUP_MIN_PLAYERS_SET.toString(Replaceable.of("<min-players>", String.valueOf(minimumPlayers))));
 
     }
 
@@ -167,7 +171,7 @@ public class GameCreator implements Listener {
 
         config.save();
         // TODO
-        player.sendMessage("Waiting spawn set");
+        player.sendMessage(Messages.SETUP_WAITINGSPAWN_SET.toString());
     }
 
     public void setSpectatorSpawn(IGamePlayer player) {
@@ -191,12 +195,11 @@ public class GameCreator implements Listener {
 
         config.save();
 
-        // TODO
-        player.sendMessage("Spectator spawn set");
+        player.sendMessage(Messages.SETUP_SPECTATORSPAWN_SET.toString());
 
     }
 
-    public void createIsland(IGamePlayer player) {
+    public void createIsland(IGamePlayer player, int islandId) {
 
         if (!isSettingUp(player)) {
             return;
@@ -208,15 +211,18 @@ public class GameCreator implements Listener {
 
         TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
-        int island = getCurrentIsland(config);
+        Set<Integer> islands = config.getSection("islands").keys().stream().map(Integer::parseInt).collect(Collectors.toSet());
 
-        config.set("islands." + island + ".spawn", "");
+        if (islands.contains(islandId)) {
+            player.sendMessage(Messages.SETUP_ISLAND_ALREADY_EXISTS.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return;
+        }
 
-        config.set("islands." + island + ".balloon", "");
-
+        config.set("islands." + islandId + ".spawn", "");
+        config.set("islands." + islandId + ".balloon", "");
         config.save();
 
-        player.sendMessage("Island " + island + " created");
+        player.sendMessage(Messages.SETUP_ISLAND_CREATED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
     }
 
     public void setIslandSpawn(IGamePlayer player, int islandId) {
@@ -234,8 +240,7 @@ public class GameCreator implements Listener {
         ConfigurationSection section = config.getSection("islands." + islandId);
 
         if (section == null) {
-            // TODO
-            player.sendMessage("Island " + islandId + " does not exist");
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
             return;
         }
 
@@ -247,7 +252,7 @@ public class GameCreator implements Listener {
 
         config.save();
 
-        player.sendMessage("Island " + islandId + " spawn set");
+        player.sendMessage(Messages.SETUP_ISLAND_SPAWN_SET.toString(Replaceable.of("<island>", String.valueOf(islandId))));
     }
 
     public void setIslandBalloon(IGamePlayer player, int islandId) {
@@ -266,7 +271,7 @@ public class GameCreator implements Listener {
 
         if (section == null) {
             // TODO
-            player.sendMessage("Island " + islandId + " does not exist");
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
             return;
         }
 
@@ -280,7 +285,7 @@ public class GameCreator implements Listener {
         config.save();
 
 
-        player.sendMessage("Island " + islandId + " balloon set");
+        player.sendMessage(Messages.SETUP_ISLAND_BALLOON_SET.toString(Replaceable.of("<island>", String.valueOf(islandId))));
     }
 
     public void clearIsland(IGamePlayer player, int islandId) {
@@ -299,8 +304,7 @@ public class GameCreator implements Listener {
         ConfigurationSection section = config.getSection("islands." + islandId);
 
         if (section == null) {
-            // TODO
-            player.sendMessage("Island " + islandId + " does not exist");
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
             return;
         }
 
@@ -308,7 +312,7 @@ public class GameCreator implements Listener {
 
         config.save();
 
-        player.sendMessage("Island " + islandId + " cleared");
+        player.sendMessage(Messages.SETUP_ISLAND_DELETED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
     }
 
     public void save(IGamePlayer player, boolean enable) {
@@ -324,8 +328,7 @@ public class GameCreator implements Listener {
         TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
 
         if (!isEverythingSettedUp(config)) {
-            // TODO
-            player.sendMessage("Not everything is set up");
+            player.sendMessage(Messages.SETUP_MISSING_COMPONENTS.toString());
             return;
         }
 
@@ -399,7 +402,7 @@ public class GameCreator implements Listener {
         }
 
         // TODO
-        player.sendMessage("Game saved");
+        player.sendMessage(Messages.SETUP_SUCCESS.toString(Replaceable.of("<game>", name)));
 
         setup.remove(player.getUniqueId());
     }
@@ -429,13 +432,13 @@ public class GameCreator implements Listener {
                 case LEFT_CLICK_BLOCK:
                     config.set("waiting-cuboid.high", location);
                     config.save();
-                    player.sendMessage("High location set for waiting cuboid");
+                    player.sendMessage(Messages.SETUP_BOUNDS_WAITING_HIGH.toString());
                     event.setCancelled(true);
                     break;
                 case RIGHT_CLICK_BLOCK:
                     config.set("waiting-cuboid.low", location);
                     config.save();
-                    player.sendMessage("Low location set for waiting cuboid");
+                    player.sendMessage(Messages.SETUP_BOUNDS_WAITING_LOW.toString());
                     event.setCancelled(true);
                     break;
             }
@@ -446,13 +449,13 @@ public class GameCreator implements Listener {
                 case LEFT_CLICK_BLOCK:
                     config.set("game-cuboid.high", location);
                     config.save();
-                    player.sendMessage("High location set for game cuboid");
+                    player.sendMessage(Messages.SETUP_BOUNDS_GAME_HIGH.toString());
                     event.setCancelled(true);
                     break;
                 case RIGHT_CLICK_BLOCK:
                     config.set("game-cuboid.low", location);
                     config.save();
-                    player.sendMessage("Low location set for game cuboid");
+                    player.sendMessage(Messages.SETUP_BOUNDS_GAME_LOW.toString());
                     event.setCancelled(true);
                     break;
             }
@@ -492,7 +495,7 @@ public class GameCreator implements Listener {
 
         if (!setup.containsKey(uniqueId)) {
             // TODO
-            player.sendMessage("You are not in the setup process");
+            player.sendMessage(Messages.SETUP_NOT_IN_PROGRESS.toString());
             return false;
         }
 
@@ -500,7 +503,7 @@ public class GameCreator implements Listener {
         File file = getFile(name);
         if (!file.exists()) {
             // TODO
-            player.sendMessage("Game does not exist");
+            player.sendMessage(Messages.SETUP_NOT_EXISTS.toString());
             return false;
         }
         return true;

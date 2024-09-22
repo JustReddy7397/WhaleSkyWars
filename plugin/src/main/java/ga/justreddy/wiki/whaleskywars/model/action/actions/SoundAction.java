@@ -13,7 +13,7 @@ import org.bukkit.Sound;
 public class SoundAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[SOUND]";
+        return "SOUND";
     }
 
     @Override

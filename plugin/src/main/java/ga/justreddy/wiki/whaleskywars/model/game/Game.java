@@ -10,6 +10,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
+import ga.justreddy.wiki.whaleskywars.model.Messages;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
@@ -25,6 +26,7 @@ import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
 import ga.justreddy.wiki.whaleskywars.support.BungeeUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.PlayerUtil;
+import ga.justreddy.wiki.whaleskywars.util.Replaceable;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -52,7 +54,7 @@ public class Game implements IGame {
     private final List<IGamePlayer> players;
     private final List<IGameTeam> teams;
     private final List<IGamePlayer> spectators;
-    private final Map<UUID, Integer> kills;
+    private final Map<IGamePlayer, Integer> kills;
     private final List<GameEvent> events;
     private ICuboid waitingCuboid;
     private ICuboid gameCuboid;
@@ -150,13 +152,13 @@ public class Game implements IGame {
     }
 
     @Override
-    public Map<UUID, Integer> getKills() {
+    public Map<IGamePlayer, Integer> getKills() {
         return kills;
     }
 
     @Override
     public int getKills(IGamePlayer player) {
-        return kills.getOrDefault(player.getUniqueId(), kills.put(player.getUniqueId(), 0));
+        return kills.getOrDefault(player, kills.put(player, 0));
     }
 
     @Override
@@ -237,6 +239,28 @@ public class Game implements IGame {
     }
 
     @Override
+    public List<Map.Entry<String, Integer>> getTopThreeKillers() {
+        LinkedList<Map.Entry<String, Integer>> topThree = new LinkedList<>();
+        if (kills.size() >= 3) {
+            kills.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(3)
+                    .forEach(entry -> {
+                        AbstractMap.SimpleEntry<String, Integer> simpleEntry = new AbstractMap.SimpleEntry<>(entry.getKey().getName(), entry.getValue());
+                        topThree.add(simpleEntry);
+                    });
+        } else {
+            kills.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .forEach(entry -> {
+                        AbstractMap.SimpleEntry<String, Integer> simpleEntry = new AbstractMap.SimpleEntry<>(entry.getKey().getName(), entry.getValue());
+                        topThree.add(simpleEntry);
+                    });
+        }
+        return topThree;
+    }
+
+    @Override
     public void init(World world) {
         this.world = world;
 
@@ -254,13 +278,14 @@ public class Game implements IGame {
                 mode = new SoloGameMode();
             }
         } else {
-          GameMode mode = WhaleSkyWars.getInstance().getGameModeManager().of(gameMode);
+            GameMode mode = WhaleSkyWars.getInstance().getGameModeManager().of(gameMode);
             if (mode == null) {
                 TextUtil.error(null, "Game " + name + " has an invalid game mode " + gameMode + "!", true);
                 return;
             }
             this.mode = mode;
         }
+        this.mode.setGame(this);
 
         Location boundHigh;
         Location boundLow;
@@ -381,7 +406,7 @@ public class Game implements IGame {
 
         players.add(player);
         player.setGame(this);
-        kills.put(player.getUniqueId(), 0);
+        kills.put(player, 0);
         bukkitPlayer.getInventory().setHeldItemSlot(4);
         bukkitPlayer.getInventory().clear();
         bukkitPlayer.setGameMode(org.bukkit.GameMode.ADVENTURE);
@@ -415,7 +440,16 @@ public class Game implements IGame {
                     .setGameBoard(player);
         }
 
-        // TODO
+        sendMessage(getPlayers(), Messages
+                .GAME_JOINED.toString(bukkitPlayer, Replaceable.of(
+                                "<player>", player.getName()
+                        ),
+                        Replaceable.of(
+                                "<players>", String.valueOf(getPlayerCount())
+                        ),
+                        Replaceable.of(
+                                "<max-players>", String.valueOf(getMaximumPlayers())
+                        )));
     }
 
     @Override
@@ -430,7 +464,7 @@ public class Game implements IGame {
 
         players.add(player);
         player.setGame(this);
-        kills.put(player.getUniqueId(), 0);
+        kills.put(player, 0);
         bukkitPlayer.getInventory().setHeldItemSlot(4);
         bukkitPlayer.getInventory().clear();
         bukkitPlayer.setGameMode(org.bukkit.GameMode.ADVENTURE);
@@ -462,6 +496,16 @@ public class Game implements IGame {
             WhaleSkyWars.getInstance().getSkyWarsBoard()
                     .setGameBoard(player);
         }
+        sendMessage(getPlayers(), Messages
+                .GAME_JOINED.toString(bukkitPlayer, Replaceable.of(
+                                "<player>", player.getName()
+                        ),
+                        Replaceable.of(
+                                "<players>", String.valueOf(getPlayerCount())
+                        ),
+                        Replaceable.of(
+                                "<max-players>", String.valueOf(getMaximumPlayers())
+                        )));
     }
 
     @Override
@@ -514,7 +558,16 @@ public class Game implements IGame {
 
 
         if (isSilent) return;
-        // TODO
+        sendMessage(getPlayers(), Messages
+                .GAME_LEFT.toString(player.getPlayer().get(), Replaceable.of(
+                                "<player>", player.getName()
+                        ),
+                        Replaceable.of(
+                                "<players>", String.valueOf(getPlayerCount())
+                        ),
+                        Replaceable.of(
+                                "<max-players>", String.valueOf(getMaximumPlayers())
+                        )));
 
     }
 
@@ -530,7 +583,7 @@ public class Game implements IGame {
             WhaleSkyWars.getInstance().getNms().setCollideWithEntities(bukkitVictim, false);
             bukkitVictim.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1000000, 0, false, false));
         }, 1L);
-        getPlayers().forEach(gamePlayers ->  {
+        getPlayers().forEach(gamePlayers -> {
             gamePlayers.getPlayer().ifPresent(bukkitPlayer -> {
                 bukkitPlayer.hidePlayer(bukkitVictim);
             });
@@ -546,9 +599,11 @@ public class Game implements IGame {
     public void onCountDown() {
         if (phaseHandler == null) return;
         phaseHandler.onTick();
-        getPlayers()
-                .forEach(WhaleSkyWars.getInstance().getSkyWarsBoard()
-                        ::updateGameScoreboard);
+        if (isGameState(GameState.WAITING) || isGameState(GameState.PLAYING) || isGameState(GameState.RESTORING)) {
+            getPlayers()
+                    .forEach(WhaleSkyWars.getInstance().getSkyWarsBoard()
+                            ::updateGameScoreboard);
+        }
     }
 
     @Override

@@ -305,7 +305,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     private void scheduleTasks() {
-        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 20, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20L);
     }
 
     private boolean loadConfigs() {

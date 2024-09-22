@@ -36,8 +36,8 @@ public abstract class AbstractTimer implements Runnable {
             stop();
             return;
         }
+        --ticksExceed;
         onTick();
-        ticksExceed--;
     }
 
     public void start() {

@@ -102,7 +102,6 @@ public class SequalStorage implements IStorage {
             statement.setString(4, gsonBuilder.create().toJson(player.getStats(), PlayerStats.class));
             int current = 5;
             for (String id : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
-                System.out.println("Hello bitches");
                 ICustomPlayerData playerData = player.getCustomPlayerData(id);
                 if (playerData != null) {
                     statement.setString(current, gsonBuilder.create().toJson(playerData, playerData.getClass()));

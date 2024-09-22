@@ -6,6 +6,8 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
 import ga.justreddy.wiki.whaleskywars.model.action.actions.*;
+import ga.justreddy.wiki.whaleskywars.model.action.actions.cosmetic.SelectDanceAction;
+import ga.justreddy.wiki.whaleskywars.model.action.actions.cosmetic.SelectPerkAction;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +37,10 @@ public class ActionManager {
                 new JoinAction(),
                 new LobbyAction(),
                 new MessageAction(),
-                new OpenInventoryAction()
+                new OpenInventoryAction(),
+                new SoundAction(),
+                new SelectDanceAction(),
+                new SelectPerkAction()
         );
     }
 

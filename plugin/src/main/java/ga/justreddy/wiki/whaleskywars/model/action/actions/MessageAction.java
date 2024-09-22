@@ -13,7 +13,7 @@ import java.util.Optional;
 public class MessageAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[MESSAGE]";
+        return "MESSAGE";
     }
 
     @Override

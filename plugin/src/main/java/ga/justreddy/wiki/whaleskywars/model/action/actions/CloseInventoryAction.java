@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class CloseInventoryAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[CLOSE]";
+        return "CLOSE";
     }
 
     @Override

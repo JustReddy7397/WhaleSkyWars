@@ -12,7 +12,7 @@ import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 public class SelectPerkAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "[SELECT_PERK]";
+        return "SELECT_PERK";
     }
 
     @Override

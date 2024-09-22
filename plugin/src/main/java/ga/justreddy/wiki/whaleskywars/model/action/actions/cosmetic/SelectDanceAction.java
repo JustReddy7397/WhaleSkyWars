@@ -12,7 +12,7 @@ public class SelectDanceAction implements IAction {
 
     @Override
     public String getIdentifier() {
-        return "[SELECT_DANCE]";
+        return "SELECT_DANCE";
     }
 
     @Override

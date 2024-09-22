@@ -10,7 +10,6 @@ import org.bukkit.World;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * @author JustReddy
@@ -43,7 +42,7 @@ public interface IGame {
 
     List<IGameTeam> getSpectatorTeams();
 
-    Map<UUID, Integer> getKills();
+    Map<IGamePlayer, Integer> getKills();
 
     int getKills(IGamePlayer player);
 
@@ -74,6 +73,8 @@ public interface IGame {
     GameEvent getCurrentEvent();
 
     World getWorld();
+
+    List<Map.Entry<String, Integer>> getTopThreeKillers();
 
     void init(World world);
 
