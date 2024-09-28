@@ -93,7 +93,7 @@ public class GameTeam implements IGameTeam {
     public void spawnBalloon() {
         List<Integer> balloons = new ArrayList<>();
         for (IGamePlayer player : getPlayers()) {
-            Balloon balloon = WhaleSkyWars.getInstance().getBalloonManager().getById(player.getCosmetics().getSelectedBalloon());
+            Balloon balloon = (Balloon) player.getCosmetics().getSelectedBalloon();
             if (balloon == null) {
                 continue;
             }

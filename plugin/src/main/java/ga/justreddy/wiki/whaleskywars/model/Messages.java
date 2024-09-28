@@ -25,6 +25,13 @@ public enum Messages {
     GAME_STARTED("game.started"),
     GAME_ENDED("game.ended"),
     GAME_WINNERS("game.winners"),
+    GAME_DEATH_VOID("game.death.void"),
+    GAME_DEATH_FALL("game.death.fall"),
+    GAME_DEATH_FIRE("game.death.fire"),
+    GAME_DEATH_EXPLOSION("game.death.explosion"),
+    GAME_DEATH_DROWNED("game.death.drowned"),
+    GAME_DEATH_SUFFOCATION("game.death.suffocation"),
+    GAME_DEATH_UNKNOWN("game.death.unknown"),
     ERROR_PLAYER_ONLY("error.player-only"),
     ERROR_PLAYER_NOT_FOUND("error.player-not-found"),
     ERROR_INVALID_COMMAND("error.invalid-command"),
@@ -56,6 +63,8 @@ public enum Messages {
     SETUP_BOUNDS_GAME_HIGH("setup.bounds.game.high"),
     SETUP_BOUNDS_GAME_LOW("setup.bounds.game.low"),
     SETUP_CHEST_NOT_FOUND("setup.chest.not-found"),
+    SETUP_STATUS("setup.satus"),
+    SIGN_CHOOSE_GAME("sign.choose-game"),
     ;
 
     private final String path;

@@ -76,7 +76,7 @@ public abstract class Perk extends Cosmetic implements Listener {
      * @return true if the perk can be activated for the player, false otherwise.
      */
     protected final boolean canActivate(IGamePlayer player) {
-        return player != null && player.getCosmetics().getSelectedPerk() == getId();
+        return player != null && player.getCosmetics().getSelectedPerkId() == getId();
     }
 
 }

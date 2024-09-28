@@ -509,4 +509,39 @@ public class GameCreator implements Listener {
         return true;
     }
 
+    public void status(IGamePlayer player) {
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        boolean isDisplayNameSet = config.isSet("settings.displayName");
+        boolean isTeamSizeSet = config.isSet("settings.teamSize");
+        boolean isMinimumPlayersSet = config.isSet("settings.minimumPlayers");
+        boolean isWaitingSpawnSet = config.isSet("waiting-location");
+        boolean isSpectatorSpawnSet = config.isSet("spectator-location");
+        boolean isIslandsSet = config.isSet("islands");
+        boolean isGameCuboidSet = config.isSet("game-cuboid.high") && config.isSet("game-cuboid.low");
+        boolean isWaitingCuboidSet = config.isSet("waiting-cuboid.high") && config.isSet("waiting-cuboid.low");
+        String yes = "&a✔";
+        String no = "&c✘";
+
+        player.sendMessages(Messages.SETUP_STATUS.toList(
+                Replaceable.of("<displayname>", isDisplayNameSet ? yes : no),
+                Replaceable.of("<teamsize>", isTeamSizeSet ? yes : no),
+                Replaceable.of("<min-players>", isMinimumPlayersSet ? yes : no),
+                Replaceable.of("<waiting-spawn>", isWaitingSpawnSet ? yes : no),
+                Replaceable.of("<spectator-spawn>", isSpectatorSpawnSet ? yes : no),
+                Replaceable.of("<islands>", isIslandsSet ? yes : no),
+                Replaceable.of("<game-bounds>", isGameCuboidSet ? yes : no),
+                Replaceable.of("<waiting-bounds>", isWaitingCuboidSet ? yes : no)
+        ));
+
+    }
 }

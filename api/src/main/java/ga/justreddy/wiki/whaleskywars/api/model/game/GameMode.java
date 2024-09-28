@@ -4,10 +4,12 @@ import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
+import java.io.Serializable;
+
 /**
  * @author JustReddy
  */
-public abstract class GameMode implements Listener {
+public abstract class GameMode implements Listener, Serializable {
 
     private IGame game;
 
@@ -23,7 +25,7 @@ public abstract class GameMode implements Listener {
         this.game = game;
     }
 
-    public boolean isGameMode() {
+    public final boolean isGameMode() {
         return getIdentifier().equals(game.getGameMode().getIdentifier());
     }
 

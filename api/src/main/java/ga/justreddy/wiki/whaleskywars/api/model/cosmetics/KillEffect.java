@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author JustReddy
  */
-public abstract class KillEffect extends Cosmetic implements Cloneable {
+public abstract class KillEffect extends Cosmetic {
     /**
      * Initializes a new instance of the KillEffect class with the specified name,
      * ID, and cost.
@@ -25,14 +25,6 @@ public abstract class KillEffect extends Cosmetic implements Cloneable {
      * @param victim The player who was killed.
      */
     public abstract void onKill(@NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
-
-    /**
-     * Clones the instance of the kill effect.
-     * @return The cloned instance of the kill effect.
-     */
-    @NotNull
-    public abstract KillEffect clone();
-
 
 }
 

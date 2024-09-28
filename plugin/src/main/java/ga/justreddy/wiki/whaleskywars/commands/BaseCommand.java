@@ -1,28 +1,29 @@
 package ga.justreddy.wiki.whaleskywars.commands;
 
-import ga.justreddy.wiki.whaleskywars.commands.impl.AdminCommand;
-import ga.justreddy.wiki.whaleskywars.commands.impl.CageCommand;
-import ga.justreddy.wiki.whaleskywars.commands.impl.GameCommand;
-import ga.justreddy.wiki.whaleskywars.commands.impl.LobbyCommand;
+import ga.justreddy.wiki.whaleskywars.commands.impl.*;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author JustReddy
  */
-public class BaseCommand implements CommandExecutor {
+public class BaseCommand implements TabExecutor {
 
     private final Map<String, SkyWarsCommand> commands;
 
     public BaseCommand() {
         this.commands = new HashMap<>();
-        registerCommands(new GameCommand(), new CageCommand(), new AdminCommand(), new LobbyCommand());
+        registerCommands(new GameCommand(), new CageCommand(), new AdminCommand()
+                , new LobbyCommand(), new SignCommand());
     }
 
     public void registerCommands(SkyWarsCommand... commands) {
@@ -64,5 +65,22 @@ public class BaseCommand implements CommandExecutor {
         command.execute(new CommandRunner(sender), args);
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd,
+                                      String label, String[] args) {
+        List<String> completions = List.of();
+
+        if (args.length == 1) {
+            completions = new ArrayList<>(commands.keySet());
+        } else if (args.length > 1) {
+            SkyWarsCommand command = commands.get(args[0]);
+            if (command != null) {
+                completions = command.onTabComplete(new CommandRunner(sender), args);
+            }
+        }
+
+        return completions;
     }
 }

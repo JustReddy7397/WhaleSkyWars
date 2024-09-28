@@ -1,0 +1,24 @@
+current-verison = 1
+
+signs = {}
+
+lines = [
+    "&dSkyWars",
+    "&dMap: &7<map>",
+    "<state>",
+    "&dPlayers: &7<players>&8/&7<max-players>"
+]
+
+states.waiting = "&aWaiting"
+states.starting = "&6Starting"
+states.playing = "&cPlaying"
+states.ending = "&9Ending"
+states.restarting = "&9Restarting"
+states.disabled = "&0Disabled"
+
+blocks.waiting = "LIME_TERRACOTTA"
+blocks.starting = "YELLOW_TERRACOTTA"
+blocks.playing = "RED_TERRACOTTA"
+blocks.ending = "BLUE_TERRACOTTA"
+blocks.restarting = "BLUE_TERRACOTTA"
+blocks.disabled = "BLACK_TERRACOTTA"

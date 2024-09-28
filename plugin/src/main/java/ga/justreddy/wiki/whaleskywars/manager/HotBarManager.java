@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class HotBarManager {
 
-    private List<HotBarItem> items;
+    private final List<HotBarItem> items;
 
     public HotBarManager() {
         this.items = new ArrayList<>();
@@ -54,6 +54,23 @@ public class HotBarManager {
                 .forEach(player -> {
                     items.forEach(item -> item.removeItem(player));
                 });
+    }
+
+    public void reload() {
+        removeItems();
+        items.clear();
+        TomlConfig config = WhaleSkyWars.getInstance().getHotbarConfig();
+
+        ConfigurationSection items = config.getSection("items");
+
+        for (String key : items.keys()) {
+            ConfigurationSection section = items.getSection(key);
+            ItemStack itemStack = ItemStackBuilder.getItemStack(section, null)
+                    .build();
+            CustomItem item = new CustomItem(this, section, itemStack, section.getInteger("slot"), key, HotBarType.valueOf(section.getString("type")));
+            this.items.add(item);
+        }
+        giveItems();
     }
 
 }

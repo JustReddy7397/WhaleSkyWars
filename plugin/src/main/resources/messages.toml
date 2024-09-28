@@ -44,6 +44,13 @@ game.winners = [
     "&c&l3rd Killer &7- &d<killer_3> &7- &d<kills_3>",
     ""
 ]
+game.death.void = "&d<player> &7was killed by the void."
+game.death.fall = "&d<player> &7fell to their death."
+game.death.fire = "&d<player> &7was burned to death."
+game.death.explosion = "&d<player> &7was blown up."
+game.death.drowned = "&d<player> &7drowned."
+game.death.suffocation = "&d<player> &7suffocated."
+game.death.unknown = "&d<player> &7died."
 
 error.player-only = "&cOnly players can use this command."
 error.player-not-found = "&cPlayer not found."
@@ -57,7 +64,7 @@ setup.not-in-progress = "&cYou are not in the progress of setting up a game."
 setup.not-exists = "&cA game with the name &d<name> &cdoes not exist."
 setup.already-created = "&cA game with the name &d<name> &chas already been created."
 setup.success = "&aGame setup successfully."
-setup.missing-components = "&cYou are missing components to save the game. Write &d/ws game info &cto see what you are missing."
+setup.missing-components = "&cYou are missing components to save the game.\n Write &d/ws game status &cto see what you are missing."
 setup.displayname-set = "&aDisplay name set to &d<displayname>&a."
 setup-teamsize-set = "&aTeam size set to &d<teamsize>&a."
 setup.min-players-set = "&aMinimum players set to &d<min-players>&a."
@@ -77,3 +84,25 @@ setup.bounds.waiting.low = "&aLow location set for waiting bounds."
 setup.bounds.game.high = "&aHigh location set for game bounds."
 setup.bounds.game.low = "&aLow location set for game bounds."
 setup.chest.not-found = "&cChest &d<chest> &cnot found."
+setup.status = [
+    "&7&m----------------------------------------",
+    "&dGame: &7<name>",
+    "&dDisplayname set: &7<displayname>",
+    "&dTeam size set: &7<teamsize>",
+    "&dMinimum players set: &7<min-players>",
+    "&dWaiting spawn set: &7<waiting-spawn> &7(optional)",
+    "&dSpectator spawn set: &7<spectator-spawn>",
+    "&dIslands set: &7<islands>",
+    "&dWaiting bounds set: &7<waiting-bounds> &7(optional)",
+    "&dGame bounds set: &7<game-bounds>",
+    "&7&m----------------------------------------"
+]
+
+sign.choose-game = [
+    "&7&m----------------------------------------",
+    "<lines> &7(&d&l<copy>&7)",
+    "&7&m----------------------------------------"
+]
+
+pages.next-symbol = ">>"
+pages.previous-symbol = "<<"

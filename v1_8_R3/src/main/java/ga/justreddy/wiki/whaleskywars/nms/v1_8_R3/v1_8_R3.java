@@ -8,8 +8,11 @@ import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +22,8 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("unused")
@@ -393,5 +398,36 @@ public final class v1_8_R3 implements INms {
         return player.getItemInHand();
     }
 
+    @Override
+    public Block getRelativeBlock(Location location) {
+        if (!isSign(location.getBlock())) return null;
+        Block block = location.getBlock();
+        byte data = block.getData();
+        switch (data) {
+            case 2:
+                return location.getBlock().getRelative(BlockFace.SOUTH);
+            case 3:
+                return location.getBlock().getRelative(BlockFace.NORTH);
+            case 4:
+                return location.getBlock().getRelative(BlockFace.EAST);
+            case 5:
+                return location.getBlock().getRelative(BlockFace.WEST);
+        }
+        return null;
+    }
+
+    @Override
+    public Block getTargetBlock(Player player, int range) {
+        Block block = player.getTargetBlock((HashSet<Material>) null, range);
+        if (!isSign(block)) {
+            return null;
+        }
+        return block;
+    }
+
+    private boolean isSign(Block block) {
+        if (block == null) return false;
+        return block.getState() instanceof Sign;
+    }
 
 }

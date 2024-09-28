@@ -3,6 +3,8 @@ package ga.justreddy.wiki.whaleskywars.model.game;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.*;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
@@ -329,10 +331,15 @@ public class Game implements IGame {
         this.maximumPlayers = this.teams.size() * this.teamSize;
 
 
-        // TODO Load all the data from the config
-        startingTimer = new StartingTimer(10, this);
-        endingTimer = new EndingTimer(10, this);
-        preGameTimer = new PreGameTimer(10, this);
+        startingTimer = new StartingTimer(
+                WhaleSkyWars.getInstance().getSettingsConfig()
+                        .getInteger("game-options.countdowns.start"), this);
+        endingTimer = new EndingTimer(
+                WhaleSkyWars.getInstance().getSettingsConfig()
+                        .getInteger("game-options.countdowns.cages"), this);
+        preGameTimer = new PreGameTimer(
+                WhaleSkyWars.getInstance().getSettingsConfig()
+                        .getInteger("game-options.countdowns.end"), this);
 
         List<String> events = WhaleSkyWars.getInstance().getSettingsConfig().getStringList("game-options.events");
         events.forEach(event -> {
@@ -425,7 +432,7 @@ public class Game implements IGame {
             gameSpawn.setUsed(true);
 
             if (!team.getPlayers().isEmpty()) {
-                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCageId());
                 gameSpawn.setCage(cage);
                 if (teamGame) {
                     cage.createBig(team.getSpawnLocation());
@@ -482,7 +489,7 @@ public class Game implements IGame {
             gameSpawn.setUsed(true);
 
             if (!team.getPlayers().isEmpty()) {
-                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCageId());
                 gameSpawn.setCage(cage);
                 if (teamGame) {
                     cage.createBig(team.getSpawnLocation());
@@ -575,7 +582,6 @@ public class Game implements IGame {
     public void onGamePlayerDeath(IGamePlayer killer, IGamePlayer victim, KillPath path) {
         Player bukkitVictim = victim.getPlayer().get();
         victim.setDead(true);
-        // TODO refresh
         Bukkit.getScheduler().runTaskLater(WhaleSkyWars.getInstance(), () -> {
             bukkitVictim.setGameMode(org.bukkit.GameMode.ADVENTURE);
             bukkitVictim.setAllowFlight(true);
@@ -590,7 +596,93 @@ public class Game implements IGame {
         });
 
         if (killer != null) {
-            // TODO ?
+
+            KillEffect effect = killer.getCosmetics().getSelectedKillEffect();
+            KillMessage message = killer.getCosmetics().getSelectedKillMessage();
+
+            if (effect != null) {
+                effect.onKill(killer, victim);
+            }
+
+            if (message != null) {
+                switch (path) {
+                    case VOID:
+                        message.sendVoidMessage(this, killer, victim);
+                        break;
+                    case FALL:
+                        message.sendFallMessage(this, killer, victim);
+                        break;
+                    case FIRE:
+                        message.sendFireMessage(this, killer, victim);
+                        break;
+                    case EXPLOSION:
+                        message.sendExplosionMessage(this, killer, victim);
+                        break;
+                    case DROWNING:
+                        message.sendDrowningMessage(this, killer, victim);
+                        break;
+                    case SUFFOCATION:
+                        message.sendSuffocationMessage(this, killer, victim);
+                        break;
+                    case MELEE:
+                        message.sendMeleeMessage(this, killer, victim);
+                        break;
+                    case PROJECTILE:
+                        message.sendProjectileMessage(this, killer, victim);
+                        break;
+                    default:
+                        message.sendUnknownMessage(this, killer, victim);
+                        break;
+                }
+            }
+
+        } else {
+            switch (path) {
+                case VOID:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_VOID.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                case FALL:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_FALL.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                case FIRE:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_FIRE.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                case EXPLOSION:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_EXPLOSION.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                case DROWNING:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_DROWNED.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                case SUFFOCATION:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_SUFFOCATION.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+                default:
+                    sendMessage(getPlayers(),
+                            Messages.GAME_DEATH_UNKNOWN.toString(bukkitVictim, Replaceable.of(
+                                    "<player>", victim.getName()
+                            )));
+                    break;
+
+
+            }
         }
 
     }
@@ -623,7 +715,6 @@ public class Game implements IGame {
         kills.clear();
         teams.clear();
         events.clear();
-
         WhaleSkyWars.getInstance().getGameMap().onRestart(this);
     }
 

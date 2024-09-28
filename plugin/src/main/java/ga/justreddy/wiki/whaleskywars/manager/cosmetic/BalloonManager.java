@@ -30,6 +30,11 @@ public class BalloonManager {
         });
     }
 
+    public void reload() {
+        die();
+        start();
+    }
+
     public void die() {
         balloons.clear();
     }

@@ -56,9 +56,7 @@ public class EndingPhase implements IPhase {
                             .append(++i == winnerSize ? "" : ", ");
                 }
                 player.getStats().addWin(((Game)game).isTeamGame());
-                final VictoryDance dance = WhaleSkyWars.getInstance().getVictoryDanceManager().copyOf(
-                        player.getCosmetics().getSelectedVictoryDance()
-                );
+                final VictoryDance dance = player.getCosmetics().getSelectedVictoryDance();
                 if (dance != null) {
                     dance.start(player);
                     Bukkit.getScheduler().runTaskLater(WhaleSkyWars.getInstance(), () -> {
@@ -69,40 +67,37 @@ public class EndingPhase implements IPhase {
             }
         }
 
-        for (IGamePlayer player : game.getPlayers()) {
-            if (player == null) continue;
-            List<Map.Entry<String, Integer>> topThree = game.getTopThreeKillers();
+        List<Map.Entry<String, Integer>> topThree = game.getTopThreeKillers();
 
-            String firstKiller = "N/A";
-            int firstKills = 0;
-            String secondKiller = "N/A";
-            int secondKills = 0;
-            String thirdKiller = " N/A";
-            int thirdKills = 0;
+        String firstKiller = "N/A";
+        int firstKills = 0;
+        String secondKiller = "N/A";
+        int secondKills = 0;
+        String thirdKiller = " N/A";
+        int thirdKills = 0;
 
-            if (!topThree.isEmpty()) {
-                firstKiller = topThree.get(0).getKey();
-                firstKills = topThree.get(0).getValue();
-                if (topThree.size() > 1) {
-                    secondKiller = topThree.get(1).getKey();
-                    secondKills = topThree.get(1).getValue();
-                }
-                if (topThree.size() > 2) {
-                    thirdKiller = topThree.get(2).getKey();
-                    thirdKills = topThree.get(2).getValue();
-                }
+        if (!topThree.isEmpty()) {
+            firstKiller = topThree.get(0).getKey();
+            firstKills = topThree.get(0).getValue();
+            if (topThree.size() > 1) {
+                secondKiller = topThree.get(1).getKey();
+                secondKills = topThree.get(1).getValue();
             }
-            game.sendMessages(game.getPlayers(),
-                    Messages.GAME_WINNERS.toList(
-                            Replaceable.of("<winners>", winnerText.toString()),
-                            Replaceable.of("<killer_1>", firstKiller),
-                            Replaceable.of("<kills_1>", String.valueOf(firstKills)),
-                            Replaceable.of("<killer_2>", secondKiller),
-                            Replaceable.of("<kills_2>", String.valueOf(secondKills)),
-                            Replaceable.of("<killer_3>", thirdKiller),
-                            Replaceable.of("<kills_3>", String.valueOf(thirdKills))
-                    ));
+            if (topThree.size() > 2) {
+                thirdKiller = topThree.get(2).getKey();
+                thirdKills = topThree.get(2).getValue();
+            }
         }
+        game.sendMessages(game.getPlayers(),
+                Messages.GAME_WINNERS.toList(
+                        Replaceable.of("<winners>", winnerText.toString()),
+                        Replaceable.of("<killer_1>", firstKiller),
+                        Replaceable.of("<kills_1>", String.valueOf(firstKills)),
+                        Replaceable.of("<killer_2>", secondKiller),
+                        Replaceable.of("<kills_2>", String.valueOf(secondKills)),
+                        Replaceable.of("<killer_3>", thirdKiller),
+                        Replaceable.of("<kills_3>", String.valueOf(thirdKills))
+                ));
 
     }
 

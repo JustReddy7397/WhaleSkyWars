@@ -1,5 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.api.model.entity.data;
 
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.perk.Perk;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IBalloon;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.ICage;
+
 import java.util.Set;
 
 /**
@@ -9,10 +16,16 @@ import java.util.Set;
 public interface IPlayerCosmetics {
 
     /**
+     * Returns the selected cage id of the player.
+     * @return the selected cage id of the player.
+     */
+    int getSelectedCageId();
+
+    /**
      * Returns the selected cage of the player.
      * @return the selected cage of the player.
      */
-    int getSelectedCage();
+    ICage getSelectedCage();
 
     /**
      * Sets the selected cage of the player.
@@ -48,10 +61,16 @@ public interface IPlayerCosmetics {
     Set<Integer> getOwnedCages();
 
     /**
+     * Returns the selected victory dance id of the player.
+     * @return the selected victory dance id of the player.
+     */
+    int getSelectedVictoryDanceId();
+
+    /**
      * Returns the selected victory dance of the player.
      * @return the selected victory dance of the player.
      */
-    int getSelectedVictoryDance();
+    VictoryDance getSelectedVictoryDance();
 
     /**
      * Sets the selected victory dance of the player.
@@ -92,7 +111,6 @@ public interface IPlayerCosmetics {
      */
     String getSelectedKit();
 
-
     /**
      * Sets the selected kit of the player.
      * @param selectedKit the selected kit of the player.
@@ -127,10 +145,16 @@ public interface IPlayerCosmetics {
     Set<String> getOwnedKits();
 
     /**
+     * Returns the selected perk id of the player.
+     * @return the selected perk id of the player.
+     */
+    int getSelectedPerkId();
+
+    /**
      * Returns the selected perk of the player.
      * @return the selected perk of the player.
      */
-    int getSelectedPerk();
+    Perk getSelectedPerk();
 
     /**
      * Sets the selected perk of the player.
@@ -166,10 +190,16 @@ public interface IPlayerCosmetics {
     Set<Integer> getOwnedPerks();
 
     /**
+     * Returns the selected balloon id of the player.
+     * @return the selected balloon id of the player.
+     */
+    int getSelectedBalloonId();
+
+    /**
      * Returns the selected balloon of the player.
      * @return the selected balloon of the player.
      */
-    int getSelectedBalloon();
+    IBalloon getSelectedBalloon();
 
     /**
      * Sets the selected balloon of the player.
@@ -203,5 +233,96 @@ public interface IPlayerCosmetics {
      * @return the cached balloons of the player.
      */
     Set<Integer> getOwnedBalloons();
+
+    /**
+     * Returns the selected kill message id of the player.
+     * @return the selected kill message id of the player.
+     */
+    int getSelectedKillMessageId();
+
+    /**
+     * Returns the selected kill message of the player.
+     * @return the selected kill message of the player.
+     */
+    KillMessage getSelectedKillMessage();
+
+    /**
+     * Sets the selected kill message of the player.
+     * @param selectedKillMessage the selected kill message of the player.
+     */
+    void setSelectedKillMessage(int selectedKillMessage);
+
+    /**
+     * Adds a cached kill message to the player.
+     * @param message the cached kill message to add.
+     * @return true if the cached kill message was added; otherwise, false.
+     */
+    boolean addCachedKillMessage(int message);
+
+    /**
+     * Removes a cached kill message from the player.
+     * @param message the cached kill message to remove.
+     * @return true if the cached kill message was removed; otherwise, false.
+     */
+
+    boolean removeCachedKillMessage(int message);
+
+    /**
+     * Returns true if the player has the cached kill message; otherwise, false.
+     * @param message the cached kill message to check.
+     * @return true, if the player has the cached kill message; otherwise, false.
+     */
+    boolean hasCachedKillMessage(int message);
+
+    /**
+     * Returns the cached kill messages of the player.
+     * @return the cached kill messages of the player.
+     */
+    Set<Integer> getOwnedKillMessages();
+
+    /**
+     * Returns the selected kill effect id of the player.
+     * @return the selected kill effect id of the player.
+     */
+    int getSelectedKillEffectId();
+
+    /**
+     * Returns the selected kill effect of the player.
+     * @return the selected kill effect of the player.
+     */
+    KillEffect getSelectedKillEffect();
+
+    /**
+     * Sets the selected kill effect of the player.
+     * @param selectedKillEffect the selected kill effect of the player.
+     */
+    void setSelectedKillEffect(int selectedKillEffect);
+
+    /**
+     * Adds a cached kill effect to the player.
+     * @param effect the cached kill effect to add.
+     * @return true if the cached kill effect was added; otherwise, false.
+     */
+    boolean addCachedKillEffect(int effect);
+
+    /**
+     * Removes a cached kill effect from the player.
+     * @param effect the cached kill effect to remove.
+     * @return true if the cached kill effect was removed; otherwise, false.
+     */
+    boolean removeCachedKillEffect(int effect);
+
+    /**
+     * Returns true if the player has the cached kill effect; otherwise, false.
+     * @param effect the cached kill effect to check.
+     * @return true if the player has the cached kill effect; otherwise, false.
+     */
+    boolean hasCachedKillEffect(int effect);
+
+    /**
+     * Returns the cached kill effects of the player.
+     * @return the cached kill effects of the player.
+     */
+    Set<Integer> getOwnedKillEffects();
 
 }

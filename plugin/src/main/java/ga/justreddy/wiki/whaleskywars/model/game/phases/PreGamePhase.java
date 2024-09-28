@@ -5,6 +5,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IPhase;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.ICage;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
@@ -33,7 +34,7 @@ public class PreGamePhase implements IPhase {
 
                 if (!team.getPlayers().isEmpty()) {
                     IGamePlayer player = team.getPlayers().get(ThreadLocalRandom.current().nextInt(team.getPlayers().size()));
-                    Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCage());
+                    ICage cage = player.getCosmetics().getSelectedCage();
                     gameSpawn.setCage(cage);
                     team.spawnBalloon();
                     if (cage == null) return;

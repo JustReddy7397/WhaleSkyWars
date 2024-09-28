@@ -85,9 +85,7 @@ public class SequalStorage implements IStorage {
             builder.append(",").append(column);
         }
         builder.append(") VALUES (?,?,?,?");
-        for (int i = 0; i < customColumns.get("wsw_player_data").size(); i++) {
-            builder.append(",?");
-        }
+        builder.append(",?".repeat(customColumns.get("wsw_player_data").size()));
         builder.append(")");
         try (PreparedStatement statement = connection.prepareStatement(builder.toString())) {
             statement.setString(1, player.getUniqueId().toString());

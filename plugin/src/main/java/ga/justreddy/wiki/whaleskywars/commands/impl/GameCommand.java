@@ -101,6 +101,8 @@ public class GameCommand implements SkyWarsCommand {
             case "save":
                 save(gamePlayer, args);
                 break;
+            case "status":
+                status(gamePlayer);
             default:
                 gamePlayer.sendMessage("&cUnknown sub-command");
                 break;
@@ -199,24 +201,30 @@ public class GameCommand implements SkyWarsCommand {
         }
 
         if (args[2].equalsIgnoreCase("create")) {
+
+            if (args.length != 4) {
+                player.sendMessage("&cUsage: /ws game island create <id>");
+                return;
+            }
+
             int id = -1;
 
             try {
                 id = Integer.parseInt(args[3]);
             } catch (NumberFormatException e) {
-                player.sendMessage("&cInvalid number");
+                player.sendMessage("&cUsage: /ws game island create <id>");
                 return;
             }
 
             if (id < 1) {
                 // TODO
-                player.sendMessage("&cInvalid number");
+                player.sendMessage("&cUsage: /ws game island create <id>");
                 return;
             }
 
             if (id > 100) {
                 // TODO
-                player.sendMessage("&cInvalid number");
+                player.sendMessage("&cUsage: /ws game island create <id>");
                 return;
             }
 
@@ -228,7 +236,7 @@ public class GameCommand implements SkyWarsCommand {
 
         if (args[2].equalsIgnoreCase("set")) {
             if (args.length < 5) {
-                player.sendMessage("&cUsage: /ws game island add <id> <balloon/spawn>");
+                player.sendMessage("&cUsage: /ws game island set <id> <balloon/spawn>");
                 return;
             }
 
@@ -290,6 +298,11 @@ public class GameCommand implements SkyWarsCommand {
 
         WhaleSkyWars.getInstance().getGameCreator()
                 .save(player, enable);
+    }
+
+    private void status(IGamePlayer player) {
+        WhaleSkyWars.getInstance().getGameCreator()
+                .status(player);
     }
 
 }

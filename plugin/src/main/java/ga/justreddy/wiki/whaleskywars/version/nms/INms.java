@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.version.nms;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -46,5 +47,9 @@ public interface INms {
     Object getNbtValue(Object value, String key);
 
     ItemStack getItemInHand(Player player);
+
+    Block getRelativeBlock(Location location);
+
+    Block getTargetBlock(Player player, int range);
 
 }

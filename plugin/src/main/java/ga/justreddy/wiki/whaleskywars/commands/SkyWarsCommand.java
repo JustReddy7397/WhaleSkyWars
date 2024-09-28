@@ -21,4 +21,7 @@ public interface SkyWarsCommand {
 
     void execute(CommandRunner runner, String[] args);
 
+    default List<String> onTabComplete(CommandRunner commandRunner, String[] args) {
+        return List.of();
+    }
 }

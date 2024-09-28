@@ -37,7 +37,12 @@ public abstract class KillMessage extends Cosmetic implements Cloneable {
      */
     public abstract void sendVoidMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
-
+    /**
+     * Sends a message when a player kills another player by knocking into the ground.
+     * @param game The game in which the kill occurred.
+     * @param killer The player who killed the other player.
+     * @param victim The player who was killed.
+     */
     public abstract void sendFallMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
     /**
@@ -67,6 +72,12 @@ public abstract class KillMessage extends Cosmetic implements Cloneable {
      */
     public abstract void sendDrowningMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
+    /**
+     * Sends a message when a player kills another player by suffocating them.
+     * @param game The game in which the kill occurred.
+     * @param killer The player who killed the other player.
+     * @param victim The player who was killed.
+     */
     public abstract void sendSuffocationMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
     /**
@@ -77,8 +88,18 @@ public abstract class KillMessage extends Cosmetic implements Cloneable {
      */
     public abstract void sendProjectileMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
+    /**
+     * Sends a message when a player kills another player with an unknown type.
+     * @param game The game in which the kill occurred.
+     * @param killer The player who killed the other player.
+     * @param victim The player who was killed.
+     */
     public abstract void sendUnknownMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
 
+    /**
+     * Clones the instance of the kill message.
+     * @return The cloned instance of the kill message.
+     */
     @NotNull
     public abstract KillMessage clone();
 

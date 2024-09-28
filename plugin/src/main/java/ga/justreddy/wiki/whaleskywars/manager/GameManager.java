@@ -76,7 +76,9 @@ public class GameManager {
     }
 
     public IGame getGameByName(String name) {
-        return games.getOrDefault(name, null);
+        return games.values().stream()
+                .filter(game -> game.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(null);
     }
 
     public List<IGame> getGamesBySimilarName(String name) {

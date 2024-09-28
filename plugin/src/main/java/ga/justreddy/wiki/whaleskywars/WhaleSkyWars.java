@@ -11,10 +11,7 @@ import ga.justreddy.wiki.whaleskywars.listeners.LobbyListener;
 import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
 import ga.justreddy.wiki.whaleskywars.manager.*;
 import ga.justreddy.wiki.whaleskywars.manager.cache.CacheManager;
-import ga.justreddy.wiki.whaleskywars.manager.cosmetic.BalloonManager;
-import ga.justreddy.wiki.whaleskywars.manager.cosmetic.CageManager;
-import ga.justreddy.wiki.whaleskywars.manager.cosmetic.PerkManager;
-import ga.justreddy.wiki.whaleskywars.manager.cosmetic.VictoryDanceManager;
+import ga.justreddy.wiki.whaleskywars.manager.cosmetic.*;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
@@ -82,11 +79,14 @@ public final class WhaleSkyWars extends JavaPlugin {
     private GameModeManager gameModeManager;
     private HookManager hookManager;
     private HotBarManager hotBarManager;
+    private KillEffectManager killEffectManager;
+    private KillMessageManager killMessageManager;
     private KitManager kitManager;
     private KitRequestManager kitRequestManager;
     private MenuManager menuManager;
     private PerkManager perkManager;
     private PlayerManager playerManager;
+    private SignManager signManager;
     private VictoryDanceManager victoryDanceManager;
     private WorldManager worldManager;
 
@@ -98,6 +98,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private TomlConfig balloonsConfig;
     private TomlConfig messagesConfig;
     private TomlConfig hotbarConfig;
+    private TomlConfig signsConfig;
 
     // Creators
     private CageCreator cageCreator;
@@ -273,6 +274,8 @@ public final class WhaleSkyWars extends JavaPlugin {
         gameModeManager = new GameModeManager();
         hookManager = new HookManager();
         hotBarManager = new HotBarManager();
+        killEffectManager = new KillEffectManager();
+        killMessageManager = new KillMessageManager();
         kitManager = new KitManager();
         kitRequestManager = new KitRequestManager();
         menuManager = new MenuManager();
@@ -280,6 +283,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         playerManager = new PlayerManager();
         victoryDanceManager = new VictoryDanceManager();
         worldManager = new WorldManager();
+        signManager = new SignManager();
         cageManager.start();
         victoryDanceManager.start();
         perkManager.start();
@@ -290,6 +294,9 @@ public final class WhaleSkyWars extends JavaPlugin {
         hookManager.hookAll();
         menuManager.start();
         balloonManager.start();
+        signManager.start();
+        killEffectManager.start();
+        killMessageManager.start();
     }
 
     private void loadCreators() {
@@ -305,7 +312,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     private void scheduleTasks() {
-        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager), 0, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager,  signManager), 0, 20L);
     }
 
     private boolean loadConfigs() {
@@ -318,6 +325,7 @@ public final class WhaleSkyWars extends JavaPlugin {
             balloonsConfig = new TomlConfig(current = "balloons", BALLOONS_VERSION);
             messagesConfig = new TomlConfig(current = "messages", MESSAGES_VERSION);
             hotbarConfig = new TomlConfig(current = "hotbar", HOTBAR_VERSION);
+            signsConfig = new TomlConfig(current = "signs", 1);
         } catch (Exception e) {
             TextUtil.error(e, "Failed to load the config: " + current, true);
             return false;
@@ -334,7 +342,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         perkManager.die();
         gameModeManager.die();
         balloonManager.die();
-
+        signManager.die();
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars disabled successfully.");
     }
 
@@ -356,6 +364,8 @@ public final class WhaleSkyWars extends JavaPlugin {
         balloonsConfig.reload();
         messagesConfig.reload();
         hotbarConfig.reload();
+        hotBarManager.reload();
+        balloonManager.reload();
     }
 
     // Version fetch method
