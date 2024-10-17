@@ -81,7 +81,7 @@ public class GameListener implements Listener {
             IGamePlayer gamePlayer = GamePlayer.get(player.getUniqueId());
             if (gamePlayer == null) return;
             if (!gamePlayer.isPlaying()) return;
-            IGame game = gamePlayer.getGame();
+            if (gamePlayer.isDead()) return;
             gamePlayer.getStats().addArrowsShot(1);
             // TODO
             Trails trails = null;
@@ -150,7 +150,7 @@ public class GameListener implements Listener {
         if (deathPlayer == null) return;
         if (!deathPlayer.isPlaying()) return;
         IGame game = deathPlayer.getGame();
-        // TODO Death Cries ?
+        death.teleport(game.getSpectatorSpawn());
         Player killer = death.getKiller();
         IGamePlayer killerPlayer = null;
         if (killer != null) {
@@ -204,7 +204,6 @@ public class GameListener implements Listener {
             game.getKills().put(killerPlayer, game.getKills().get(killerPlayer) + 1);
             killerPlayer.getStats().addKill(((Game)game).isTeamGame());
             game.onGamePlayerDeath(killerPlayer, deathPlayer, path);
-            // TODO killeffect ?
         }
 
     }

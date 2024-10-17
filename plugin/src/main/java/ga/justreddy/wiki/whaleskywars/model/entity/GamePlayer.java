@@ -25,7 +25,6 @@ public class GamePlayer implements IGamePlayer {
 
     private final UUID uniqueId;
     private final String name;
-    private final Optional<Player> player;
     private IPlayerCosmetics cosmetics;
     private IPlayerStats stats;
     private IGame game;
@@ -37,7 +36,6 @@ public class GamePlayer implements IGamePlayer {
     public GamePlayer(UUID uniqueId, String name) {
         this.uniqueId = uniqueId;
         this.name = name;
-        this.player = Optional.ofNullable(Bukkit.getPlayer(uniqueId));
         this.cosmetics = new PlayerCosmetics();
         this.stats = new PlayerStats();
         this.customPlayerData = new HashMap<>();
@@ -64,7 +62,7 @@ public class GamePlayer implements IGamePlayer {
 
     @Override
     public Optional<Player> getPlayer() {
-        return player;
+        return Optional.ofNullable(Bukkit.getPlayer(uniqueId));
     }
 
     @Override
@@ -134,7 +132,7 @@ public class GamePlayer implements IGamePlayer {
 
     @Override
     public void sendMessage(String message) {
-        player.ifPresent(player -> player.sendMessage(TextUtil.color(message)));
+        getPlayer().ifPresent(player -> player.sendMessage(TextUtil.color(message)));
     }
 
     @Override
@@ -153,17 +151,29 @@ public class GamePlayer implements IGamePlayer {
 
     @Override
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-
+        getPlayer().ifPresent(player -> {
+            WhaleSkyWars
+                    .getInstance()
+                    .getNms()
+                    .sendTitle(player, TextUtil.color(title), TextUtil.color(subtitle));
+        });
     }
 
     @Override
     public void sendActionBar(String message) {
-
+        getPlayer().ifPresent(player -> {
+            WhaleSkyWars
+                    .getInstance()
+                    .getNms()
+                    .sendActionBar(player, TextUtil.color(message));
+        });
     }
 
     @Override
     public void sendSound(String sound, float volume, float pitch) {
-
+        getPlayer().ifPresent(player -> {
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        });
     }
 
     @SuppressWarnings("unchecked")

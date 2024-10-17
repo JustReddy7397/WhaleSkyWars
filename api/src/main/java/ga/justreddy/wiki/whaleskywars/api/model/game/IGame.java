@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.ChestType;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author JustReddy
@@ -74,7 +76,21 @@ public interface IGame {
 
     World getWorld();
 
+    ChestType getDefaultChestType();
+
+    void setDefaultChestType(ChestType chestType);
+
+    ChestType getGameChestType();
+
     List<Map.Entry<String, Integer>> getTopThreeKillers();
+
+    Map<UUID, ChestType> getVotedChestTypes();
+
+    void voteChestType(IGamePlayer player, ChestType chestType);
+
+    ChestType getVotedChestType(IGamePlayer player);
+
+    void clearVotes();
 
     void init(World world);
 

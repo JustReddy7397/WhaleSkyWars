@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.util.iridium;
 
 import com.google.common.collect.ImmutableMap;
+import ga.justreddy.wiki.whaleskywars.util.DefaultFontInfo;
 import ga.justreddy.wiki.whaleskywars.util.iridium.patterns.GradientPattern;
 import ga.justreddy.wiki.whaleskywars.util.iridium.patterns.Pattern;
 import ga.justreddy.wiki.whaleskywars.util.iridium.patterns.RainbowPattern;
@@ -28,7 +29,9 @@ public class IridiumColorAPI {
      *
      * @since 1.0.0
      */
-    private static final int VERSION = getVersion();
+    private static final int VERSION = getVersion();\
+
+    private static final int CENTER_PX = 154;
 
     private static final boolean SUPPORTS_RGB = VERSION >= 16 || VERSION == -1;
 
@@ -73,9 +76,16 @@ public class IridiumColorAPI {
      * @since 1.0.0
      */
     public static String process(String string) {
+
+        if (string.startsWith("<center>") && string.endsWith("</center>")) {
+            string = centerMessage(string);
+        }
+
         for (Pattern pattern : PATTERNS) {
             string = pattern.process(string);
         }
+
+
 
         return ChatColor.translateAlternateColorCodes('&', string);
     }
@@ -293,6 +303,43 @@ public class IridiumColorAPI {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    private static String centerMessage(String message) {
+        if (message == null || message.isEmpty()) return "";
+
+        message = message.replaceAll("<center>", "").replaceAll("</center>", "");
+
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for (char c : message.toCharArray()) {
+            if (c == '�') {
+                previousCode = true;
+
+            } else if (previousCode) {
+                previousCode = false;
+                isBold = c == 'l' || c == 'L';
+            } else {
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while (compensated < toCompensate) {
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+
+        return sb + message;
+
     }
 
 

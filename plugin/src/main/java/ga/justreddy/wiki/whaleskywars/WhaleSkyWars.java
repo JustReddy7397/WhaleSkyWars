@@ -73,6 +73,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private BalloonManager balloonManager;
     private CacheManager cacheManager;
     private CageManager cageManager;
+    private ChestManager chestManager;
     private CustomPlayerDataManager customPlayerDataManager;
     private GameEventManager gameEventManager;
     private GameManager gameManager;
@@ -284,6 +285,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         victoryDanceManager = new VictoryDanceManager();
         worldManager = new WorldManager();
         signManager = new SignManager();
+        chestManager = new ChestManager();
         cageManager.start();
         victoryDanceManager.start();
         perkManager.start();
@@ -297,6 +299,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         signManager.start();
         killEffectManager.start();
         killMessageManager.start();
+        chestManager.start();
     }
 
     private void loadCreators() {

@@ -7,6 +7,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.*;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.ChestType;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameSpawn;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
@@ -14,6 +15,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
 import ga.justreddy.wiki.whaleskywars.api.model.game.timer.AbstractTimer;
 import ga.justreddy.wiki.whaleskywars.model.Messages;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
+import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
@@ -34,6 +36,8 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -57,6 +61,8 @@ public class Game implements IGame {
     private final List<IGameTeam> teams;
     private final List<IGamePlayer> spectators;
     private final Map<IGamePlayer, Integer> kills;
+    private final Map<UUID, ChestType> votedChestTypes;
+    private final Map<Location, String> chests;
     private final List<GameEvent> events;
     private ICuboid waitingCuboid;
     private ICuboid gameCuboid;
@@ -67,7 +73,7 @@ public class Game implements IGame {
     private int teamSize;
     private PhaseHandler phaseHandler;
     private World world;
-    private String defaultChestType;
+    private ChestType defaultChestType;
 
     private boolean teamGame = false;
 
@@ -86,6 +92,8 @@ public class Game implements IGame {
         this.spectators = new ArrayList<>();
         this.kills = new HashMap<>();
         this.events = new LinkedList<>();
+        this.votedChestTypes = new HashMap<>();
+        this.chests = new HashMap<>();
     }
 
     @Override
@@ -241,6 +249,16 @@ public class Game implements IGame {
     }
 
     @Override
+    public void setDefaultChestType(ChestType chestType) {
+        this.defaultChestType = chestType;
+    }
+
+    @Override
+    public ChestType getGameChestType() {
+        return votedChestTypes.values().stream().max(Comparator.comparingInt(i -> Collections.frequency(votedChestTypes.values(), i))).orElse(ChestType.NORMAL);
+    }
+
+    @Override
     public List<Map.Entry<String, Integer>> getTopThreeKillers() {
         LinkedList<Map.Entry<String, Integer>> topThree = new LinkedList<>();
         if (kills.size() >= 3) {
@@ -260,6 +278,26 @@ public class Game implements IGame {
                     });
         }
         return topThree;
+    }
+
+    @Override
+    public Map<UUID, ChestType> getVotedChestTypes() {
+        return votedChestTypes;
+    }
+
+    @Override
+    public void voteChestType(IGamePlayer player, ChestType chestType) {
+        votedChestTypes.put(player.getUniqueId(), chestType);
+    }
+
+    @Override
+    public ChestType getVotedChestType(IGamePlayer player) {
+        return votedChestTypes.get(player.getUniqueId());
+    }
+
+    @Override
+    public void clearVotes() {
+        votedChestTypes.clear();
     }
 
     @Override
@@ -326,10 +364,9 @@ public class Game implements IGame {
 
         // TODO chests!!
 
-        this.defaultChestType = config.getString("settings.defaultChestType", "normal");
+        this.defaultChestType = ChestType.valueOf(config.getString("settings.defaultChestType", "NORMAL").toUpperCase());
 
         this.maximumPlayers = this.teams.size() * this.teamSize;
-
 
         startingTimer = new StartingTimer(
                 WhaleSkyWars.getInstance().getSettingsConfig()
@@ -354,7 +391,6 @@ public class Game implements IGame {
             gameEvent.setTimer(timer);
             gameEvent.setEnabled(true);
             this.events.add(gameEvent);
-            System.out.println("Added event " + name + " with timer " + timer + " to game " + this.name);
         });
 
         // LAST
@@ -364,8 +400,6 @@ public class Game implements IGame {
             setGameState(GameState.DISABLED);
         } else {
             phaseHandler.setPhase(new WaitingPhase());
-            System.out.println("Game " + name + " has been initialized");
-            // TODO?
         }
 
 
@@ -723,6 +757,19 @@ public class Game implements IGame {
         return phaseHandler;
     }
 
+    public void fillChests(ChestType chestType) {
+        chests.forEach((loc, id) -> {
+            if (loc == null) return;
+            Block block = loc.getBlock();
+            if (block == null) return;
+            if (!(block.getState() instanceof Chest)) return;
+            Chest chest = (Chest) block.getState();
+            CustomChest customChest = WhaleSkyWars.getInstance().getChestManager().getById(id);
+            if (customChest == null) return;
+            customChest.populateChest(chest.getBlockInventory(), chestType, getGameChestType());
+        });
+    }
+
     public BungeeGame getBungeeGame() {
         return bungeeGame;
     }
@@ -730,5 +777,7 @@ public class Game implements IGame {
     public void setBungeeGame(BungeeGame bungeeGame) {
         this.bungeeGame = bungeeGame;
     }
+
+
 
 }

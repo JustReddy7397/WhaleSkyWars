@@ -21,6 +21,8 @@ public class PlayingPhase implements IPhase {
     public void onEnable(IGame game) {
         game.setGameState(GameState.PLAYING);
 
+        ((Game)game).fillChests(game.getGameChestType());
+
         game.getTeams().forEach(team -> {
             IGameSpawn spawn = team.getGameSpawn();
             if (spawn.getCage() == null) return;
