@@ -296,6 +296,27 @@ public class Game implements IGame {
     }
 
     @Override
+    public void addChest(Location location, String type) {
+        chests.put(location, type);
+    }
+
+    @Override
+    public boolean isChest(Location location) {
+        return chests.keySet()
+                .stream()
+                .anyMatch(chest -> {
+                    return chest.getBlockX() == location.getBlockX() &&
+                            chest.getBlockY() == location.getBlockY() &&
+                            chest.getBlockZ() == location.getBlockZ();
+                });
+    }
+
+    @Override
+    public void removeChest(Location location) {
+        chests.remove(location);
+    }
+
+    @Override
     public void clearVotes() {
         votedChestTypes.clear();
     }
@@ -768,6 +789,7 @@ public class Game implements IGame {
             if (customChest == null) return;
             customChest.populateChest(chest.getBlockInventory(), chestType, getGameChestType());
         });
+        teams.forEach(team -> team.fill(this, chestType));
     }
 
     public BungeeGame getBungeeGame() {

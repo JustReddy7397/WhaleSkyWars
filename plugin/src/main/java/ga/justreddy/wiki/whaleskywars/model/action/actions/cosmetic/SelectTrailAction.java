@@ -8,11 +8,10 @@ import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 /**
  * @author JustReddy
  */
-public class SelectDanceAction implements IAction {
-
+public class SelectTrailAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "SELECT_DANCE";
+        return "SELECT_TRAIL";
     }
 
     @Override
@@ -20,30 +19,29 @@ public class SelectDanceAction implements IAction {
         int id;
         try {
             id = Integer.parseInt(data);
-        }catch (NumberFormatException ex) {
-            TextUtil.error(null, "Invalid dance id: " + data, false);
+        } catch (NumberFormatException ex) {
+            TextUtil.error(null, "Invalid trail id: " + data, false);
             return;
         }
 
-        boolean exists = plugin.getVictoryDanceManager().exists(id);
+        boolean exists = plugin.getTrailManager().exists(id);
 
         if (!exists) {
-            TextUtil.error(null, "Dance not found: " + id, false);
+            TextUtil.error(null, "Trail not found: " + id, false);
             return;
         }
 
-        if (!player.getCosmetics().hasCachedVictoryDance(id)) {
+        if (!player.getCosmetics().hasCachedTrail(id)) {
             player.sendMessage(plugin
                     .getMessagesConfig()
                     .getString("error.cosmetics.not-unlocked"));
             return;
         }
 
-        player.getCosmetics().setSelectedVictoryDance(id);
+        player.getCosmetics().setSelectedTrail(id);
         player.sendMessage(plugin
                 .getMessagesConfig()
                 .getString("general.cosmetics.selected")
-                .replaceAll("<cosmetic>", plugin.getVictoryDanceManager().copyOf(id).getName()));
-
+                .replaceAll("<cosmetic>", plugin.getTrailManager().getById(id).getName()));
     }
 }

@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.api.model.entity.data;
 
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.Trail;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.perk.Perk;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IBalloon;
@@ -324,5 +325,50 @@ public interface IPlayerCosmetics {
      * @return the cached kill effects of the player.
      */
     Set<Integer> getOwnedKillEffects();
+
+    /**
+     * Returns the selected trail id of the player.
+     * @return the selected trail id of the player.
+     */
+    int getSelectedTrailId();
+
+    /**
+     * Returns the selected trail of the player.
+     * @return the selected trail of the player.
+     */
+    Trail getSelectedTrail();
+
+    /**
+     * Sets the selected trail of the player.
+     * @param selectedTrail the selected trail of the player.
+     */
+    void setSelectedTrail(int selectedTrail);
+
+    /**
+     * Adds a cached trail to the player.
+     * @param trail the cached trail to add.
+     * @return true if the cached trail was added; otherwise, false.
+     */
+    boolean addCachedTrail(int trail);
+
+    /**
+     * Removes a cached trail from the player.
+     * @param trail the cached trail to remove.
+     * @return true if the cached trail was removed; otherwise, false.
+     */
+    boolean removeCachedTrail(int trail);
+
+    /**
+     * Returns true if the player has the cached trail; otherwise, false.
+     * @param trail the cached trail to check.
+     * @return true if the player has the cached trail; otherwise, false.
+     */
+    boolean hasCachedTrail(int trail);
+
+    /**
+     * Returns the cached trails of the player.
+     * @return the cached trails of the player.
+     */
+    Set<Integer> getOwnedTrails();
 
 }

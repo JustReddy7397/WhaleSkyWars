@@ -63,4 +63,7 @@ public class KillMessageManager {
         return killMessages.getOrDefault(id, null);
     }
 
+    public Map<Integer, KillMessage> getKillMessages() {
+        return killMessages;
+    }
 }

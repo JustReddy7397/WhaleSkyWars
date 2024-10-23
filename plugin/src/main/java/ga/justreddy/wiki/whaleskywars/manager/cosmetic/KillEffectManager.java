@@ -64,4 +64,7 @@ public class KillEffectManager {
         return killEffects.getOrDefault(id, null);
     }
 
+    public Map<Integer, KillEffect> getKillEffects() {
+        return killEffects;
+    }
 }

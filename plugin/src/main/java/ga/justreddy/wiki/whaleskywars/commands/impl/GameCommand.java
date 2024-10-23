@@ -65,6 +65,8 @@ public class GameCommand implements SkyWarsCommand {
                     "&b/ws game island add <id> chest <type> &7- &3Add the chest for the specified island",
                     "&b/ws game island set <id> spawn &7- &3Sets the spawn for the specified island",
                     "&b/ws game island remove <id> &7- &3Removes the specified island",
+                    "&b/ws game chest create <type> &7- &3Creates a chest",
+                    "&b/ws game chest remove <type> &7- &3Removes a chest",
                     "&b/ws game save &7- &3Saves the game",
                     "&7&m----------------------------------------"
             );
@@ -100,6 +102,9 @@ public class GameCommand implements SkyWarsCommand {
                 break;
             case "save":
                 save(gamePlayer, args);
+                break;
+            case "chest":
+                chest(gamePlayer, args);
                 break;
             case "status":
                 status(gamePlayer);
@@ -300,9 +305,15 @@ public class GameCommand implements SkyWarsCommand {
                 .save(player, enable);
     }
 
+    private void chest(IGamePlayer player, String[] args) {
+
+    }
+
     private void status(IGamePlayer player) {
         WhaleSkyWars.getInstance().getGameCreator()
                 .status(player);
     }
+
+
 
 }

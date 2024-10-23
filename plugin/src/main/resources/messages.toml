@@ -29,6 +29,7 @@ general.no-permission = "&cYou do not have permission to do this."
 general.no-player = "&cThis player is not online."
 general.lobby-set = "&aLobby set."
 general.reloaded = "&aPlugin reloaded."
+general.cosmetics.selected = "&aSuccessfully selected the cosmetic: &d<cosmetic>&a."
 
 game.joined = "&d<player> &7joined the game. &8(&d<players> &7/ &d<max-players>&8)"
 game.left = "&d<player> &7left the game. &8(&d<players> &7/ &d<max-players>&8)"
@@ -57,6 +58,7 @@ error.player-not-found = "&cPlayer not found."
 error.invalid-command  = "&cThe command you entered is invalid."
 error.invalid-permission = "&cYou do not have permission to do this."
 error.no-lobby = "&cThe lobby has not been set. Use &d/ws admin setlobby &cto set the lobby."
+error.cosmetics.not-unlocked = "&cYou have not unlocked this cosmetic."
 
 setup.created = "&aSuccessfully created the game: &d<name>&a."
 setup.already-in-progress = "&cYou are already in the progress of setting up a game."
@@ -79,6 +81,10 @@ setup.island.chest-remove = "&aChest removed for island &d<island>&a."
 setup.island.chest-already-exists = "&cChest already exists at this location for island &d<island>&c."
 setup.island.not-found = "&cIsland &d<island> &cnot found."
 setup.island.already-exists = "&cIsland &d<island> &calready exists."
+setup.island.chest-added = "&aChest &d<type> &aadded for island &d<island> &7(&d<id>&7) &a."
+setup.island.chest-removed = "&aChest removed for island &d<island> &7(&d<id>&7)."
+setup.island.chest-not-found = "&cChest &d<id> &cnot found for island &d<island>&c."
+setup.island.chest-already-added = "&cChest already added for island &d<island>&c."
 setup.bounds.waiting.high = "&aHigh location set for waiting bounds."
 setup.bounds.waiting.low = "&aLow location set for waiting bounds."
 setup.bounds.game.high = "&aHigh location set for game bounds."
@@ -98,11 +104,6 @@ setup.status = [
     "&7&m----------------------------------------"
 ]
 
-sign.choose-game = [
-    "&7&m----------------------------------------",
-    "<lines> &7(&d&l<copy>&7)",
-    "&7&m----------------------------------------"
-]
-
-pages.next-symbol = ">>"
-pages.previous-symbol = "<<"
+enums.cosmetics.selected = "&aCurrently selected"
+enums.cosmetics.not-selected = "&cClick to select"
+enums.cosmetics.buy = "&aClick to buy: &6<price>"

@@ -88,6 +88,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private PerkManager perkManager;
     private PlayerManager playerManager;
     private SignManager signManager;
+    private TrailManager trailManager;
     private VictoryDanceManager victoryDanceManager;
     private WorldManager worldManager;
 
@@ -100,6 +101,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private TomlConfig messagesConfig;
     private TomlConfig hotbarConfig;
     private TomlConfig signsConfig;
+    private TomlConfig trailsConfig;
 
     // Creators
     private CageCreator cageCreator;
@@ -286,6 +288,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         worldManager = new WorldManager();
         signManager = new SignManager();
         chestManager = new ChestManager();
+        trailManager = new TrailManager();
         cageManager.start();
         victoryDanceManager.start();
         perkManager.start();
@@ -300,6 +303,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         killEffectManager.start();
         killMessageManager.start();
         chestManager.start();
+        trailManager.start();
     }
 
     private void loadCreators() {
@@ -329,6 +333,7 @@ public final class WhaleSkyWars extends JavaPlugin {
             messagesConfig = new TomlConfig(current = "messages", MESSAGES_VERSION);
             hotbarConfig = new TomlConfig(current = "hotbar", HOTBAR_VERSION);
             signsConfig = new TomlConfig(current = "signs", 1);
+            trailsConfig = new TomlConfig(current = "trails", 1);
         } catch (Exception e) {
             TextUtil.error(e, "Failed to load the config: " + current, true);
             return false;
@@ -346,6 +351,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         gameModeManager.die();
         balloonManager.die();
         signManager.die();
+        trailManager.die();
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars disabled successfully.");
     }
 

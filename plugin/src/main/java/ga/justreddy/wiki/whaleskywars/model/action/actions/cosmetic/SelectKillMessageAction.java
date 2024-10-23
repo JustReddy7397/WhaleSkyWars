@@ -8,11 +8,10 @@ import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 /**
  * @author JustReddy
  */
-public class SelectDanceAction implements IAction {
-
+public class SelectKillMessageAction implements IAction {
     @Override
     public String getIdentifier() {
-        return "SELECT_DANCE";
+        return "SELECT_KILL_MESSAGE";
     }
 
     @Override
@@ -20,30 +19,29 @@ public class SelectDanceAction implements IAction {
         int id;
         try {
             id = Integer.parseInt(data);
-        }catch (NumberFormatException ex) {
-            TextUtil.error(null, "Invalid dance id: " + data, false);
+        } catch (NumberFormatException ex) {
+            TextUtil.error(null, "Invalid kill message id: " + data, false);
             return;
         }
 
-        boolean exists = plugin.getVictoryDanceManager().exists(id);
+        boolean exists = plugin.getKillMessageManager().exists(id);
 
         if (!exists) {
-            TextUtil.error(null, "Dance not found: " + id, false);
+            TextUtil.error(null, "Kill message not found: " + id, false);
             return;
         }
 
-        if (!player.getCosmetics().hasCachedVictoryDance(id)) {
+        if (!player.getCosmetics().hasCachedKillMessage(id)) {
             player.sendMessage(plugin
                     .getMessagesConfig()
                     .getString("error.cosmetics.not-unlocked"));
             return;
         }
 
-        player.getCosmetics().setSelectedVictoryDance(id);
+        player.getCosmetics().setSelectedKillMessage(id);
         player.sendMessage(plugin
                 .getMessagesConfig()
                 .getString("general.cosmetics.selected")
-                .replaceAll("<cosmetic>", plugin.getVictoryDanceManager().copyOf(id).getName()));
-
+                .replaceAll("<cosmetic>", plugin.getKillMessageManager().of(id).getName()));
     }
 }

@@ -36,7 +36,6 @@ public abstract class Menu implements InventoryHolder {
         return config.getInteger("options.rows");
     }
 
-
     public int getRefreshRate() {
         return config.getInteger("options.refreshRate");
     }

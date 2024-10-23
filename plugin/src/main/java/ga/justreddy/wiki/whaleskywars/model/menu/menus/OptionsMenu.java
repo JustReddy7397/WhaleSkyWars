@@ -50,6 +50,11 @@ public class OptionsMenu extends Menu {
             for (String path : section.keys()) {
                 ConfigurationSection button = section.getSection(path);
                 if (button.getInteger("position") == event.getSlot()) {
+                    if (button.isSet("permission")) {
+                        if (!bukkitPlayer.hasPermission(button.getString("permission"))) {
+                            return;
+                        }
+                    }
                     List<String> actions = button.getStringList("actions");
                     WhaleSkyWars.getInstance().getActionManager().onAction(player, actions);
                     break;

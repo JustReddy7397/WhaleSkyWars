@@ -9,6 +9,7 @@ import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSign;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public class SignCommand implements SkyWarsCommand {
 
         Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
 
-        if (block == null) {
+        if (block == null || !(block.getState() instanceof Sign)) {
             gamePlayer.sendMessages("&cYou are not looking at a sign!");
             return;
         }

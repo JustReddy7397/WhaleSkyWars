@@ -6,12 +6,12 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
 import ga.justreddy.wiki.whaleskywars.model.action.actions.*;
-import ga.justreddy.wiki.whaleskywars.model.action.actions.cosmetic.SelectDanceAction;
-import ga.justreddy.wiki.whaleskywars.model.action.actions.cosmetic.SelectPerkAction;
+import ga.justreddy.wiki.whaleskywars.model.action.actions.cosmetic.*;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.BuilderFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +40,12 @@ public class ActionManager {
                 new OpenInventoryAction(),
                 new SoundAction(),
                 new SelectDanceAction(),
-                new SelectPerkAction()
+                new SelectPerkAction(),
+                new ServerAction(),
+                new SelectKillMessageAction(),
+                new SelectBalloonAction(),
+                new SelectKillEffectAction(),
+                new SelectTrailAction()
         );
     }
 
@@ -61,7 +66,7 @@ public class ActionManager {
                 return;
             }
 
-            action = action.contains(" ") ? actionName.split(" ", 2)[1] : "";
+            action = action.contains(" ") ? action.split(" ", 2)[1] : "";
             if (player.getPlayer().isPresent()) {
                 Player bukkitPlayer = player.getPlayer().get();
                 action = PlaceholderAPI.setPlaceholders(bukkitPlayer, action);

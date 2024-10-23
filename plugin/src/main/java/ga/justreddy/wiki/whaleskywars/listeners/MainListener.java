@@ -8,6 +8,7 @@ import ga.justreddy.wiki.whaleskywars.model.Messages;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSign;
+import ga.justreddy.wiki.whaleskywars.model.menu.Menu;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,9 +19,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -68,6 +72,19 @@ public class MainListener implements Listener {
                 WhaleSkyWars.getInstance().getSkyWarsBoard().setLobbyBoard(player);
             }, 1L);
         }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Inventory inventory = event.getInventory();
+        if (inventory == null) return;
+        if (!(inventory.getHolder() instanceof Menu)) return;
+        ItemStack clickedItem = event.getCurrentItem();
+        if (clickedItem == null) return;
+        Menu menu = (Menu) inventory.getHolder();
+        IGamePlayer player = GamePlayer.get(event.getWhoClicked().getUniqueId());
+        event.setCancelled(true);
+        menu.onClick(player, event);
     }
 
     private boolean inLobbyWorld(Player player) {

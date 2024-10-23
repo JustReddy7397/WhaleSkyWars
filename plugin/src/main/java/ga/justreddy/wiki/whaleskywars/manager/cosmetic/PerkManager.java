@@ -56,4 +56,7 @@ public class PerkManager {
         return perks.getOrDefault(id, null);
     }
 
+    public Map<Integer, Perk> getPerks() {
+        return perks;
+    }
 }

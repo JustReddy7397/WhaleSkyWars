@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.entity.data;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.Trail;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.perk.Perk;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
@@ -24,6 +25,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     private int selectedBalloon;
     private int selectedKillMessage;
     private int selectedKillEffect;
+    private int selectedTrail;
 
     private Set<Integer> ownedCages;
     private Set<Integer> ownedVictoryDances;
@@ -32,6 +34,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     private Set<Integer> ownedBalloons;
     private Set<Integer> ownedKillMessages;
     private Set<Integer> ownedKillEffects;
+    private Set<Integer> ownedTrails;
 
     public PlayerCosmetics() {
         this.selectedCage = 0;
@@ -41,6 +44,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
         this.selectedBalloon = 0;
         this.selectedKillMessage = 0;
         this.selectedKillEffect = 0;
+        this.selectedTrail = 0;
         this.ownedCages = new HashSet<>();
         this.ownedVictoryDances = new HashSet<>();
         this.ownedKits = new HashSet<>();
@@ -48,6 +52,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
         this.ownedBalloons = new HashSet<>();
         this.ownedKillMessages = new HashSet<>();
         this.ownedKillEffects = new HashSet<>();
+        this.ownedTrails = new HashSet<>();
     }
 
     @Override
@@ -344,5 +349,48 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     @Override
     public Set<Integer> getOwnedKillEffects() {
         return ownedKillEffects;
+    }
+
+    @Override
+    public int getSelectedTrailId() {
+        return selectedTrail;
+    }
+
+    @Override
+    public Trail getSelectedTrail() {
+        return WhaleSkyWars.getInstance().getTrailManager().getById(selectedTrail);
+    }
+
+    @Override
+    public void setSelectedTrail(int selectedTrail) {
+        this.selectedTrail = selectedTrail;
+    }
+
+    @Override
+    public boolean addCachedTrail(int trail) {
+        if (hasCachedTrail(trail)) {
+            return false;
+        }
+        ownedTrails.add(trail);
+        return true;
+    }
+
+    @Override
+    public boolean removeCachedTrail(int trail) {
+        if (!hasCachedTrail(trail)) {
+            return false;
+        }
+        ownedTrails.remove(trail);
+        return true;
+    }
+
+    @Override
+    public boolean hasCachedTrail(int trail) {
+        return ownedTrails.contains(trail);
+    }
+
+    @Override
+    public Set<Integer> getOwnedTrails() {
+        return ownedTrails;
     }
 }

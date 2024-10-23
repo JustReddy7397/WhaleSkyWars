@@ -29,7 +29,7 @@ public class IridiumColorAPI {
      *
      * @since 1.0.0
      */
-    private static final int VERSION = getVersion();\
+    private static final int VERSION = getVersion();
 
     private static final int CENTER_PX = 154;
 

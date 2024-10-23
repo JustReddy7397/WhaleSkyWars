@@ -24,6 +24,7 @@ public class MenuManager {
     public MenuManager() {
         this.menus = new HashSet<>();
         this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "menus");
+        if (!folder.exists()) folder.mkdir();
         start();
     }
 
@@ -45,6 +46,7 @@ public class MenuManager {
         String menu = menus.stream()
                 .filter(name -> {
                     String[] split = name.split("_");
+                    System.out.println(split[0]);
                     return split[0].equalsIgnoreCase(identifier);
                 }).findFirst().orElse(null);
         if (menu == null) return null;

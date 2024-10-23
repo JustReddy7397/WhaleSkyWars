@@ -1,6 +1,8 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game.team;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.enums.ChestType;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -92,4 +94,30 @@ public interface IGameTeam {
      */
     void spawnBalloon();
 
+    /**
+     * Adds a chest to the GameTeam.
+     * @param location the location of the chest
+     * @param type the type of the chest
+     */
+    void addChest(Location location, String type);
+
+    /**
+     * Checks if the location is a chest.
+     * @param location the location
+     * @return true if the location is a chest, false otherwise
+     */
+    boolean isChest(Location location);
+
+    /**
+     * Removes a chest from the GameTeam.
+     * @param location the location of the chest
+     */
+    void removeChest(Location location);
+
+    /**
+     * Fills the chest for the GameTeam.
+     * @param game the game
+     * @param chestType the chest type
+     */
+    void fill(IGame game, ChestType chestType);
 }

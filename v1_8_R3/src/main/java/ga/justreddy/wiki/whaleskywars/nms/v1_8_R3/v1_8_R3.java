@@ -418,11 +418,7 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public Block getTargetBlock(Player player, int range) {
-        Block block = player.getTargetBlock((HashSet<Material>) null, range);
-        if (!isSign(block)) {
-            return null;
-        }
-        return block;
+        return player.getTargetBlock((HashSet<Material>) null, range);
     }
 
     private boolean isSign(Block block) {

@@ -6,6 +6,7 @@ import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.manager.cache.CacheManager;
 import ga.justreddy.wiki.whaleskywars.model.Messages;
+import ga.justreddy.wiki.whaleskywars.model.menu.Menu;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Location;
 
@@ -52,6 +53,7 @@ public class AdminCommand implements SkyWarsCommand {
 
         if (args.length == 1) {
             // TODO
+            return;
         }
 
         switch (args[1].toLowerCase()) {
@@ -60,6 +62,16 @@ public class AdminCommand implements SkyWarsCommand {
                 return;
             case "build":
                 buildCommand(player);
+                return;
+            case "menu":
+                // TODO
+                String menu = args[2];
+                Menu m = WhaleSkyWars.getInstance().getMenuManager().of(menu);
+                if (m == null) {
+                    TextUtil.error(null, "Menu not found!", false);
+                    return;
+                }
+                m.open(player);
                 return;
             case "reload":
                 reloadCommand(player);

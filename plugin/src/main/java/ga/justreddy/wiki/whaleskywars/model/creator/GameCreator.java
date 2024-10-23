@@ -21,6 +21,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -313,6 +315,143 @@ public class GameCreator implements Listener {
         config.save();
 
         player.sendMessage(Messages.SETUP_ISLAND_DELETED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+    }
+
+    public void addIslandChest(IGamePlayer player, int islandId, String chestType) {
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return;
+        }
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return;
+        }
+
+        Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
+
+        if (block == null || !(block.getState() instanceof Chest)) {
+            player.sendMessages("&cYou are not looking at a chest!");
+            return;
+        }
+
+        if (WhaleSkyWars.getInstance().getChestManager().getById(chestType) == null) {
+            player.sendMessage(Messages.SETUP_CHEST_NOT_FOUND.toString(Replaceable.of("<type>", chestType)));
+            return;
+        }
+
+        if (isChest(player, islandId)) {
+            player.sendMessage(Messages.SETUP_ISLAND_CHEST_ALREADY_ADDED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return;
+        }
+
+        int currentChests = section.getSection("chests").keys().size();
+        section.set("chests." + currentChests + ".type", chestType);
+        section.set("chests." + currentChests + ".location", LocationUtil.toLocation(block.getLocation()));
+        config.save();
+
+        player.sendMessage(Messages.SETUP_ISLAND_CHEST_ADDED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<type>", chestType), Replaceable.of("<id>", String.valueOf(currentChests))));
+    }
+
+    private boolean isChest(IGamePlayer player, int islandId) {
+        if (!isSettingUp(player)) {
+            return false;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return false;
+        }
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return false;
+        }
+
+        Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
+
+        if (block == null || !(block.getState() instanceof Chest)) {
+            player.sendMessages("&cYou are not looking at a chest!");
+            return false;
+        }
+
+        boolean isChest = false;
+
+        for (String key : section.getSection("chests").keys()) {
+            Location location = LocationUtil.getLocation(section.getString("chests." + key + ".location"));
+            if (location  == null) continue;
+            if (location.equals(block.getLocation())) {
+                isChest = true;
+                break;
+            }
+        }
+
+        return isChest;
+    }
+
+    public void removeChest(IGamePlayer player, int islandId, int chestId) {
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return;
+        }
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return;
+        }
+
+        Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
+
+        if (block == null || !(block.getState() instanceof Chest)) {
+            player.sendMessages("&cYou are not looking at a chest!");
+            return;
+        }
+
+        if (!isChest(player, islandId)) {
+            player.sendMessage(Messages.SETUP_ISLAND_CHEST_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+            return;
+        }
+
+        section.set("chests." + chestId, null);
+        config.save();
+
+        player.sendMessage(Messages.SETUP_ISLAND_CHEST_REMOVED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+
     }
 
     public void save(IGamePlayer player, boolean enable) {

@@ -66,4 +66,7 @@ public class VictoryDanceManager {
         return event.clone();
     }
 
+    public Map<Integer, VictoryDance> getDances() {
+        return dances;
+    }
 }

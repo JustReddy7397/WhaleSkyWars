@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.model.cosmetics;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.Cosmetic;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.Trail;
 import lombok.Getter;
 import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author JustReddy
  */
 @Getter
-public class Trails extends Cosmetic {
+public class Trails extends Trail {
 
     private final String particle;
 

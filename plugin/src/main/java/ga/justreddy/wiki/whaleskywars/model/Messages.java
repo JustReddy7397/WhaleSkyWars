@@ -63,9 +63,13 @@ public enum Messages {
     SETUP_BOUNDS_GAME_HIGH("setup.bounds.game.high"),
     SETUP_BOUNDS_GAME_LOW("setup.bounds.game.low"),
     SETUP_CHEST_NOT_FOUND("setup.chest.not-found"),
+    SETUP_ISLAND_CHEST_ADDED("setup.island.chest-added"),
+    SETUP_ISLAND_CHEST_REMOVED("setup.island.chest-removed"),
+    SETUP_ISLAND_CHEST_ALREADY_ADDED("setup.island.chest-already-added"),
+    SETUP_ISLAND_CHEST_NOT_FOUND("setup.island.chest-not-found"),
     SETUP_STATUS("setup.satus"),
     SIGN_CHOOSE_GAME("sign.choose-game"),
-    ;
+  ;
 
     private final String path;
 

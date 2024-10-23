@@ -17,14 +17,11 @@ public class SelectPerkAction implements IAction {
 
     @Override
     public void onAction(WhaleSkyWars plugin, IGamePlayer player, String data) {
-        int id = -1;
+
+        int id;
         try {
             id = Integer.parseInt(data);
         } catch (NumberFormatException ex) {
-            TextUtil.error(null, "Invalid perk id: " + data, false);
-            return;
-        }
-        if (id == -1) {
             TextUtil.error(null, "Invalid perk id: " + data, false);
             return;
         }
@@ -36,7 +33,19 @@ public class SelectPerkAction implements IAction {
             return;
         }
 
+        if (!player.getCosmetics().hasCachedPerk(id)) {
+            player.sendMessage(plugin
+                    .getMessagesConfig()
+                    .getString("error.cosmetics.not-unlocked"));
+            return;
+        }
+
         player.getCosmetics().setSelectedPerk(id);
+
+        player.sendMessage(plugin
+                .getMessagesConfig()
+                .getString("general.cosmetics.selected")
+                .replaceAll("<cosmetic>", plugin.getPerkManager().of(id).getName()));
 
     }
 }
