@@ -1,20 +1,16 @@
-package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
+package ga.justreddy.v1_12_R1;
 
-import de.tr7zw.changeme.nbtapi.NBTBlock;
-import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -23,12 +19,12 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
-@SuppressWarnings("unused")
-public final class v1_8_R3 implements INms {
+/**
+ * @author JustReddy
+ */
+public class v1_12_R1 implements INms {
 
     @Override
     public boolean isLegacy() {
@@ -47,6 +43,7 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void setJsonMessage(Player player, String message) {
+        if (!message.startsWith("json:")) return;
         final IChatBaseComponent component = IChatBaseComponent
                 .ChatSerializer.a(message);
         ((CraftPlayer) player).getHandle()
@@ -56,51 +53,16 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void sendTitle(Player player, String title, String subTitle) {
-        PlayerConnection connection = ((CraftPlayer) player)
-                .getHandle().playerConnection;
-        PacketPlayOutTitle titleInfo = new PacketPlayOutTitle(
-                PacketPlayOutTitle.EnumTitleAction.TIMES,
-                null,
-                20,
-                60,
-                20
-        );
-        connection.sendPacket(titleInfo);
-        if (title != null) {
-            IChatBaseComponent component = IChatBaseComponent.ChatSerializer
-                    .a("{\"text\": \"" +
-                            title +
-                            "\"}");
-            connection.sendPacket(new PacketPlayOutTitle(
-                    PacketPlayOutTitle.EnumTitleAction.TITLE,
-                    component
-            ));
-        }
-
-        if (subTitle != null) {
-            IChatBaseComponent component = IChatBaseComponent.ChatSerializer
-                    .a("{\"text\": \"" +
-                            subTitle +
-                            "\"}");
-            connection.sendPacket(new PacketPlayOutTitle(
-                    PacketPlayOutTitle.EnumTitleAction.SUBTITLE,
-                    component
-            ));
-        }
+        player.sendTitle(title, subTitle, 3, 2, 3);
     }
 
     @Override
     public void sendActionBar(Player player, String action) {
-        if (action == null) return;
         IChatBaseComponent component = IChatBaseComponent.ChatSerializer
-                .a("{\"text\": \"" +
-                        action +
-                        "\"}");
-        PacketPlayOutChat chat = new PacketPlayOutChat(
-                component, (byte) 2
-        );
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(chat);
-
+                .a("{\"text\":\"" + action + "\"}");
+        PacketPlayOutChat packet = new PacketPlayOutChat(component,
+                ChatMessageType.GAME_INFO);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 
     @Override
@@ -119,7 +81,7 @@ public final class v1_8_R3 implements INms {
     @Override
     public boolean isParticleCorrect(String particle) {
         try {
-            EnumParticle.valueOf(particle.toUpperCase());
+            EnumParticle.valueOf(particle);
         } catch (Exception e) {
             return false;
         }
@@ -130,10 +92,9 @@ public final class v1_8_R3 implements INms {
     public void setUnbreakable(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null) {
-            meta.spigot().setUnbreakable(true);
+            meta.setUnbreakable(true);
             itemStack.setItemMeta(meta);
-        }
-    }
+        }    }
 
     @Override
     public void setCollideWithEntities(Entity entity, boolean collide) {
@@ -143,15 +104,10 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void removeAi(Entity entity) {
-        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) entity).getHandle();
-        NBTTagCompound tag = nmsEntity.getNBTTag();
-        if (tag == null) {
-            tag = new NBTTagCompound();
-        }
-        nmsEntity.c(tag);
-        tag.setInt("NoAI", 1);
-        tag.setBoolean("Silent", true);
-        nmsEntity.f(tag);
+        if (!(entity instanceof LivingEntity)) return;
+        LivingEntity livingEntity = (LivingEntity) entity;
+        livingEntity.setAI(false);
+        livingEntity.setSilent(true);
     }
 
     @Override
@@ -207,6 +163,10 @@ public final class v1_8_R3 implements INms {
                 return "Luck of the Sea";
             case 62:
                 return "Lure";
+            case 70:
+                return "Mending";
+            case 71:
+                return "Curse of Vanishing";
         }
         return null;
     }
@@ -393,7 +353,7 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public ItemStack getItemInHand(Player player) {
-        return player.getItemInHand();
+        return player.getInventory().getItemInMainHand();
     }
 
     @Override
@@ -416,7 +376,7 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public Block getTargetBlock(Player player, int range) {
-        return player.getTargetBlock((HashSet<Material>) null, range);
+        return player.getTargetBlock(null, range);
     }
 
     private boolean isSign(Block block) {

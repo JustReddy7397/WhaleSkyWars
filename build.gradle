@@ -50,6 +50,7 @@ dependencies {
     implementation project(':api')
     implementation project(':plugin')
     implementation project(":v1_8_R3")
+    implementation project(":v1_12_R1")
 }
 
 
