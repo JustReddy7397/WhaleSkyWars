@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.util;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 
 import java.util.Collections;
@@ -88,6 +89,59 @@ public class ShuffleUtil {
     }
 
     private static void shuffleEqualValues(List<IGame> list, int start, int end, Random random) {
+        // Getting the size of the list
+        // The size is the end index - the start index + 1
+        int size = end - start + 1;
+        // Looping over the list
+        while (size > 1) {
+            // Getting a random integer between the start and the size
+            int i = start + random.nextInt(size);
+            // Decreasing the size by 1
+            int j = start + --size;
+            // Swapping the values
+            Collections.swap(list, i, j);
+        }
+    }
+
+    public static void shuffleTeams(List<IGameTeam> teams) {
+
+        // Sorts games by their player counts ( high to low )
+        teams.sort(Comparator.comparingInt(IGameTeam::getSize).reversed());
+
+        // Start index
+        int startIndex = 0;
+        // End index
+        int endIndex = 0;
+        // Current player count value of the first team in the list
+        int currentValue = teams.get(0).getSize();
+        // Create a new random object
+        Random random = ThreadLocalRandom.current();
+        // Looping over all the teams except the first one!
+        for (int i = 1; i < teams.size(); i++) {
+            // Getting the game by the index aka "i"
+            IGameTeam currentObject = teams.get(i);
+            // Getting the player count of the current team
+            int value = currentObject.getSize();
+            // If the value is equal to the current value,
+            // then we set the end index to the current index
+            if (value == currentValue) {
+                endIndex = i;
+            } else {
+                // Else we shuffle the values between the start and end index
+                shuffleEqualTeams(teams, startIndex, endIndex, random);
+                // And we set the start index to the current index
+                startIndex = i;
+                // And the end index to the current index
+                endIndex = i;
+                // And the current value to the team value we declared in the for loop
+                currentValue = value;
+            }
+        }
+        // Shuffling the last values
+        shuffleEqualTeams(teams, startIndex, endIndex, random);
+    }
+
+    private static void shuffleEqualTeams(List<IGameTeam> list, int start, int end, Random random) {
         // Getting the size of the list
         // The size is the end index - the start index + 1
         int size = end - start + 1;

@@ -4,6 +4,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.ITeamAssigner;
+import ga.justreddy.wiki.whaleskywars.model.game.Game;
+import ga.justreddy.wiki.whaleskywars.util.ShuffleUtil;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -22,6 +24,7 @@ public class TeamAssigner implements ITeamAssigner {
             // Parties support eventually
             LinkedList<List<IGamePlayer>> teams = new LinkedList<>();
             if (!teams.isEmpty()) {
+
                 for (IGameTeam team : game.getTeams()) {
                     teams.sort(Comparator.comparing(List::size));
                     if (teams.get(0).isEmpty()) break;
@@ -61,7 +64,7 @@ public class TeamAssigner implements ITeamAssigner {
             // Parties support eventually
             LinkedList<List<IGamePlayer>> teams = new LinkedList<>();
             if (!teams.isEmpty()) {
-                for (IGameTeam team : game.getTeams()) {
+                for (IGameTeam team : new ArrayList<>(game.getTeams())) {
                     teams.sort(Comparator.comparing(List::size));
                     if (teams.get(0).isEmpty()) break;
                     for (int i = 0; i < game.getTeamSize() && team.getPlayers().size() < game.getTeamSize(); i++) {
@@ -78,12 +81,26 @@ public class TeamAssigner implements ITeamAssigner {
             }
         }
 
-        for (IGameTeam team : game.getRandomTeams()) {
-            if (team.getPlayers().size() < game.getTeamSize()) {
-                player.getPlayer().ifPresent(Player::closeInventory);
-                team.addPlayer(player);
-                player.setGameTeam(team);
-                break;
+        List<IGameTeam> randomTeams = new ArrayList<>(game.getRandomTeams());
+        if (((Game)game).isTeamGame()) {
+            ShuffleUtil.shuffleTeams(randomTeams);
+            for (IGameTeam team : randomTeams) {
+                if (team.getPlayers().size() < game.getTeamSize()) {
+                    player.getPlayer().ifPresent(Player::closeInventory);
+                    team.addPlayer(player);
+                    player.setGameTeam(team);
+                    break;
+                }
+            }
+        } else {
+            Collections.shuffle(randomTeams);
+            for (IGameTeam team : randomTeams) {
+                if (team.getPlayers().size() < game.getTeamSize()) {
+                    player.getPlayer().ifPresent(Player::closeInventory);
+                    team.addPlayer(player);
+                    player.setGameTeam(team);
+                    break;
+                }
             }
         }
     }

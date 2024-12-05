@@ -431,13 +431,13 @@ public final class v1_8_R3 implements INms {
         boolean isTeamGame = team.getGame().getTeamSize() > 1;
         String prefix = "";
         if (isTeamGame) {
-            prefix = team.getId();
+            prefix = "[" + team.getId() + "] ";
         }
 
         FakeTeam greenTeam = new FakeTeam(
                 ChatColor.GREEN + prefix, "", 0);
         FakeTeam redTeam = new FakeTeam(
-                ChatColor.RED + prefix, "", priority +1);
+                ChatColor.RED + prefix, "", priority + 1);
         for (IGamePlayer player : team.getPlayers()) {
             skip.add(player.getUniqueId());
             List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
@@ -473,50 +473,73 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void setTeamName(IGamePlayer player) {
+        // Getting all current teams
         Map<UUID, List<FakeTeam>> teams = FakeTeamManager.getPlayerTeams();
 
+        // Getting the priority of team, used for sorting in tab
         int priority = player.getGameTeam().getPriority();
 
-        Set<UUID> skip = new HashSet<>();
-
+        // Check if the game is a team game
         boolean isTeamGame = player.getGame().getTeamSize() > 1;
         String prefix = "";
         if (isTeamGame) {
-            prefix = player.getGameTeam().getId();
+            // If it is a team game, we set the prefix to the team id
+            prefix = "[" + player.getGameTeam().getId() + "] ";
         }
 
+        // Creating the green team
         FakeTeam greenTeam = new FakeTeam(
                 ChatColor.GREEN + prefix, "", 0);
+        // Creating the red team
         FakeTeam redTeam = new FakeTeam(
                 ChatColor.RED + prefix, "", priority + 1);
-        skip.add(player.getUniqueId());
-        List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        // Getting all teams for this specific player
+        List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(),
+                new ArrayList<>());
+        // If the player teams are not empty, we clear them
         if (!playerTeams.isEmpty()) playerTeams.clear();
+        // Adding the player to the green team
         greenTeam.addMember(player.getName());
+        // Adding the player to the red team
         redTeam.addMember(player.getName());
+        // Adding the teams to the player
         playerTeams.add(greenTeam);
         playerTeams.add(redTeam);
+        // Putting the teams back into the map
         teams.put(player.getUniqueId(), playerTeams);
         player.getPlayer().ifPresent(bukkitPlayer -> {
+            // Sending the created green team to the player
             FakeTeamManager.sendTeam(bukkitPlayer, greenTeam);
+            // Iterating over all players in the game
             for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                // If the player is the same as the current player, we skip
                 if (otherPlayer.getUniqueId().equals(player.getUniqueId())) continue;
+                // Getting the fake teams of the other player
                 List<FakeTeam> fakeTeams = teams.getOrDefault(otherPlayer.getUniqueId(), new ArrayList<>());
+                // If the fake teams are empty, we skip
                 if (fakeTeams.isEmpty()) continue;
+                // If the fake teams size is less than 2, we skip
                 if (fakeTeams.size() < 2) continue;
-                FakeTeam fakeTeam = fakeTeams.get(1);
+                // Getting the green fake team from the OTHER player(s)
+                FakeTeam greenFakeTeam = fakeTeams.get(0);
+                // Getting the red fake team from the OTHER player(s)
+                FakeTeam redFakeTeam = fakeTeams.get(1);
                 otherPlayer.getPlayer().ifPresent(bukkitPlayer1 -> {
-                    FakeTeamManager.sendTeam(bukkitPlayer, fakeTeam);
+                    // If the player is in the same team as the other player
+                    if (player.getGameTeam().hasPlayer(otherPlayer)) {
+                        // Send the other green fake team to the player
+                        FakeTeamManager.sendTeam(bukkitPlayer, greenFakeTeam);
+                        // Send the created green fake team to the other player
+                        FakeTeamManager.sendTeam(bukkitPlayer1, greenTeam);
+                        return;
+                    }
+                    // Send the other red fake team to the player
+                    FakeTeamManager.sendTeam(bukkitPlayer, redFakeTeam);
+                    // Send the created red fake team to the other player
+                    FakeTeamManager.sendTeam(bukkitPlayer1, redTeam);
                 });
             }
         });
-
-        for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
-            if (skip.contains(otherPlayer.getUniqueId())) continue;
-            otherPlayer.getPlayer().ifPresent(bukkitPlayer -> {
-                FakeTeamManager.sendTeam(bukkitPlayer, redTeam);
-            });
-        }
     }
 
     @Override

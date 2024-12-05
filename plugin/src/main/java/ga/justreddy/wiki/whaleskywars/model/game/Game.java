@@ -19,6 +19,7 @@ import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
+import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.SoloGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.TeamGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
@@ -382,7 +383,6 @@ public class Game implements IGame {
             }
         }
 
-
         // TODO chests!!
 
         this.defaultChestType = ChestType.valueOf(config.getString("settings.defaultChestType", "NORMAL").toUpperCase());
@@ -482,7 +482,6 @@ public class Game implements IGame {
             IGameSpawn gameSpawn = team.getGameSpawn();
             if (gameSpawn.isUsed()) {
                 bukkitPlayer.teleport(team.getSpawnLocation());
-                return;
             }
             gameSpawn.setUsed(true);
 
@@ -541,7 +540,6 @@ public class Game implements IGame {
             IGameSpawn gameSpawn = team.getGameSpawn();
             if (gameSpawn.isUsed()) {
                 bukkitPlayer.teleport(team.getSpawnLocation());
-                return;
             }
             gameSpawn.setUsed(true);
 
