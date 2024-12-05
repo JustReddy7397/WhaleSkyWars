@@ -165,6 +165,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     @Override
     public void onDisable() {
         stopManagers();
+        gameCreator.kill();
     }
 
     // Initialization methods

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author JustReddy
  */
-public abstract class KillMessage extends Cosmetic implements Cloneable {
+public abstract class KillMessage extends Cosmetic {
 
     /**
      * Initializes a new instance of the KillMessage class with the specified name,
@@ -95,12 +95,5 @@ public abstract class KillMessage extends Cosmetic implements Cloneable {
      * @param victim The player who was killed.
      */
     public abstract void sendUnknownMessage(@NotNull IGame game, @NotNull IGamePlayer killer, @NotNull IGamePlayer victim);
-
-    /**
-     * Clones the instance of the kill message.
-     * @return The cloned instance of the kill message.
-     */
-    @NotNull
-    public abstract KillMessage clone();
 
 }

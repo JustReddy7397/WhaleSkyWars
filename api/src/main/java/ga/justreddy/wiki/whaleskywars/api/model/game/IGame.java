@@ -377,4 +377,3 @@ public interface IGame {
     void reset();
 }
 
-}

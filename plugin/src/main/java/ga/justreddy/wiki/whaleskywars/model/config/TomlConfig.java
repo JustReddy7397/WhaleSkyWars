@@ -22,6 +22,11 @@ public class TomlConfig extends TomlConfiguration {
         isOutdated(currentVersion);
     }
 
+    public TomlConfig(File folder, String fileName) {
+        super(new File(WhaleSkyWars.getInstance().getDataFolder(), folder.getName()),fileName.endsWith(".toml") ? fileName : fileName + ".toml");
+        reload();
+    }
+
 
     /**
      * Checks if the config version integer equals or is less than the current version.

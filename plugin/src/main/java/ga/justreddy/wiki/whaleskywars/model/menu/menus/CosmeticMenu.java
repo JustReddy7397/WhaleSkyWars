@@ -41,6 +41,32 @@ public class CosmeticMenu extends Menu {
             text = PlaceholderAPI.setPlaceholders(player.getPlayer().get(), text);
         }
 
+
+        text = text.replaceAll("<wsw-owned-cages>",
+                cosmetics.getOwnedCages().size() + "");
+        text = text.replaceAll("<wsw-max-cages>",
+                WhaleSkyWars.getInstance().getCageManager()
+                        .getData().size() + "");
+
+        text = text.replaceAll("<wsw-owned-dances>",
+                cosmetics.getOwnedVictoryDances().size() + "");
+        text = text.replaceAll("<wsw-max-dances>",
+                WhaleSkyWars.getInstance()
+                        .getVictoryDanceManager().getDances().size() + "");
+
+        text = text.replaceAll("<wsw-owned-messages>",
+                cosmetics.getOwnedKillMessages().size() + "");
+        text = text.replaceAll("<wsw-max-messages>",
+                WhaleSkyWars.getInstance()
+                        .getKillMessageManager().getKillMessages().size() + "");
+
+        text = text.replaceAll("<wsw-owned-killeffects>",
+                cosmetics.getOwnedKillEffects().size() + "");
+        text = text.replaceAll("<wsw-max-killeffects>",
+                WhaleSkyWars.getInstance()
+                        .getKillEffectManager().getKillEffects().size() + "");
+
+
         for (Cage cage : plugin.getCageManager().getData().values()) {
             int id = cage.getId();
             if (cosmetics.getSelectedCageId() == id) {
@@ -90,6 +116,7 @@ public class CosmeticMenu extends Menu {
                         .getMessagesConfig()
                         .getString("enums.cosmetics.buy").replaceAll("<price>", String.valueOf(message.getCost())));
             }
+
         }
 
         for (KillEffect effect : plugin.getKillEffectManager().getKillEffects().values()) {
@@ -170,13 +197,21 @@ public class CosmeticMenu extends Menu {
     @Override
     public void setMenuItems(IGamePlayer player) {
         ConfigurationSection section = config.getSection("buttons");
+        System.out.println(section.data());
         for (String path : section.keys()) {
             ConfigurationSection button = section.getSection(path);
+            System.out.println(button.data());
             ItemStackBuilder builder = ItemStackBuilder.getItemStack(button, player)
                     .clearLore();
             List<String> lore = button.getStringList("lore");
             lore.stream().map(s -> setPlaceholders(s, player)).forEach(builder::addLore);
-            inventory.setItem(button.getInteger("position"), builder.build());
+            if (button.get("position") instanceof Number) {
+                inventory.setItem(button.getInteger("position"), builder.build());
+            } else if (button.get("position") instanceof List) {
+                button.getIntegerList("position").forEach(i -> {
+                    inventory.setItem(i, builder.build());
+                });
+            }
         }
     }
 
@@ -186,7 +221,8 @@ public class CosmeticMenu extends Menu {
             ConfigurationSection section = config.getSection("buttons");
             for (String path : section.keys()) {
                 ConfigurationSection button = section.getSection(path);
-                if (button.getInteger("position") == event.getSlot()) {
+
+                if (button.get("position") instanceof Number) {
                     if (button.isSet("permission")) {
                         if (!bukkitPlayer.hasPermission(button.getString("permission"))) {
                             return;

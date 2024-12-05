@@ -55,7 +55,7 @@ public class CageCreator {
         TempConfig config = new TempConfig(folder, name + ".toml");
 
         config.set("name", name);
-        config.set("id", data.size());
+        config.set("id", WhaleSkyWars.getInstance().getCageManager().getData().size());
         config.set("cost", 0);
         config.save();
 

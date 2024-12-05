@@ -21,96 +21,66 @@
 # DO NOT TOUCH THIS!
 config-version = 1
 
-[modules]
-slimeworldmanager = false # Recommended
-mode = "MULTI_ARENA" # MULTI_ARENA, BUNGEE, LOBBY
-toml-for-chests = true # Recommended, change to false to use YML files
-# Recommended for BUNGEE mode
-# When you create a new map, it will be automatically added to all the servers.
-# If you want to disable this feature, set this option to false.
-map-sync = false
+modules.slimeworldmanager = false
+modules.mode = "MULTI_ARENA"       # MULTI_ARENA, BUNGEE, LOBBY
+modules.toml-for-chests = true
+modules.map-sync = false           # Automatically add new maps to all servers (recommended for BUNGEE mode).
 
-[modules.leaderboards]
-enabled = false
-update-interval = 120 # in seconds
+modules.leaderboards.enabled = false
+modules.leaderboards.update-interval = 120  # Seconds
 
+game-options.events = []  # TODO
+# If this feature is enabled, you will lose hunger while in-gamae
+game-options.food = false
 
-[game-options]
-events = [] # TODO
+game-options.command-whitelist.enabled = false
+game-options.command-whitelist.commands = ["leave"]
 
-[game-options.command-whitelist]
-enabled = false
-commands = ["leave"]
+game-options.countdowns.start = 10
+game-options.countdowns.cages = 10  # aka pregame
+game-options.countdowns.end = 10
 
-[game-options.countdowns]
-start = 10
-cages = 10 # aka pregame
-end = 10
+game-options.sounds.game-join = "none"
+game-options.sounds.game-leave = "none"
+game-options.sounds.game-start = "none"
+game-options.sounds.game-pre = "none"
+game-options.sounds.game-play = "none"
+game-options.sounds.game-end = "none"
 
-[game-options.sounds]
-game-join = "none"
-game-leave = "none"
-game-start = "none"
-game-pre = "none"
-game-play = "none"
-game-end = "none"
+player.save-inventory = true
+player.titles = true
+player.action-bar = true
+player.sounds = true
 
-[player]
-save-inventory = true
-titles = true
-action-bar = true
-sounds = true
+player.default-cosmetics.cage = 0
+player.default-cosmetics.kit = 0
+player.default-cosmetics.trail = 0
+player.default-cosmetics.death-cry = 0
+player.default-cosmetics.kill-effect = 0
+player.default-cosmetics.balloon = 0
+player.default-cosmetics.victory-dance = 0
 
-[player.default-cosmetics]
-cage = 0
-kit = 0
-trail = 0
-death-cry = 0
-kill-effect = 0
-balloon = 0
-victory-dance = 0
+# Types: SOCKET, RABBITMQ, REDIS
+bungee.type = "SOCKET"
+# Server name used in bungeecord config.
+bungee.server-name = "srv1"
+# What happens when a player leaves the game.
+bungee.on-leave = "LOBBY_SERVER"
+# Bungeecord lobby server name.
+bungee.lobby = "lobby"
+bungee.leave-commands = ["cmd <player>", "tell <player> &aYou have left the game!"]
 
-# You have to configure this only if you are using bungee/lobby mode, otherwise ignore it.
-[bungee]
-# Types SOCKET, RABBITMQ, REDIS
-type = "SOCKET"
-# Server name - name of this server that is used in the bungeecord config.
-# WARNING!
-# It's really important to use the same name here as in the bungeecord config - otherwise the plugin won't work.
-# So if this spigot server is named "srv1" in your bungeecord config, leave this option set to "srv1".
-server-name = "srv1"
-# What should happen to the player who left the game?
-# Use JOIN_SERVER to put the player back to the server from where they had joined the game.
-# Use LOBBY_SERVER to put player in the lobby server.
-# Use LEAVE_COMMAND to make spigot server console execute custom command when the player leaves the game.
-on-leave = "LOBBY_SERVER"
-# Lobby server.
-# Use the bungeecord server name that you set in bungeecord config.toml.
-lobby = "lobby"
-# Leave commands.
-# They are used only when "on-leave" option is set to "LEAVE_COMMAND" and will be executed from the spigot server's console.
-# You can use %player% placeholder - it will be replaced with the player's name.
-# Do not put slash (/) at the beginning!
-leave-commands = ["cmd <player>", "tell <player> &aYou have left the game!"]
+# If spigot and bungeecord are on the same machine, leave as "localhost".
+bungee.socket.host = "localhost"
+# Match this to the socket port in bungee-config.toml.
+bungee.socket.port = 3000
 
-[bungee.socket]
-# Bungeecord server hostname,
-# if your spigot and bungeecord server are on the same machine leave it set to "localhost".
-host = "localhost"
-# Bungeecord socket server port, set it to the same value as in the bungee-config.toml in your bungeecord server.
-# WARNING!
-# This is NOT your bungeecord server port,
-# it's your socket server port that can be changed in the file mentioned above.
-port = 3000
+bungee.rabbitmq.host = "localhost"
+bungee.rabbitmq.port = 5672
+bungee.rabbitmq.username = "guest"
+bungee.rabbitmq.password = "guest"
+bungee.rabbitmq.virtual-host = "/"
+# NOTE: This configuration is untested due to external constraints.
 
-[bungee.rabbitmq]
-host = "localhost"
-port = 5_672
-username = "guest"
-password = "guest"
-virtual-host = "/"
-# NOTE: Since I can't test this myself due to some issues,
-# I can't guarantee that this will work.
-[bungee.redis]
-host = "localhost"
-port = 6379
+bungee.redis.host = "localhost"
+bungee.redis.port = 6379

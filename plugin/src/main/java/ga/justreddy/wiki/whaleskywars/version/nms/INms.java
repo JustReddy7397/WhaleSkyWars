@@ -1,5 +1,8 @@
 package ga.justreddy.wiki.whaleskywars.version.nms;
 
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -51,5 +54,23 @@ public interface INms {
     Block getRelativeBlock(Location location);
 
     Block getTargetBlock(Player player, int range);
+
+    void setTeamName(IGameTeam team);
+
+    void setTeamName(IGamePlayer player);
+
+    void removeTeamNames(IGame game);
+
+    void removeTeamName(IGame game, IGamePlayer player);
+
+    void removeTeamName(IGameTeam team);
+
+    void removeTeamName(IGamePlayer player);
+
+    void setWaitingLobbyName(IGamePlayer player);
+
+    void removeWaitingLobbyName(IGame game);
+
+    void removeWaitingLobbyName(IGame game, IGamePlayer player);
 
 }

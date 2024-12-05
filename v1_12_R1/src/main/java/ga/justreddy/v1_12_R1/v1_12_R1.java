@@ -3,6 +3,9 @@ package ga.justreddy.v1_12_R1;
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Location;
@@ -377,6 +380,51 @@ public class v1_12_R1 implements INms {
     @Override
     public Block getTargetBlock(Player player, int range) {
         return player.getTargetBlock(null, range);
+    }
+
+    @Override
+    public void setTeamName(IGameTeam team) {
+
+    }
+
+    @Override
+    public void setTeamName(IGamePlayer player) {
+
+    }
+
+    @Override
+    public void removeTeamNames(IGame game) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGame game, IGamePlayer player) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGameTeam team) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGamePlayer player) {
+
+    }
+
+    @Override
+    public void setWaitingLobbyName(IGamePlayer player) {
+
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game) {
+
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game, IGamePlayer player) {
+
     }
 
     private boolean isSign(Block block) {

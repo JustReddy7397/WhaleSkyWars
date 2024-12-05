@@ -90,6 +90,10 @@ setup.bounds.waiting.low = "&aLow location set for waiting bounds."
 setup.bounds.game.high = "&aHigh location set for game bounds."
 setup.bounds.game.low = "&aLow location set for game bounds."
 setup.chest.not-found = "&cChest &d<chest> &cnot found."
+setup.chest.added = "&aChest &d<type> &aadded &7(&d<id>&7) &a."
+setup.chest.removed = "&aChest removed &7(&d<id>&7) &a."
+setup.chest.already-added = "&cChest already added."
+setup.chest.not-chest = "&cChest not found."
 setup.status = [
     "&7&m----------------------------------------",
     "&dGame: &7<name>",

@@ -33,13 +33,21 @@ public class OtherMenu extends Menu {
     @Override
     public void setMenuItems(IGamePlayer player) {
         ConfigurationSection section = config.getSection("buttons");
+        System.out.println(section.data());
         for (String path : section.keys()) {
             ConfigurationSection button = section.getSection(path);
-            ItemStackBuilder builder = ItemStackBuilder.getItemStack(button.getSection("item"), player)
+            System.out.println(button.data());
+            ItemStackBuilder builder = ItemStackBuilder.getItemStack(button, player)
                     .clearLore();
             List<String> lore = button.getStringList("lore");
             lore.stream().map(s -> setPlaceholders(s, player)).forEach(builder::addLore);
-            inventory.setItem(button.getInteger("position"), builder.build());
+            if (button.get("position") instanceof Number) {
+                inventory.setItem(button.getInteger("position"), builder.build());
+            } else if (button.get("position") instanceof List) {
+                button.getIntegerList("position").forEach(i -> {
+                    inventory.setItem(i, builder.build());
+                });
+            }
         }
     }
 
@@ -49,7 +57,8 @@ public class OtherMenu extends Menu {
             ConfigurationSection section = config.getSection("buttons");
             for (String path : section.keys()) {
                 ConfigurationSection button = section.getSection(path);
-                if (button.getInteger("position") == event.getSlot()) {
+
+                if (button.get("position") instanceof Number) {
                     if (button.isSet("permission")) {
                         if (!bukkitPlayer.hasPermission(button.getString("permission"))) {
                             return;

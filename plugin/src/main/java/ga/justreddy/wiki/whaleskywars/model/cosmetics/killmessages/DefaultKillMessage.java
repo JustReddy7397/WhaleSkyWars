@@ -75,8 +75,4 @@ public class DefaultKillMessage extends KillMessage {
                 "&7" + killer.getName() + " &7killed &7" + victim.getName() + " &7in an unknown way.");
     }
 
-    @Override
-    public @NotNull KillMessage clone() {
-        return new DefaultKillMessage();
-    }
 }

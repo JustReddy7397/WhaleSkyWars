@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.manager;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.hooks.IHook;
+import ga.justreddy.wiki.whaleskywars.model.hooks.hooks.DecentHologramsHook;
 import ga.justreddy.wiki.whaleskywars.model.hooks.hooks.PlaceholderHook;
 import ga.justreddy.wiki.whaleskywars.model.hooks.hooks.SlimeWorldHook;
 
@@ -19,6 +20,7 @@ public class HookManager {
         this.hooks = new HashMap<>();
         registerHook(new PlaceholderHook(WhaleSkyWars.getInstance().getPlayerManager()));
         registerHook(new SlimeWorldHook());
+        registerHook(new DecentHologramsHook());
         hookAll();
     }
 

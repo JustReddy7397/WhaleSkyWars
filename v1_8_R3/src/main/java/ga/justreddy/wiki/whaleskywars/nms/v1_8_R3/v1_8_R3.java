@@ -1,12 +1,16 @@
 package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 
-import de.tr7zw.changeme.nbtapi.NBTBlock;
-import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
+import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeam;
+import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeamManager;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,15 +21,12 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public final class v1_8_R3 implements INms {
@@ -417,6 +418,140 @@ public final class v1_8_R3 implements INms {
     @Override
     public Block getTargetBlock(Player player, int range) {
         return player.getTargetBlock((HashSet<Material>) null, range);
+    }
+
+    @Override
+    public void setTeamName(IGameTeam team) {
+        Map<UUID, List<FakeTeam>> teams = FakeTeamManager.getPlayerTeams();
+
+        int priority = team.getPriority();
+
+        Set<UUID> skip = new HashSet<>();
+
+        boolean isTeamGame = team.getGame().getTeamSize() > 1;
+        String prefix = "";
+        if (isTeamGame) {
+            prefix = team.getId();
+        }
+
+        FakeTeam greenTeam = new FakeTeam(
+                ChatColor.GREEN + prefix, "", 0);
+        FakeTeam redTeam = new FakeTeam(
+                ChatColor.RED + prefix, "", priority +1);
+        for (IGamePlayer player : team.getPlayers()) {
+            skip.add(player.getUniqueId());
+            List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
+            if (!playerTeams.isEmpty()) playerTeams.clear();
+            greenTeam.addMember(player.getName());
+            redTeam.addMember(player.getName());
+            playerTeams.add(greenTeam);
+            playerTeams.add(redTeam);
+            teams.put(player.getUniqueId(), playerTeams);
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                FakeTeamManager.sendTeam(bukkitPlayer, greenTeam);
+                for (IGamePlayer otherPlayer : team.getGame().getPlayers()) {
+                    if (otherPlayer.getUniqueId().equals(player.getUniqueId())) continue;
+                    List<FakeTeam> fakeTeams = teams.getOrDefault(otherPlayer.getUniqueId(), new ArrayList<>());
+                    if (fakeTeams.isEmpty()) continue;
+                    if (fakeTeams.size() < 2) continue;
+                    FakeTeam fakeTeam = fakeTeams.get(1);
+                    otherPlayer.getPlayer().ifPresent(bukkitPlayer1 -> {
+                        FakeTeamManager.sendTeam(bukkitPlayer, fakeTeam);
+                    });
+                }
+            });
+        }
+
+        for (IGamePlayer otherPlayer : team.getGame().getPlayers()) {
+            if (skip.contains(otherPlayer.getUniqueId())) continue;
+            otherPlayer.getPlayer().ifPresent(bukkitPlayer -> {
+                FakeTeamManager.sendTeam(bukkitPlayer, redTeam);
+            });
+        }
+
+    }
+
+    @Override
+    public void setTeamName(IGamePlayer player) {
+        Map<UUID, List<FakeTeam>> teams = FakeTeamManager.getPlayerTeams();
+
+        int priority = player.getGameTeam().getPriority();
+
+        Set<UUID> skip = new HashSet<>();
+
+        boolean isTeamGame = player.getGame().getTeamSize() > 1;
+        String prefix = "";
+        if (isTeamGame) {
+            prefix = player.getGameTeam().getId();
+        }
+
+        FakeTeam greenTeam = new FakeTeam(
+                ChatColor.GREEN + prefix, "", 0);
+        FakeTeam redTeam = new FakeTeam(
+                ChatColor.RED + prefix, "", priority + 1);
+        skip.add(player.getUniqueId());
+        List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        if (!playerTeams.isEmpty()) playerTeams.clear();
+        greenTeam.addMember(player.getName());
+        redTeam.addMember(player.getName());
+        playerTeams.add(greenTeam);
+        playerTeams.add(redTeam);
+        teams.put(player.getUniqueId(), playerTeams);
+        player.getPlayer().ifPresent(bukkitPlayer -> {
+            FakeTeamManager.sendTeam(bukkitPlayer, greenTeam);
+            for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                if (otherPlayer.getUniqueId().equals(player.getUniqueId())) continue;
+                List<FakeTeam> fakeTeams = teams.getOrDefault(otherPlayer.getUniqueId(), new ArrayList<>());
+                if (fakeTeams.isEmpty()) continue;
+                if (fakeTeams.size() < 2) continue;
+                FakeTeam fakeTeam = fakeTeams.get(1);
+                otherPlayer.getPlayer().ifPresent(bukkitPlayer1 -> {
+                    FakeTeamManager.sendTeam(bukkitPlayer, fakeTeam);
+                });
+            }
+        });
+
+        for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+            if (skip.contains(otherPlayer.getUniqueId())) continue;
+            otherPlayer.getPlayer().ifPresent(bukkitPlayer -> {
+                FakeTeamManager.sendTeam(bukkitPlayer, redTeam);
+            });
+        }
+    }
+
+    @Override
+    public void removeTeamNames(IGame game) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGame game, IGamePlayer player) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGameTeam team) {
+
+    }
+
+    @Override
+    public void removeTeamName(IGamePlayer player) {
+
+    }
+
+    @Override
+    public void setWaitingLobbyName(IGamePlayer player) {
+
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game) {
+
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game, IGamePlayer player) {
+
     }
 
     private boolean isSign(Block block) {

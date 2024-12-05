@@ -2,7 +2,6 @@ package ga.justreddy.wiki.whaleskywars.commands.impl;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
@@ -63,6 +62,7 @@ public class GameCommand implements SkyWarsCommand {
                     "&b/ws game island create &7- &3Creates an island",
                     "&b/ws game island set <id> balloon &7- &3Sets the balloon spawn for the specified island",
                     "&b/ws game island add <id> chest <type> &7- &3Add the chest for the specified island",
+                    "&b/ws game island remove <id> chest <chestId> &7- &3Removes the chest for the specified island",
                     "&b/ws game island set <id> spawn &7- &3Sets the spawn for the specified island",
                     "&b/ws game island remove <id> &7- &3Removes the specified island",
                     "&b/ws game chest create <type> &7- &3Creates a chest",
@@ -198,6 +198,7 @@ public class GameCommand implements SkyWarsCommand {
                     "&b/ws game island create <id> &7- &3Creates an island",
                     "&b/ws game island set <id> balloon &7- &3Sets the balloon spawn for the specified island",
                     "&b/ws game island add <id> chest <type> &7- &3Add the chest for the specified island",
+                    "&b/ws game island remove <id> chest <chestId> &7- &3Removes the chest for the specified island",
                     "&b/ws game island set <id> spawn &7- &3Sets the spawn for the specified island",
                     "&b/ws game island remove <id> &7- &3Removes the specified island",
                     "&7&m----------------------------------------"
@@ -271,23 +272,54 @@ public class GameCommand implements SkyWarsCommand {
         }
 
         if (args[2].equalsIgnoreCase("remove")) {
-            if (args.length != 4) {
-                player.sendMessage("&cUsage: /ws island remove <id>");
+            if (args.length < 4) {
+                player.sendMessage("&cUsage: /ws island remove <id> [chest]");
+                return;
+            }
+            if (args.length > 4) {
+                if (!args[4].equalsIgnoreCase("chest")) {
+                    player.sendMessage("&cUsage: /ws island remove <id> chest <chestId>");
+                    return;
+                }
+
+                int id;
+
+                try {
+                    id = Integer.parseInt(args[3]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("&cInvalid number");
+                    return;
+                }
+
+                int chestId;
+
+                try {
+                    chestId = Integer.parseInt(args[5]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("&cInvalid number");
+                    return;
+                }
+
+                WhaleSkyWars.getInstance().getGameCreator()
+                        .removeIslandChest(player, id, chestId);
+
+            } else {
+
+                int id;
+
+                try {
+                    id = Integer.parseInt(args[3]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("&cInvalid number");
+                    return;
+                }
+
+                WhaleSkyWars.getInstance().getGameCreator()
+                        .clearIsland(player, id);
                 return;
             }
 
-            int id;
 
-            try {
-                id = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                player.sendMessage("&cInvalid number");
-                return;
-            }
-
-            WhaleSkyWars.getInstance().getGameCreator()
-                    .clearIsland(player, id);
-            return;
         }
 
     }
@@ -313,7 +345,6 @@ public class GameCommand implements SkyWarsCommand {
         WhaleSkyWars.getInstance().getGameCreator()
                 .status(player);
     }
-
 
 
 }

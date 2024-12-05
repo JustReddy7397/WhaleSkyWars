@@ -22,12 +22,14 @@ public class GameTeam implements IGameTeam {
     private final String id;
     private final List<IGamePlayer> players;
     private final Map<Location, String> chests;
+    private final IGame game;
     private final IGameSpawn gameSpawn;
     private final Location spawnLocation;
     private final Location balloonLocation;
 
-    public GameTeam(String id, Location spawnLocation, Location balloonLocation) {
+    public GameTeam(String id, IGame game, Location spawnLocation, Location balloonLocation) {
         this.id = id;
+        this.game = game;
         this.players = new ArrayList<>();
         this.chests = new HashMap<>();
         // The cage will be set once the game starts
@@ -90,6 +92,16 @@ public class GameTeam implements IGameTeam {
     @Override
     public Location getSpawnLocation() {
         return spawnLocation;
+    }
+
+    @Override
+    public IGame getGame() {
+        return game;
+    }
+
+    @Override
+    public int getPriority() {
+        return Integer.parseInt(id);
     }
 
     @Override

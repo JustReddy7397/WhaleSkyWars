@@ -32,6 +32,10 @@ repositories {
         url = "https://libraries.minecraft.net/"
     }
 
+    maven {
+        url = "https://jitpack.io/"
+    }
+
 }
 
 dependencies {
@@ -53,7 +57,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly "com.mojang:authlib:1.5.21"
     implementation 'fr.mrmicky:fastboard:2.1.2'
-
+    compileOnly 'com.github.decentsoftware-eu:decentholograms:2.8.11'
 }
 
 def targetJavaVersion = 11

@@ -37,7 +37,7 @@ public class PlayerCosmetics implements IPlayerCosmetics {
     private Set<Integer> ownedTrails;
 
     public PlayerCosmetics() {
-        this.selectedCage = 0;
+        this.selectedCage = 1;
         this.selectedVictoryDance = 0;
         this.selectedKit = "default";
         this.selectedPerk = 0;

@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.listeners;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.Trail;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.KillPath;
@@ -68,8 +69,13 @@ public class GameListener implements Listener {
         if (gamePlayer == null) return;
         if (!gamePlayer.isPlaying()) return;
         IGame game = gamePlayer.getGame();
-        if (game.isGameState(GameState.PLAYING)) return;
-        event.setCancelled(true);
+        boolean isFoodEnabled = WhaleSkyWars.getInstance().getSettingsConfig()
+                .getBoolean("game-options.food");
+        if (!game.isGameState(GameState.PLAYING) || (
+                !isFoodEnabled && game.isGameState(GameState.PLAYING)
+                )) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -84,10 +90,9 @@ public class GameListener implements Listener {
             if (gamePlayer.isDead()) return;
             gamePlayer.getStats().addArrowsShot(1);
             // TODO
-            Trails trails = null;
+            Trail trails = gamePlayer.getCosmetics().getSelectedTrail();
             if (trails == null) return;
             trails.summon(projectile);
-
         }
     }
 

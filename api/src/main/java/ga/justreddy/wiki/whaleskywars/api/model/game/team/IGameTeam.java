@@ -90,6 +90,20 @@ public interface IGameTeam {
     Location getSpawnLocation();
 
     /**
+     * Returns the game of the GameTeam.
+     * @return the game of the GameTeam
+     */
+    IGame getGame();
+
+    /**
+     * Returns the priority of the GameTeam.
+     * Used for sorting in tablist
+     *
+     * @return the priority of the GameTeam
+     */
+    int getPriority();
+
+    /**
      * Spawns a balloon for the GameTeam.
      */
     void spawnBalloon();
@@ -115,7 +129,7 @@ public interface IGameTeam {
     void removeChest(Location location);
 
     /**
-     * Fills the chest for the GameTeam.
+     * Fills the chests for the GameTeam.
      * @param game the game
      * @param chestType the chest type
      */

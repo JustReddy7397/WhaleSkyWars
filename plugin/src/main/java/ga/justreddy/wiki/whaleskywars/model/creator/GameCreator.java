@@ -1,10 +1,13 @@
 package ga.justreddy.wiki.whaleskywars.model.creator;
 
+import com.avaje.ebeaninternal.server.query.LimitOffsetList;
 import com.cryptomorin.xseries.XMaterial;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
 import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.Messages;
@@ -31,10 +34,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 public class GameCreator implements Listener {
 
     private final Map<UUID, String> setup;
+    private final Map<String, Map<String, Hologram>> holograms = new HashMap<>();
     private static final File GAMES_FOLDER = WhaleSkyWars.getInstance().getGameManager().getGamesFolder();
 
     public GameCreator() {
@@ -315,6 +316,16 @@ public class GameCreator implements Listener {
         config.save();
 
         player.sendMessage(Messages.SETUP_ISLAND_DELETED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            if (hologramMap.isEmpty()) return;
+            for (Map.Entry<String, Hologram> entry : hologramMap.entrySet()) {
+                if (entry.getKey().contains("island_" + islandId)) {
+                    entry.getValue().delete();
+                    hologramMap.remove(entry.getKey());
+                }
+            }
+        }
     }
 
     public void addIslandChest(IGamePlayer player, int islandId, String chestType) {
@@ -353,7 +364,7 @@ public class GameCreator implements Listener {
             return;
         }
 
-        if (isChest(player, islandId)) {
+        if (isIslandChest(player, islandId)) {
             player.sendMessage(Messages.SETUP_ISLAND_CHEST_ALREADY_ADDED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
             return;
         }
@@ -364,9 +375,49 @@ public class GameCreator implements Listener {
         config.save();
 
         player.sendMessage(Messages.SETUP_ISLAND_CHEST_ADDED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<type>", chestType), Replaceable.of("<id>", String.valueOf(currentChests))));
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            List<String> lines = new ArrayList<>();
+            lines.add("&a&lIsland Chest &d&l" + islandId + " &a&l" + currentChests);
+            Hologram hologram = DHAPI.createHologram("islandchest_" + islandId + "_" + currentChests, block.getLocation().clone().add(0.5, 1.5, 0.5));
+            hologram.setDefaultVisibleState(false);
+            hologram.setShowPlayer(bukkitPlayer);
+            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            if (hologramMap.isEmpty()) {
+                holograms.put(name, hologramMap);
+            }
+            hologramMap.put("island_" + islandId + "_" + currentChests, hologram);
+            holograms.put(name, hologramMap);
+        }
     }
 
-    private boolean isChest(IGamePlayer player, int islandId) {
+    private boolean isIslandChest(IGamePlayer player, int islandId, int chestId) {
+        if (!isSettingUp(player)) {
+            return false;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("islands." + islandId);
+
+        if (section == null) {
+            player.sendMessage(Messages.SETUP_ISLAND_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId))));
+            return false;
+        }
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return false;
+        }
+
+        return section.isSet("chests." + chestId);
+    }
+
+    private boolean isIslandChest(IGamePlayer player, int islandId) {
         if (!isSettingUp(player)) {
             return false;
         }
@@ -411,7 +462,7 @@ public class GameCreator implements Listener {
         return isChest;
     }
 
-    public void removeChest(IGamePlayer player, int islandId, int chestId) {
+    public void removeIslandChest(IGamePlayer player, int islandId, int chestId) {
         if (!isSettingUp(player)) {
             return;
         }
@@ -435,6 +486,45 @@ public class GameCreator implements Listener {
             return;
         }
 
+        if (!isIslandChest(player, islandId, chestId)) {
+            player.sendMessage(Messages.SETUP_ISLAND_CHEST_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+            return;
+        }
+
+        section.set("chests." + chestId, null);
+        config.save();
+        player.sendMessage(Messages.SETUP_ISLAND_CHEST_REMOVED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            if (hologramMap.isEmpty()) return;
+            Hologram hologram = hologramMap.getOrDefault("island_"
+                    + islandId + "_" + chestId, null);
+            if (hologram == null) return;
+            hologram.delete();
+            hologramMap.remove("island_" + islandId + "_" + chestId);
+            holograms.put(name, hologramMap);
+        }
+    }
+
+    public void addChest(IGamePlayer player, String chestType) {
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("chests");
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return;
+        }
+
         Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
 
         if (block == null || !(block.getState() instanceof Chest)) {
@@ -442,16 +532,142 @@ public class GameCreator implements Listener {
             return;
         }
 
-        if (!isChest(player, islandId)) {
-            player.sendMessage(Messages.SETUP_ISLAND_CHEST_NOT_FOUND.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+        if (WhaleSkyWars.getInstance().getChestManager().getById(chestType) == null) {
+            player.sendMessage(Messages.SETUP_CHEST_NOT_FOUND.toString(Replaceable.of("<type>", chestType)));
             return;
         }
 
-        section.set("chests." + chestId, null);
+        if (isChest(player)) {
+            player.sendMessage(Messages.SETUP_CHEST_ALREADY_ADDED.toString());
+            return;
+        }
+
+        int currentChests = section.keys().size();
+
+        section.set(currentChests + ".type", chestType);
+        section.set(currentChests + ".location", LocationUtil.toLocation(block.getLocation()));
         config.save();
+        player.sendMessage(Messages.SETUP_CHEST_ADDED.toString(Replaceable.of("<type>", chestType), Replaceable.of("<id>", String.valueOf(currentChests))));
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            List<String> lines = new ArrayList<>();
+            lines.add("&a&lGame Chest &d&l" + currentChests);
+            Hologram hologram = DHAPI.createHologram("gamechest_" + currentChests, block.getLocation().clone().add(0.5, 1.5, 0.5));
+            hologram.setDefaultVisibleState(false);
+            hologram.setShowPlayer(bukkitPlayer);
+            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            if (hologramMap.isEmpty()) {
+                holograms.put(name, hologramMap);
+            }
+            hologramMap.put("game_" + currentChests, hologram);
+            holograms.put(name, hologramMap);
+        }
+    }
 
-        player.sendMessage(Messages.SETUP_ISLAND_CHEST_REMOVED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
+    public boolean isChest(IGamePlayer player, int chestId) {
+        if (!isSettingUp(player)) {
+            return false;
+        }
 
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("chests");
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return false;
+        }
+
+        return section.isSet(String.valueOf(chestId));
+    }
+
+    public boolean isChest(IGamePlayer player) {
+        if (!isSettingUp(player)) {
+            return false;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("chests");
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return false;
+        }
+
+        Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
+
+        if (block == null || !(block.getState() instanceof Chest)) {
+            player.sendMessages("&cYou are not looking at a chest!");
+            return false;
+        }
+
+        boolean isChest = false;
+
+        for (String key : section.keys()) {
+            Location location = LocationUtil.getLocation(section.getString(key + ".location"));
+            if (location  == null) continue;
+            if (location.equals(block.getLocation())) {
+                isChest = true;
+                break;
+            }
+        }
+
+        return isChest;
+    }
+
+    public void removeChest(IGamePlayer player, int chestId) {
+        if (!isSettingUp(player)) {
+            return;
+        }
+
+        String name = setup.get(player.getUniqueId());
+
+        File file = getFile(name);
+
+        // TODO
+        TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
+
+        ConfigurationSection section = config.getSection("chests");
+
+        Player bukkitPlayer = player.getPlayer().orElse(null);
+        if (bukkitPlayer == null) {
+            return;
+        }
+
+        Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(bukkitPlayer, 5);
+
+        if (block == null || !(block.getState() instanceof Chest)) {
+            player.sendMessages("&cYou are not looking at a chest!");
+            return;
+        }
+
+        if (!isChest(player, chestId)) {
+            player.sendMessage(Messages.SETUP_CHEST_NOT_CHEST.toString(Replaceable.of("<id>", String.valueOf(chestId))));
+            return;
+        }
+
+        section.set(String.valueOf(chestId), null);
+        config.save();
+        player.sendMessage(Messages.SETUP_CHEST_REMOVED.toString(Replaceable.of("<id>", String.valueOf(chestId))));
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            if (hologramMap.isEmpty()) return;
+            Hologram hologram = hologramMap.getOrDefault("game_" + chestId, null);
+            if (hologram == null) return;
+            hologram.delete();
+            hologramMap.remove("game_" + chestId);
+            holograms.put(name, hologramMap);
+        }
     }
 
     public void save(IGamePlayer player, boolean enable) {
@@ -469,6 +685,11 @@ public class GameCreator implements Listener {
         if (!isEverythingSettedUp(config)) {
             player.sendMessage(Messages.SETUP_MISSING_COMPONENTS.toString());
             return;
+        }
+
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            holograms.getOrDefault(name, new HashMap<>()).forEach((key, value) -> value.delete());
+            holograms.remove(name);
         }
 
         World world = Bukkit.getServer().getWorld(name);
@@ -544,6 +765,7 @@ public class GameCreator implements Listener {
         player.sendMessage(Messages.SETUP_SUCCESS.toString(Replaceable.of("<game>", name)));
 
         setup.remove(player.getUniqueId());
+
     }
 
     @EventHandler
@@ -682,5 +904,13 @@ public class GameCreator implements Listener {
                 Replaceable.of("<waiting-bounds>", isWaitingCuboidSet ? yes : no)
         ));
 
+    }
+
+    public void kill() {
+        setup.clear();
+        holograms.forEach((key, hologram) -> {
+            hologram.forEach((key1, value) -> value.delete());
+        });
+        holograms.clear();
     }
 }

@@ -217,7 +217,7 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder clearLore() {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        meta.setLore(new ArrayList<String>());
+        meta.setLore(new ArrayList<>());
         ITEM_STACK.setItemMeta(meta);
         return this;
     }

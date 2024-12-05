@@ -49,6 +49,10 @@ public class PreGamePhase implements IPhase {
                             player1.teleport(team.getSpawnLocation());
                         });
                     });
+                    if (game.getWaitingSpawn() != null && game.getGameCuboid() != null) {
+                        WhaleSkyWars.getInstance().getNms()
+                                .setTeamName(team);
+                    }
                 }
             });
         }

@@ -378,7 +378,7 @@ public class Game implements IGame {
                 Location location = LocationUtil.getLocation(island.getString("spawn"));
                 if (location == null) continue;
                 Location balloon = LocationUtil.getLocation(island.getString("balloon"));
-                teams.add(new GameTeam(key, location, balloon));
+                teams.add(new GameTeam(key, this, location, balloon));
             }
         }
 
@@ -500,6 +500,8 @@ public class Game implements IGame {
                     .removeScoreboard(player);
             WhaleSkyWars.getInstance().getSkyWarsBoard()
                     .setGameBoard(player);
+            WhaleSkyWars.getInstance().getNms()
+                    .setTeamName(player);
         }
 
         sendMessage(getPlayers(), Messages

@@ -7,6 +7,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class ApiProvider implements SkyWarsAPI {
 
     @Override
     public CompletableFuture<IGamePlayer> loadPlayer(String name) {
-        return null;
+        return WhaleSkyWars.getInstance().getStorage().loadPlayer(name);
     }
 
     @Override
