@@ -45,6 +45,10 @@ public class FakeTeam {
         }
     }
 
+    public void removeMember(String player) {
+        members.remove(player);
+    }
+
     public String getName() {
         return name;
     }

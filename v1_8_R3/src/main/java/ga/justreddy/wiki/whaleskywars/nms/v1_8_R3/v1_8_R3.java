@@ -544,22 +544,52 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void removeTeamNames(IGame game) {
-
+        for (IGamePlayer player : game.getPlayers()) {
+            removeTeamName(player);
+        }
     }
 
     @Override
     public void removeTeamName(IGame game, IGamePlayer player) {
-
+        Map<UUID, List<FakeTeam>> teams = FakeTeamManager.getPlayerTeams();
+        List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        if (playerTeams.isEmpty()) return;
+        for (FakeTeam fakeTeam : playerTeams) {
+            for (String member : fakeTeam.getMembers()) {
+                if (member.equals(player.getName())) {
+                    fakeTeam.removeMember(member);
+                }
+            }
+        }
+        teams.put(player.getUniqueId(), playerTeams);
+        player.getPlayer().ifPresent(bukkitPlayer -> {
+            FakeTeamManager.sendTeam(bukkitPlayer, new FakeTeam("", "", 0));
+        });
     }
 
     @Override
     public void removeTeamName(IGameTeam team) {
-
+        for (IGamePlayer player : team.getPlayers()) {
+            removeTeamName(player);
+        }
     }
 
     @Override
     public void removeTeamName(IGamePlayer player) {
-
+        Map<UUID, List<FakeTeam>> teams = FakeTeamManager.getPlayerTeams();
+        List<FakeTeam> playerTeams = teams.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        if (playerTeams.isEmpty()) return;
+        for (FakeTeam fakeTeam : playerTeams) {
+            for (String member : fakeTeam.getMembers()) {
+                if (member.equals(player.getName())) {
+                    fakeTeam.removeMember(member);
+                }
+            }
+        }
+        teams.put(player.getUniqueId(), playerTeams);
+        player.getPlayer().ifPresent(bukkitPlayer -> {
+            FakeTeamManager.sendTeam(bukkitPlayer, new FakeTeam("", "", 0));
+        });
     }
 
     @Override

@@ -41,11 +41,12 @@ public class TeamAssigner implements ITeamAssigner {
                 }
             }
         }
-
+        List<IGameTeam> randomTeams = new ArrayList<>(game.getRandomTeams());
+        ShuffleUtil.shuffleTeams(randomTeams);
         for (IGamePlayer remaining : game.getPlayers()) {
             if (skip.contains(remaining.getUniqueId())) continue;
             if (remaining.getGameTeam() != null) continue;
-            for (IGameTeam team : game.getRandomTeams()) {
+            for (IGameTeam team : randomTeams) {
                 if (team.getPlayers().size() < game.getTeamSize()) {
                     remaining.getPlayer().ifPresent(Player::closeInventory);
                     team.addPlayer(remaining);
