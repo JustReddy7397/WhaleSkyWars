@@ -7,6 +7,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.ScoreBoardCreator;
+import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import ga.justreddy.wiki.whaleskywars.util.NumberUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -98,6 +99,9 @@ public class SkyWarsBoard {
                 line = line.replace("{mode}", game.getGameMode().getDisplayName());
                 line = line.replace("{date}", dateFormat.format(System.currentTimeMillis()));
                 line = line.replace("{kills}", String.valueOf(game.getKills(player)));
+                if (((Game)game).isTeamGame()) {
+                    line = line.replace("{team}", player.getGameTeam().getId());
+                }
                 String currentEvent = config.getString("events.no-event");
 
                 switch (game.getGameState()) {
