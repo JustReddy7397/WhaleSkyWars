@@ -1,6 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.model.creator;
 
-import com.avaje.ebeaninternal.server.query.LimitOffsetList;
 import com.cryptomorin.xseries.XMaterial;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
@@ -40,14 +39,15 @@ import java.util.stream.Collectors;
 /**
  * @author JustReddy
  */
-public class GameCreator implements Listener {
+public class GameCreator<H> implements Listener {
 
     private final Map<UUID, String> setup;
-    private final Map<String, Map<String, Hologram>> holograms = new HashMap<>();
+    private final Map<String, Map<String, H>> holograms;
     private static final File GAMES_FOLDER = WhaleSkyWars.getInstance().getGameManager().getGamesFolder();
 
     public GameCreator() {
         this.setup = new HashMap<>();
+        holograms = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, WhaleSkyWars.getInstance());
     }
 
@@ -317,11 +317,11 @@ public class GameCreator implements Listener {
 
         player.sendMessage(Messages.SETUP_ISLAND_DELETED.toString(Replaceable.of("<island>", String.valueOf(islandId))));
         if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
-            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            Map<String, ?> hologramMap = holograms.getOrDefault(name, new HashMap<>());
             if (hologramMap.isEmpty()) return;
-            for (Map.Entry<String, Hologram> entry : hologramMap.entrySet()) {
+            for (Map.Entry<String, ?> entry : hologramMap.entrySet()) {
                 if (entry.getKey().contains("island_" + islandId)) {
-                    entry.getValue().delete();
+                    ((Hologram) entry.getValue()).delete();
                     hologramMap.remove(entry.getKey());
                 }
             }
@@ -381,11 +381,11 @@ public class GameCreator implements Listener {
             Hologram hologram = DHAPI.createHologram("islandchest_" + islandId + "_" + currentChests, block.getLocation().clone().add(0.5, 1.5, 0.5));
             hologram.setDefaultVisibleState(false);
             hologram.setShowPlayer(bukkitPlayer);
-            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            Map<String, H> hologramMap = holograms.getOrDefault(name, new HashMap<>());
             if (hologramMap.isEmpty()) {
                 holograms.put(name, hologramMap);
             }
-            hologramMap.put("island_" + islandId + "_" + currentChests, hologram);
+            hologramMap.put("island_" + islandId + "_" + currentChests, (H) hologram);
             holograms.put(name, hologramMap);
         }
     }
@@ -452,7 +452,7 @@ public class GameCreator implements Listener {
 
         for (String key : section.getSection("chests").keys()) {
             Location location = LocationUtil.getLocation(section.getString("chests." + key + ".location"));
-            if (location  == null) continue;
+            if (location == null) continue;
             if (location.equals(block.getLocation())) {
                 isChest = true;
                 break;
@@ -495,9 +495,9 @@ public class GameCreator implements Listener {
         config.save();
         player.sendMessage(Messages.SETUP_ISLAND_CHEST_REMOVED.toString(Replaceable.of("<island>", String.valueOf(islandId)), Replaceable.of("<id>", String.valueOf(chestId))));
         if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
-            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            Map<String, H> hologramMap = holograms.getOrDefault(name, new HashMap<>());
             if (hologramMap.isEmpty()) return;
-            Hologram hologram = hologramMap.getOrDefault("island_"
+            Hologram hologram = (Hologram) hologramMap.getOrDefault("island_"
                     + islandId + "_" + chestId, null);
             if (hologram == null) return;
             hologram.delete();
@@ -512,8 +512,6 @@ public class GameCreator implements Listener {
         }
 
         String name = setup.get(player.getUniqueId());
-
-        File file = getFile(name);
 
         // TODO
         TempConfig config = new TempConfig(GAMES_FOLDER, name + ".toml");
@@ -554,16 +552,16 @@ public class GameCreator implements Listener {
             Hologram hologram = DHAPI.createHologram("gamechest_" + currentChests, block.getLocation().clone().add(0.5, 1.5, 0.5));
             hologram.setDefaultVisibleState(false);
             hologram.setShowPlayer(bukkitPlayer);
-            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            Map<String, H> hologramMap = holograms.getOrDefault(name, new HashMap<>());
             if (hologramMap.isEmpty()) {
                 holograms.put(name, hologramMap);
             }
-            hologramMap.put("game_" + currentChests, hologram);
+            hologramMap.put("game_" + currentChests, (H) hologram);
             holograms.put(name, hologramMap);
         }
     }
 
-    public boolean isChest(IGamePlayer player, int chestId) {
+    /*public boolean isChest(IGamePlayer player) {
         if (!isSettingUp(player)) {
             return false;
         }
@@ -583,7 +581,7 @@ public class GameCreator implements Listener {
         }
 
         return section.isSet(String.valueOf(chestId));
-    }
+    }*/
 
     public boolean isChest(IGamePlayer player) {
         if (!isSettingUp(player)) {
@@ -615,7 +613,7 @@ public class GameCreator implements Listener {
 
         for (String key : section.keys()) {
             Location location = LocationUtil.getLocation(section.getString(key + ".location"));
-            if (location  == null) continue;
+            if (location == null) continue;
             if (location.equals(block.getLocation())) {
                 isChest = true;
                 break;
@@ -625,7 +623,7 @@ public class GameCreator implements Listener {
         return isChest;
     }
 
-    public void removeChest(IGamePlayer player, int chestId) {
+    public void removeChest(IGamePlayer player) {
         if (!isSettingUp(player)) {
             return;
         }
@@ -651,8 +649,21 @@ public class GameCreator implements Listener {
             return;
         }
 
-        if (!isChest(player, chestId)) {
-            player.sendMessage(Messages.SETUP_CHEST_NOT_CHEST.toString(Replaceable.of("<id>", String.valueOf(chestId))));
+        if (!isChest(player)) {
+            player.sendMessage(Messages.SETUP_CHEST_NOT_CHEST.toString());
+            return;
+        }
+
+        int chestId = -1;
+        for (String key : section.keys()) {
+            Location location = LocationUtil.getLocation(section.getString(key + ".location"));
+            if (location == null) continue;
+            if (!LocationUtil.equalsBlock(location, block.getLocation())) continue;
+            chestId = Integer.parseInt(key);
+        }
+
+        if (chestId == -1) {
+            player.sendMessage(Messages.SETUP_CHEST_NOT_FOUND.toString(Replaceable.of("<id>", String.valueOf(chestId))));
             return;
         }
 
@@ -660,9 +671,9 @@ public class GameCreator implements Listener {
         config.save();
         player.sendMessage(Messages.SETUP_CHEST_REMOVED.toString(Replaceable.of("<id>", String.valueOf(chestId))));
         if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
-            Map<String, Hologram> hologramMap = holograms.getOrDefault(name, new HashMap<>());
+            Map<String, H> hologramMap = holograms.getOrDefault(name, new HashMap<>());
             if (hologramMap.isEmpty()) return;
-            Hologram hologram = hologramMap.getOrDefault("game_" + chestId, null);
+            Hologram hologram = (Hologram) hologramMap.getOrDefault("game_" + chestId, null);
             if (hologram == null) return;
             hologram.delete();
             hologramMap.remove("game_" + chestId);
@@ -688,7 +699,7 @@ public class GameCreator implements Listener {
         }
 
         if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
-            holograms.getOrDefault(name, new HashMap<>()).forEach((key, value) -> value.delete());
+            holograms.getOrDefault(name, new HashMap<>()).forEach((key, value) -> ((Hologram) value).delete());
             holograms.remove(name);
         }
 
@@ -908,9 +919,9 @@ public class GameCreator implements Listener {
 
     public void kill() {
         setup.clear();
-        holograms.forEach((key, hologram) -> {
-            hologram.forEach((key1, value) -> value.delete());
-        });
+        if (WhaleSkyWars.getInstance().isHooked("DecentHolograms")) {
+            holograms.forEach((key, value) -> value.forEach((k, v) -> ((Hologram) v).delete()));
+        }
         holograms.clear();
     }
 }
