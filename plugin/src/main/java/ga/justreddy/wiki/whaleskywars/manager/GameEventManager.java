@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameEvent;
 import ga.justreddy.wiki.whaleskywars.model.game.events.ChestRefillEvent;
 import ga.justreddy.wiki.whaleskywars.model.game.events.DoomEvent;
@@ -20,14 +21,10 @@ import java.util.Map;
 public class GameEventManager {
 
     private final Map<String, GameEvent> events;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
 
     public GameEventManager() {
         this.events = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "events");
-        if (!this.folder.exists()) {
-            this.folder.mkdirs();
-        }
     }
 
     public void start() {
@@ -44,10 +41,11 @@ public class GameEventManager {
 
     private void register(File file) {
         try {
-            List<Class<? extends GameEvent>> events = ClassUtil.findClasses(file, GameEvent.class);
-            for (Class<? extends GameEvent> event : events) {
-                GameEvent gameEvent = event.getConstructor().newInstance();
-                register(gameEvent);
+            List<Class<? extends Addon>> events = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> event : events) {
+                Addon addon = event.getConstructor().newInstance();
+                if (!(addon instanceof GameEvent)) continue;
+                register((GameEvent) addon);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

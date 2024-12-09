@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.api.model.cosmetics;
 
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * The name is the display name of the cosmetic.
  * @author JustReddy
  */
-public abstract class Cosmetic {
+public abstract class Cosmetic implements Addon {
 
     private final String name;
     private final int id;
@@ -36,7 +37,7 @@ public abstract class Cosmetic {
      * @return The name of the cosmetic.
      */
     @NotNull
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -44,7 +45,7 @@ public abstract class Cosmetic {
      * Returns the unique identifier of the cosmetic.
      * @return The unique identifier of the cosmetic.
      */
-    public int getId() {
+    public final int getId() {
         return id;
     }
 
@@ -52,7 +53,7 @@ public abstract class Cosmetic {
      * Returns the cost of the cosmetic.
      * @return The cost of the cosmetic.
      */
-    public int getCost() {
+    public final int getCost() {
         return cost;
     }
 

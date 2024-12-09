@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
 
@@ -15,14 +16,10 @@ import java.util.Map;
 public class VictoryDanceManager {
 
     private final Map<Integer, VictoryDance> dances;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
 
     public VictoryDanceManager() {
         this.dances = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "dances");
-        if (!this.folder.exists()) {
-            this.folder.mkdirs();
-        }
     }
 
     public void start() {
@@ -38,10 +35,11 @@ public class VictoryDanceManager {
 
     private void register(String name, File file) {
         try {
-            List<Class<? extends VictoryDance>> dances = ClassUtil.findClasses(file, VictoryDance.class);
-            for (Class<? extends VictoryDance> dance : dances) {
-                VictoryDance victoryDance = dance.getConstructor().newInstance();
-                register(victoryDance);
+            List<Class<? extends Addon>> dances = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> dance : dances) {
+                Addon addon = dance.getConstructor().newInstance();
+                if (!(addon instanceof VictoryDance)) continue;
+                register((VictoryDance) addon);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
@@ -16,14 +17,10 @@ import java.util.Map;
 public class KillEffectManager {
 
     private final Map<Integer, KillEffect> killEffects;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
 
     public KillEffectManager() {
         this.killEffects = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "killEffects");
-        if (!this.folder.exists()) {
-            this.folder.mkdirs();
-        }
     }
 
     public void start() {
@@ -42,10 +39,11 @@ public class KillEffectManager {
 
     public void register(File file) {
         try {
-            List<Class<? extends KillEffect>> killEffects = ClassUtil.findClasses(file, KillEffect.class);
-            for (Class<? extends KillEffect> classKillEffects : killEffects) {
-                KillEffect killEffect = classKillEffects.getConstructor().newInstance();
-                register(killEffect);
+            List<Class<? extends Addon>> killEffects = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> classKillEffects : killEffects) {
+                Addon killEffect = classKillEffects.getConstructor().newInstance();
+                if (!(killEffect instanceof KillEffect)) continue;
+                register((KillEffect) killEffect);
             }
         } catch (Exception e) {
             TextUtil.error(e, "Failed to load kill effects from: " + file.getName(), false);

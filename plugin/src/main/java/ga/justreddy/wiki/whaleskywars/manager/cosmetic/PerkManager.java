@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.perk.Perk;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
@@ -17,11 +18,10 @@ import java.util.Map;
 public class PerkManager {
 
     private final Map<Integer, Perk> perks;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
 
     public PerkManager() {
         this.perks = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "perks");
     }
 
     public void start() {
@@ -30,10 +30,11 @@ public class PerkManager {
 
     public void register(File file) {
         try {
-            List<Class<? extends Perk>> perks = ClassUtil.findClasses(file, Perk.class);
-            for (Class<? extends Perk> classPerks : perks) {
-                Perk perk = classPerks.getConstructor().newInstance();
-                register(perk);
+            List<Class<? extends Addon>> perks = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> classPerks : perks) {
+                Addon perk = classPerks.getConstructor().newInstance();
+                if (!(perk instanceof Perk)) continue;
+                register((Perk) perk);
             }
         } catch (Exception e) {
             TextUtil.error(e, "Failed to load perks from: " + file.getName(), false);

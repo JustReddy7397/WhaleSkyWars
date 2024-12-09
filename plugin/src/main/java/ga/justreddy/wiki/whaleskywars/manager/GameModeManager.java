@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameMode;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
@@ -16,13 +17,9 @@ import java.util.Map;
 public class GameModeManager {
 
     private final Map<String, GameMode> gameModes;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
     public GameModeManager() {
         this.gameModes = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "modes");
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
     }
 
     public void start() {
@@ -37,10 +34,11 @@ public class GameModeManager {
 
     private void register(File file) {
         try {
-            List<Class<? extends GameMode>> modes = ClassUtil.findClasses(file, GameMode.class);
-            for (Class<? extends GameMode> mode : modes) {
-                GameMode gameMode = mode.getConstructor().newInstance();
-                register(gameMode);
+            List<Class<? extends Addon>> modes = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> mode : modes) {
+                Addon addon = mode.getConstructor().newInstance();
+                if (!(addon instanceof GameMode)) continue;
+                register((GameMode) addon);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

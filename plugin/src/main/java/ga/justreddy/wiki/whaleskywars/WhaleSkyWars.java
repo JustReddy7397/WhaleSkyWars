@@ -40,6 +40,8 @@ import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.BuilderFactory;
 
+import java.io.File;
+
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
 
@@ -52,6 +54,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private static final int MESSAGES_VERSION = 1;
     private static final int HOTBAR_VERSION = 1;
     private static final String VERSION = getVersion(Bukkit.getServer());
+    public static final File ADDONS_FOLDER = new File("plugins/WhaleSkyWars/addons");
 
     // Instance
     @Getter
@@ -122,7 +125,9 @@ public final class WhaleSkyWars extends JavaPlugin {
         instance = this;
         LibraryManager libraryManager = new LibraryManager();
         libraryManager.loadDependencies();
-
+        if (!ADDONS_FOLDER.exists()) {
+            ADDONS_FOLDER.mkdirs();
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.manager.cosmetic;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.killmessages.DefaultKillMessage;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
@@ -17,11 +18,10 @@ import java.util.Map;
 public class KillMessageManager {
 
     private final Map<Integer, KillMessage> killMessages;
-    private final File folder;
+    private final File folder = WhaleSkyWars.ADDONS_FOLDER;
 
     public KillMessageManager() {
         this.killMessages = new HashMap<>();
-        this.folder = new File(WhaleSkyWars.getInstance().getDataFolder(), "killmessages");
     }
 
     public void start() {
@@ -41,10 +41,11 @@ public class KillMessageManager {
 
     public void register(File file) {
         try {
-            List<Class<? extends KillMessage>> killMessages = ClassUtil.findClasses(file, KillMessage.class);
-            for (Class<? extends KillMessage> classKillMessages : killMessages) {
-                KillMessage killMessage = classKillMessages.getConstructor().newInstance();
-                register(killMessage);
+            List<Class<? extends Addon>> killMessages = ClassUtil.findAddons(file);
+            for (Class<? extends Addon> classKillMessages : killMessages) {
+                Addon killMessage = classKillMessages.getConstructor().newInstance();
+                if (!(killMessage instanceof KillMessage)) continue;
+                register((KillMessage) killMessage);
             }
         } catch (Exception ex) {
             TextUtil.error(ex, "Failed to load kill messages from: " + file.getName(), false);

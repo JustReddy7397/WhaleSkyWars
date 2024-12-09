@@ -45,7 +45,7 @@ public abstract class Perk extends Cosmetic implements Listener {
      *
      * @return The current level of the perk.
      */
-    public int getLevel() {
+    public final int getLevel() {
         return level;
     }
 
@@ -54,7 +54,7 @@ public abstract class Perk extends Cosmetic implements Listener {
      *
      * @return The maximum level of the perk.
      */
-    public int getMaxLevel() {
+    public final int getMaxLevel() {
         return maxLevel;
     }
 
@@ -63,7 +63,7 @@ public abstract class Perk extends Cosmetic implements Listener {
      *
      * @param level The new level to set for the perk.
      */
-    public void setLevel(int level) {
+    public final void setLevel(int level) {
         this.level = level;
     }
 

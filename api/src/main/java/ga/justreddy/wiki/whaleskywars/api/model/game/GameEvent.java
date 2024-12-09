@@ -1,9 +1,11 @@
 package ga.justreddy.wiki.whaleskywars.api.model.game;
 
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
+
 /**
  * @author JustReddy
  */
-public abstract class GameEvent implements Cloneable {
+public abstract class GameEvent implements Cloneable, Addon {
 
     protected final String name;
     protected boolean enabled;
@@ -22,31 +24,31 @@ public abstract class GameEvent implements Cloneable {
 
     public abstract GameEvent clone();
 
-    public void update() {
+    public final void update() {
         if (timer > 0) timer--;
     }
 
-    public boolean isEnded() {
+    public final boolean isEnded() {
         return timer <= 0;
     }
 
-    public int getTimer() {
+    public final int getTimer() {
         return timer;
     }
 
-    public void setTimer(int timer) {
+    public final void setTimer(int timer) {
         this.timer = timer;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

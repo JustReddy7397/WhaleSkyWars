@@ -40,13 +40,13 @@ public abstract class AbstractTimer implements Runnable {
         onTick();
     }
 
-    public void start() {
+    public final void start() {
         ticksExceed = seconds;
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0L, 20L);
         started = true;
     }
 
-    public void stop() {
+    public final void stop() {
         if (task == -1) {
             throw new IllegalStateException("Timer is not active");
         }
@@ -58,11 +58,11 @@ public abstract class AbstractTimer implements Runnable {
 
     protected abstract void onEnd();
 
-    public int getTicksExceed() {
+    public final int getTicksExceed() {
         return ticksExceed;
     }
 
-    public int getSeconds() {
+    public final int getSeconds() {
         return seconds;
     }
 }
