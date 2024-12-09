@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
 import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
@@ -34,6 +35,7 @@ import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.ISchematic;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.IWorldEdit;
 import lombok.Getter;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -70,6 +72,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private SlimeLoader slimeLoader;
     private IGameMap gameMap;
     private SkyWarsBoard skyWarsBoard;
+    private Permission permission;
+
 
     // Managers
     private ActionManager actionManager;
@@ -141,9 +145,10 @@ public final class WhaleSkyWars extends JavaPlugin {
             return;
         }
 
-        initializeNms();
-        initializeSchematicHandler();
-        initializeWorldEdit();
+        if (!initializeNms()) return;
+        if (!initializeSchematicHandler()) return;
+        if (!initializeWorldEdit()) return;
+        if (!setupPermissions()) return;
         initializeApi();
         initializeServerMode();
         initializeStorage();
@@ -174,17 +179,20 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     // Initialization methods
-    private void initializeNms() {
+    private boolean initializeNms() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aFinding NMS version...");
         try {
             nms = (INms) Class.forName("ga.justreddy.wiki.whaleskywars.nms." + VERSION + "." + VERSION).newInstance();
             TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aNMS version found: " + VERSION);
         } catch (Exception e) {
             TextUtil.error(e, "Failed to find NMS version: " + VERSION + ", not supported!", true);
+            getServer().getPluginManager().disablePlugin(this);
+            return false;
         }
+        return true;
     }
 
-    private void initializeSchematicHandler() {
+    private boolean initializeSchematicHandler() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading schematic handler...");
         try {
             schematic = (ISchematic) Class.forName("ga.justreddy.wiki.whaleskywars.nms." + VERSION + ".Schematic").newInstance();
@@ -192,14 +200,17 @@ public final class WhaleSkyWars extends JavaPlugin {
         } catch (Exception e) {
             TextUtil.error(e, "Schematic version: " + VERSION + " is not supported!", true);
             getServer().getPluginManager().disablePlugin(this);
+            return false;
         }
+        return true;
     }
 
-    private void initializeWorldEdit() {
+    private boolean initializeWorldEdit() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aFinding WorldEdit version...");
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
             TextUtil.error(null, "WorldEdit is not installed, disabling plugin!", true);
             getServer().getPluginManager().disablePlugin(this);
+            return false;
         } else {
             try {
                 worldEdit = (IWorldEdit) Class.forName("ga.justreddy.wiki.whaleskywars.nms." + VERSION + ".WorldEdit").newInstance();
@@ -208,6 +219,17 @@ public final class WhaleSkyWars extends JavaPlugin {
                 TextUtil.error(e, "Failed to find WorldEdit version: " + VERSION + ", not supported!", true);
             }
         }
+        return true;
+    }
+
+    private boolean setupPermissions() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            TextUtil.error(null, "Vault is not installed, disabling plugin!", true);
+            getServer().getPluginManager().disablePlugin(this);
+            return false;
+        }
+        permission = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
+        return permission != null;
     }
 
     private void initializeApi() {
@@ -216,7 +238,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aAPI found!");
     }
 
-    private void initializeServerMode() {
+    private boolean initializeServerMode() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aSetting server mode...");
         try {
             serverMode = ServerMode.valueOf(settingsConfig.getString("modules.mode").toUpperCase());
@@ -224,10 +246,12 @@ public final class WhaleSkyWars extends JavaPlugin {
         } catch (Exception e) {
             TextUtil.error(e, "Failed to set server mode! " + settingsConfig.getString("modules.mode") + " not supported!", true);
             getServer().getPluginManager().disablePlugin(this);
+            return false;
         }
+        return true;
     }
 
-    private void initializeStorage() {
+    private boolean initializeStorage() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading storage...");
         try {
             String storageType = databaseConfig.getString("storage.type");
@@ -255,7 +279,9 @@ public final class WhaleSkyWars extends JavaPlugin {
             TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aStorage loaded!");
         } catch (Exception e) {
             TextUtil.error(e, "Failed to load storage!", true);
+            return false;
         }
+        return true;
     }
 
     private void initializeGameMap() {
@@ -314,7 +340,7 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     private void loadCreators() {
         cageCreator = new CageCreator();
-        gameCreator = new GameCreator();
+        gameCreator = new GameCreator<Hologram>();
     }
 
     private void setupCommandsAndListeners() {

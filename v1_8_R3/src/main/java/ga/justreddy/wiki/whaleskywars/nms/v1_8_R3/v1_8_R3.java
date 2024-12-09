@@ -3,17 +3,18 @@ package ga.justreddy.wiki.whaleskywars.nms.v1_8_R3;
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.handler.NBTHandlers;
+import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeam;
 import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeamManager;
+import ga.justreddy.wiki.whaleskywars.util.PrefixUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -594,17 +595,93 @@ public final class v1_8_R3 implements INms {
 
     @Override
     public void setWaitingLobbyName(IGamePlayer player) {
+        // Check if the player is in a game
+        if (player.getGame() == null) return;
+        System.out.println("Existing ");
+        // Getting all teams
+        Map<UUID, List<FakeTeam>> TEAMS = FakeTeamManager.getPlayerTeams();
+        // Resetting the teams of the player
+        for (FakeTeam team : TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>())) {
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                FakeTeamManager.reset(bukkitPlayer, team);
+            });
+        }
+
+        // Removing player from the map
+        TEAMS.remove(player.getUniqueId());
+
+
+        Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
+
+            // Getting all teams for this player
+            List<FakeTeam> teams = TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>());
+
+            // If the teams are not empty, we clear them
+            if (!teams.isEmpty()) teams.clear();
+
+
+
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                // Getting the prefix of the player
+                String prefix = PrefixUtil.getColorByRank(bukkitPlayer);
+                // Getting the priority of the player
+                int priority = PrefixUtil.getPriority(bukkitPlayer);
+                // Creating a new fake team
+                FakeTeam fakeTeam = new FakeTeam(prefix, "", priority);
+                fakeTeam.addMember(bukkitPlayer.getName());
+                teams.add(fakeTeam);
+                TEAMS.put(player.getUniqueId(), teams);
+
+                // Sending the fake team to the player
+                System.out.println("Sending ");
+                FakeTeamManager.sendTeam(bukkitPlayer, fakeTeam);
+
+                // Sending the fake team to all other players
+                for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                    if (otherPlayer.getUniqueId().equals(player.getUniqueId())) continue;
+                    otherPlayer.getPlayer().ifPresent(otherBukkitPlayer -> {
+                        FakeTeamManager.sendTeam(otherBukkitPlayer, fakeTeam);
+                    });
+                }
+
+                // Sending the others faketeam to the player
+                for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                    otherPlayer.getPlayer().ifPresent(otherBukkitPlayer -> {
+                        FakeTeam otherFakeTeam = new FakeTeam(
+                                PrefixUtil.getColorByRank(otherBukkitPlayer),
+                                "",
+                                PrefixUtil.getPriority(otherBukkitPlayer));
+                        otherFakeTeam.addMember(otherBukkitPlayer.getName());
+                        player.getPlayer().ifPresent(mainBukkitPlayer -> {
+                            FakeTeamManager.sendTeam(mainBukkitPlayer, otherFakeTeam);
+                        });
+                    });
+                }
+
+            });
+
+        });
 
     }
 
     @Override
     public void removeWaitingLobbyName(IGame game) {
-
+        for (IGamePlayer player : game.getPlayers()) {
+            removeWaitingLobbyName(game, player);
+        }
     }
 
     @Override
     public void removeWaitingLobbyName(IGame game, IGamePlayer player) {
-
+        Map<UUID, List<FakeTeam>> TEAMS = FakeTeamManager.getPlayerTeams();
+        List<FakeTeam> teams = TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        if (teams.isEmpty()) return;
+        for (FakeTeam team : teams) {
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                FakeTeamManager.reset(bukkitPlayer, team);
+            });
+        }
+        TEAMS.remove(player.getUniqueId());
     }
 
     private boolean isSign(Block block) {

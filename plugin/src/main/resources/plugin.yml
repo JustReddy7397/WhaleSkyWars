@@ -3,6 +3,7 @@ version: '${version}'
 main: ga.justreddy.wiki.whaleskywars.WhaleSkyWars
 depend:
   - WorldEdit
+  - Vault
 softdepend:
   - PlaceholderAPI
   - Vault

@@ -36,6 +36,24 @@ game-options.food = false
 game-options.command-whitelist.enabled = false
 game-options.command-whitelist.commands = ["leave"]
 
+# For waiting lobby tablist
+# Should match the rank name in the permissions' plugin.
+# Shows the color of your rank + name in tablist
+# For example, if you have the rank "default" your name would be
+# the gray color + your name.
+# Format: rank;color;priority (lowest to highest)
+game-options.tablist-ranks = [
+    "default;&7;9",
+    "vip;&a;8",
+    "vip+;&b;7",
+    "mvp;&e;6",
+    "mvp+;&6;5",
+    "helper;&9;4",
+    "mod;&2;3",
+    "admin;&c;2",
+    "owner;&4;1"
+]
+
 game-options.countdowns.start = 10
 game-options.countdowns.cages = 10  # aka pregame
 game-options.countdowns.end = 10
