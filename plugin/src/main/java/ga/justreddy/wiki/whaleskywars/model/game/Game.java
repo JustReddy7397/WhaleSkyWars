@@ -387,6 +387,17 @@ public class Game implements IGame {
 
         this.defaultChestType = ChestType.valueOf(config.getString("settings.defaultChestType", "NORMAL").toUpperCase());
 
+        ConfigurationSection chests = config.getSection("chests");
+        if (chests != null) {
+            for (String key : chests.keys()) {
+                ConfigurationSection chest = chests.getSection(key);
+                if (chest == null) continue;
+                Location location = LocationUtil.getLocation(chest.getString("location"));
+                if (location == null) continue;
+                addChest(location, chest.getString("type"));
+            }
+        }
+
         this.maximumPlayers = this.teams.size() * this.teamSize;
 
         startingTimer = new StartingTimer(
@@ -475,6 +486,8 @@ public class Game implements IGame {
 
         if (waitingSpawn != null && waitingCuboid != null) {
             bukkitPlayer.teleport(waitingSpawn);
+            WhaleSkyWars.getInstance().getNms()
+                    .setWaitingLobbyName(player);
         } else {
             assigner.assign(this, player);
 
@@ -495,13 +508,14 @@ public class Game implements IGame {
                 }
             }
             bukkitPlayer.teleport(team.getSpawnLocation());
-            WhaleSkyWars.getInstance().getSkyWarsBoard()
-                    .removeScoreboard(player);
-            WhaleSkyWars.getInstance().getSkyWarsBoard()
-                    .setGameBoard(player);
             WhaleSkyWars.getInstance().getNms()
                     .setTeamName(player);
+
         }
+        WhaleSkyWars.getInstance().getSkyWarsBoard()
+                .removeScoreboard(player);
+        WhaleSkyWars.getInstance().getSkyWarsBoard()
+                .setGameBoard(player);
 
         sendMessage(getPlayers(), Messages
                 .GAME_JOINED.toString(bukkitPlayer, Replaceable.of(
@@ -788,6 +802,7 @@ public class Game implements IGame {
             CustomChest customChest = WhaleSkyWars.getInstance().getChestManager().getById(id);
             if (customChest == null) return;
             customChest.populateChest(chest.getBlockInventory(), chestType, getGameChestType());
+            System.out.println("hi");
         });
         teams.forEach(team -> team.fill(this, chestType));
     }

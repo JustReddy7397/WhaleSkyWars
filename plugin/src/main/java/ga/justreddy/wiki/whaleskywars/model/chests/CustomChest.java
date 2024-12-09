@@ -157,6 +157,7 @@ public class CustomChest {
     }
 
     private void fillRandomizer(Inventory inventory, ThreadLocalRandom random, List<ILootItem> refill) {
+        System.out.println("Size: " + refill.size());
         Set<ILootItem> used = new HashSet<>();
 
         int amount = random.nextInt(minamount, maxamount) + maxamount;
@@ -167,11 +168,13 @@ public class CustomChest {
             ILootItem item = refill.get(random.nextInt(refill.size()));
             if (used.contains(item)) continue;
             used.add(item);
+/*
             if (item.shouldFill(random)) {
+*/
                 ItemStack itemStack = item.getItemStack();
                 inventory.setItem(slotIndex, itemStack);
                 ++placed;
-            }
+            /*}*/
         }
 
     }

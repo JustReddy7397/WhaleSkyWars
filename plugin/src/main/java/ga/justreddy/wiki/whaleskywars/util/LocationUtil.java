@@ -29,4 +29,13 @@ public class LocationUtil {
         return location.clone().subtract((new Vector(Math.cos((double) yaw + 5.1D), 0.0D, Math.sin((double) yaw + 5.1D))).normalize().multiply(rotate));
     }
 
+    public static boolean equalsBlock(Location one, Location two) {
+        return one.getBlockX()
+                == two.getBlockX()
+                && one.getBlockY()
+                == two.getBlockY()
+                && one.getBlockZ()
+                == two.getBlockZ();
+    }
+
 }

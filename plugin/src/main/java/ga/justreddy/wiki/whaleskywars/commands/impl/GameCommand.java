@@ -65,8 +65,8 @@ public class GameCommand implements SkyWarsCommand {
                     "&b/ws game island remove <id> chest <chestId> &7- &3Removes the chest for the specified island",
                     "&b/ws game island set <id> spawn &7- &3Sets the spawn for the specified island",
                     "&b/ws game island remove <id> &7- &3Removes the specified island",
-                    "&b/ws game chest create <type> &7- &3Creates a chest",
-                    "&b/ws game chest remove <type> &7- &3Removes a chest",
+                    "&b/ws game chest add <type> &7- &3Adds a chest to the game",
+                    "&b/ws game chest remove <type> &7- &3Removes a chest from the game",
                     "&b/ws game save &7- &3Saves the game",
                     "&7&m----------------------------------------"
             );
@@ -338,6 +338,23 @@ public class GameCommand implements SkyWarsCommand {
     }
 
     private void chest(IGamePlayer player, String[] args) {
+
+        if (args.length != 4) {
+            player.sendMessage("&cUsage: /ws game chest <add/remove> <type>");
+            return;
+        }
+
+        if (args[2].equalsIgnoreCase("add")) {
+            WhaleSkyWars.getInstance().getGameCreator()
+                    .addChest(player, args[3]);
+            return;
+        } else if (args[2].equalsIgnoreCase("remove")) {
+            WhaleSkyWars.getInstance().getGameCreator()
+                    .removeChest(player);
+            return;
+        } else {
+            player.sendMessage("&cUsage: /ws game chest <add/remove> <type>");
+        }
 
     }
 

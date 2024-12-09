@@ -41,6 +41,8 @@ public class PlayingPhase implements IPhase {
             });
         });
 
+        ((Game) game).fillChests(game.getGameChestType());
+
     }
 
     @Override
