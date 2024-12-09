@@ -54,6 +54,7 @@ public class GameManager {
     }
 
     public void register(String name, TempConfig tempConfig) {
+        if (!tempConfig.getBoolean("settings.enabled")) return;
         IGame game = new Game(name, tempConfig);
         games.put(name, game);
         if (WhaleSkyWars.getInstance().getServerMode() != ServerMode.LOBBY) {
