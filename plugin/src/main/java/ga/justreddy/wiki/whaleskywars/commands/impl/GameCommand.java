@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.commands.impl;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
@@ -108,6 +109,15 @@ public class GameCommand implements SkyWarsCommand {
                 break;
             case "status":
                 status(gamePlayer);
+            case "next":
+                // TODO fix
+                IGame game = gamePlayer.getGame();
+                game.goToNextPhase();
+                break;
+            case "leave":
+                IGame game2 = gamePlayer.getGame();
+                game2.onGamePlayerLeave(gamePlayer, false, true);
+                break;
             default:
                 gamePlayer.sendMessage("&cUnknown sub-command");
                 break;

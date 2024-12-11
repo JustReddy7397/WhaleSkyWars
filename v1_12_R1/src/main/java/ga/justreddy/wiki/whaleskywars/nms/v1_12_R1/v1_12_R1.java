@@ -1,4 +1,4 @@
-package ga.justreddy.v1_12_R1;
+package ga.justreddy.wiki.whaleskywars.nms.v1_12_R1;
 
 import de.tr7zw.changeme.nbtapi.NBTEntity;
 import de.tr7zw.changeme.nbtapi.NBTItem;
@@ -361,7 +361,6 @@ public class v1_12_R1 implements INms {
 
     @Override
     public Block getRelativeBlock(Location location) {
-        if (!isSign(location.getBlock())) return null;
         Block block = location.getBlock();
         byte data = block.getData();
         switch (data) {

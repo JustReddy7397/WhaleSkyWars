@@ -633,6 +633,8 @@ public class Game implements IGame {
         }
 
 
+        WhaleSkyWars.getInstance().getNms().removeTeamName(player);
+
         if (isSilent) return;
         sendMessage(getPlayers(), Messages
                 .GAME_LEFT.toString(player.getPlayer().get(), Replaceable.of(

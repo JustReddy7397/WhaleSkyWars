@@ -48,22 +48,22 @@ public class PlayingPhase implements IPhase {
     @Override
     public void onTick(IGame game) {
 
-        if (game.getAliveTeams().size() == 1) {
+        /*if (game.getAliveTeams().size() == 1) {
             ((Game)game).getPhaseHandler().setPhase(new EndingPhase(game.getAliveTeams().get(0)));
             return;
         } else if (game.getAliveTeams().isEmpty()) {
             game.goToNextPhase();
             return;
-        }
+        }*/
 
         GameEvent event = game.getCurrentEvent();
 
         if (event == null) {
-            if (game.getAliveTeams().size() == 1) {
+            /*if (game.getAliveTeams().size() == 1) {
                 ((Game)game).getPhaseHandler().setPhase(new EndingPhase(game.getAliveTeams().get(0)));
             } else if (game.getAliveTeams().isEmpty()) {
                 game.goToNextPhase();
-            }
+            }*/
             return;
         }
 
