@@ -155,7 +155,7 @@ public class GameListener implements Listener {
         if (deathPlayer == null) return;
         if (!deathPlayer.isPlaying()) return;
         IGame game = deathPlayer.getGame();
-        death.teleport(game.getSpectatorSpawn());
+
         Player killer = death.getKiller();
         IGamePlayer killerPlayer = null;
         if (killer != null) {

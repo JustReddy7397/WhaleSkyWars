@@ -22,12 +22,12 @@ public class StartingPhase implements IPhase {
 
         AbstractTimer startingTimer = game.getStartingTimer();
 
-        /*if (game.getPlayerCount() < game.getMinimumPlayers()) {
+        if (game.getPlayerCount() < game.getMinimumPlayers()) {
             ((Game) game).getPhaseHandler().setPhase(new WaitingPhase());
             // TODO bungeecord support
             startingTimer.stop();
             return;
-        }*/
+        }
 
         if (startingTimer.getTicksExceed() <= 0) {
             startingTimer.stop();

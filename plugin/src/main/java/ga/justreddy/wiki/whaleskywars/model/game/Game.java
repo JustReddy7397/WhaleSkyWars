@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.model.game;
 
+import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
@@ -622,6 +623,13 @@ public class Game implements IGame {
         WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
         PlayerUtil.refresh(player);
 
+        for (IGamePlayer otherPlayer : getPlayers()) {
+            otherPlayer.getPlayer().ifPresent(bukkitPlayer -> {
+                player.getPlayer().ifPresent(bukkitPlayer::showPlayer);
+                bukkitPlayer.showPlayer(bukkitPlayer);
+            });
+        }
+
         if (kick) {
             if (WhaleSkyWars.getInstance().getServerMode() == ServerMode.BUNGEE) {
                 BungeeUtil.sendBackToServer(player);
@@ -654,6 +662,10 @@ public class Game implements IGame {
         Player bukkitVictim = victim.getPlayer().get();
         victim.setDead(true);
         Bukkit.getScheduler().runTaskLater(WhaleSkyWars.getInstance(), () -> {
+            if (XMaterial.supports(13)) {
+                WhaleSkyWars.getInstance().getNms().respawn(bukkitVictim);
+            }
+            bukkitVictim.teleport(spectatorSpawn);
             bukkitVictim.setGameMode(org.bukkit.GameMode.ADVENTURE);
             bukkitVictim.setAllowFlight(true);
             bukkitVictim.setFlying(true);

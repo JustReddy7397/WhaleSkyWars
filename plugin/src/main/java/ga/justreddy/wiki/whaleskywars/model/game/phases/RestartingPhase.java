@@ -21,6 +21,7 @@ public class RestartingPhase implements IPhase {
         ServerMode mode = WhaleSkyWars.getInstance().getServerMode();
 
         World world = game.getWorld();
+        WhaleSkyWars.getInstance().getNms().removeTeamNames(game);
         game.getPlayers().forEach(player -> {
             game.onGamePlayerLeave(player, true, true);
         });

@@ -49,7 +49,7 @@ public class EndingPhase implements IPhase {
                 if (player.getGame().getName().equalsIgnoreCase(game.getName())) {
                     PlayerUtil.refresh(player);
                 }
-                if (((Game)game).isTeamGame()) {
+                if (!((Game)game).isTeamGame()) {
                     winnerText.append(player.getName());
                 } else {
                     winnerText.append(player.getName())
