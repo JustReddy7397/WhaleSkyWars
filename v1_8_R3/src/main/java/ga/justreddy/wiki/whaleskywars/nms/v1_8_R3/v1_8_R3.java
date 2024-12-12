@@ -597,7 +597,6 @@ public final class v1_8_R3 implements INms {
     public void setWaitingLobbyName(IGamePlayer player) {
         // Check if the player is in a game
         if (player.getGame() == null) return;
-        System.out.println("Existing ");
         // Getting all teams
         Map<UUID, List<FakeTeam>> TEAMS = FakeTeamManager.getPlayerTeams();
         // Resetting the teams of the player
@@ -652,9 +651,7 @@ public final class v1_8_R3 implements INms {
                                 "",
                                 PrefixUtil.getPriority(otherBukkitPlayer));
                         otherFakeTeam.addMember(otherBukkitPlayer.getName());
-                        player.getPlayer().ifPresent(mainBukkitPlayer -> {
-                            FakeTeamManager.sendTeam(mainBukkitPlayer, otherFakeTeam);
-                        });
+                        FakeTeamManager.sendTeam(bukkitPlayer, otherFakeTeam);
                     });
                 }
 
@@ -682,6 +679,11 @@ public final class v1_8_R3 implements INms {
             });
         }
         TEAMS.remove(player.getUniqueId());
+    }
+
+    @Override
+    public void respawn(Player player) {
+        ((CraftPlayer) player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
     }
 
     private boolean isSign(Block block) {

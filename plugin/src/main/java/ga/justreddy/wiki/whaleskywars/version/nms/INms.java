@@ -73,4 +73,6 @@ public interface INms {
 
     void removeWaitingLobbyName(IGame game, IGamePlayer player);
 
+    void respawn(Player player);
+
 }

@@ -426,6 +426,11 @@ public class v1_12_R1 implements INms {
 
     }
 
+    @Override
+    public void respawn(Player player) {
+        ((CraftPlayer) player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+    }
+
     private boolean isSign(Block block) {
         if (block == null) return false;
         return block.getState() instanceof Sign;
