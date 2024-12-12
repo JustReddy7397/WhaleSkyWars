@@ -18,7 +18,6 @@ public class NmsTeam {
 
     private ScoreboardTeam scoreboardTeam;
 
-
     public NmsTeam(Player player, FakeTeam fakeTeam) {
         String name = fakeTeam.getName();
         String prefix = fakeTeam.getPrefix();

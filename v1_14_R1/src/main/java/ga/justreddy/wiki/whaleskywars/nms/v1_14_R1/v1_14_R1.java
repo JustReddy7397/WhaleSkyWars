@@ -3,17 +3,18 @@ package ga.justreddy.wiki.whaleskywars.nms.v1_14_R1;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
-import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
 import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeam;
 import ga.justreddy.wiki.whaleskywars.nms.v1_14_R1.teams.NmsTeam;
 import ga.justreddy.wiki.whaleskywars.nms.v1_14_R1.teams.NmsTeamManager;
+import ga.justreddy.wiki.whaleskywars.util.PrefixUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_14_R1.ChatMessageType;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_14_R1.PacketPlayOutChat;
 import org.bukkit.*;
-import org.bukkit.Particle;
-import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -110,7 +111,7 @@ public final class v1_14_R1 implements INms {
     @Override
     public void setCollideWithEntities(Entity entity, boolean collide) {
         if (!(entity instanceof Player)) return;
-        ((Player)entity).setCollidable(collide);
+        ((Player) entity).setCollidable(collide);
     }
 
     @Override
@@ -309,7 +310,6 @@ public final class v1_14_R1 implements INms {
                 ChatColor.RED + prefix, "", priority + 1);
 
 
-
         for (IGamePlayer player : team.getPlayers()) {
             skip.add(player.getUniqueId());
             player.getPlayer().ifPresent(bukkitPlayer -> {
@@ -329,25 +329,96 @@ public final class v1_14_R1 implements INms {
 
     @Override
     public void setTeamName(IGamePlayer player) {
-
+        IGameTeam team = player.getGameTeam();
+        if (team == null) return;
+        setTeamName(team);
     }
 
     @Override
     public void removeTeamNames(IGame game) {
+        for (IGameTeam team : game.getTeams()) {
+            removeTeamName(team);
+        }
     }
 
     @Override
     public void removeTeamName(IGame game, IGamePlayer player) {
-
+        removeTeamName(player);
     }
 
     @Override
     public void removeTeamName(IGameTeam team) {
-
+        for (IGamePlayer player : team.getPlayers()) {
+            removeTeamName(player);
+        }
     }
 
     @Override
     public void removeTeamName(IGamePlayer player) {
+        Map<UUID, List<NmsTeam>> TEAMS = NmsTeamManager.TEAMS;
+        List<NmsTeam> teams = TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        if (teams.isEmpty()) return;
+        for (NmsTeam team : teams) {
+            player.getPlayer().ifPresent(team::reset);
+        }
+        TEAMS.remove(player.getUniqueId());
+    }
+
+    @Override
+    public void setWaitingLobbyName(IGamePlayer player) {
+        if (player.getGame() == null) return;
+        Map<UUID, List<NmsTeam>> TEAMS = NmsTeamManager.TEAMS;
+
+        for (NmsTeam team : TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>())) {
+            player.getPlayer().ifPresent(team::reset);
+        }
+
+        TEAMS.remove(player.getUniqueId());
+
+        Bukkit.getScheduler().runTaskAsynchronously(WhaleSkyWars.getInstance(), () -> {
+            List<NmsTeam> teams = TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>());
+            if (!teams.isEmpty()) teams.clear();
+
+            player.getPlayer().ifPresent(bukkitPlayer -> {
+                String prefix = PrefixUtil.getColorByRank(bukkitPlayer);
+                int priority = PrefixUtil.getPriority(bukkitPlayer);
+
+                FakeTeam fakeTeam = new FakeTeam(prefix, "", priority);
+                NmsTeam nmsTeam = new NmsTeam(bukkitPlayer, fakeTeam);
+                teams.add(nmsTeam);
+                TEAMS.put(player.getUniqueId(), teams);
+                nmsTeam.send(bukkitPlayer);
+
+                for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                    if (otherPlayer.getUniqueId().equals(player.getUniqueId())) continue;
+                    otherPlayer.getPlayer().ifPresent(nmsTeam::send);
+                }
+
+                for (IGamePlayer otherPlayer : player.getGame().getPlayers()) {
+                    otherPlayer.getPlayer().ifPresent(otherBukkitPlayer -> {
+                        FakeTeam otherFakeTeam = new FakeTeam(PrefixUtil.getColorByRank(otherBukkitPlayer), "", PrefixUtil.getPriority(otherBukkitPlayer));
+                        NmsTeam otherNmsTeam = new NmsTeam(otherBukkitPlayer, otherFakeTeam);
+                        otherNmsTeam.send(bukkitPlayer);
+                    });
+                }
+
+
+
+            });
+
+        });
+
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game) {
+        for (IGamePlayer player : game.getPlayers()) {
+            removeWaitingLobbyName(game, player);
+        }
+    }
+
+    @Override
+    public void removeWaitingLobbyName(IGame game, IGamePlayer player) {
         Map<UUID, List<NmsTeam>> TEAMS = NmsTeamManager.TEAMS;
         List<NmsTeam> teams = TEAMS.getOrDefault(player.getUniqueId(), new ArrayList<>());
         for (NmsTeam team : teams) {
@@ -357,17 +428,7 @@ public final class v1_14_R1 implements INms {
     }
 
     @Override
-    public void setWaitingLobbyName(IGamePlayer player) {
-
-    }
-
-    @Override
-    public void removeWaitingLobbyName(IGame game) {
-
-    }
-
-    @Override
-    public void removeWaitingLobbyName(IGame game, IGamePlayer player) {
-
+    public void respawn(Player player) {
+        ((CraftPlayer) player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
     }
 }
