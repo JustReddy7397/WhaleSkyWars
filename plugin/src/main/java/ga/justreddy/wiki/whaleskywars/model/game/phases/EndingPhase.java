@@ -36,9 +36,6 @@ public class EndingPhase implements IPhase {
         game.getEndingTimer().start();
         ((Game)game).getEvents().forEach(event -> event.onDisable(game));
 
-        SkyWarsGameStateChangeEvent event = new SkyWarsGameStateChangeEvent(game, previousState, game.getGameState());
-        event.call();
-
         StringBuilder winnerText = new StringBuilder();
 
         if (winnerTeam != null) {

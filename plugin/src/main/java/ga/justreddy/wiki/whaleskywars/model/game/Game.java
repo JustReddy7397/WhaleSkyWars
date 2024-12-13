@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameJoinEvent;
 import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameLeaveEvent;
+import ga.justreddy.wiki.whaleskywars.api.events.SkyWarsGameStateChangeEvent;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillEffect;
 import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.KillMessage;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
@@ -200,6 +201,8 @@ public class Game implements IGame {
 
     @Override
     public void setGameState(GameState gameState) {
+        SkyWarsGameStateChangeEvent event = new SkyWarsGameStateChangeEvent(this, state, gameState);
+        event.call();
         state = gameState;
     }
 
