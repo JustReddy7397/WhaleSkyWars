@@ -2,7 +2,6 @@ package ga.justreddy.wiki.whaleskywars.manager;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.Addon;
-import ga.justreddy.wiki.whaleskywars.api.model.cosmetics.VictoryDance;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameMode;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
 
@@ -30,6 +29,7 @@ public class GameModeManager {
             if (!file.getName().endsWith(".jar")) continue;
             register(file);
         }
+        register(new SwapGameMode1());
     }
 
     private void register(File file) {
