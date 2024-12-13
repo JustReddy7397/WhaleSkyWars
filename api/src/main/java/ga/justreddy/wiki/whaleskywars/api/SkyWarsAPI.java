@@ -76,20 +76,6 @@ public interface SkyWarsAPI {
     List<IGame> getGames();
 
     /**
-     * Registers a custom victory dance.
-     *
-     * @param dance the victory dance to register.
-     */
-    void registerVictoryDance(VictoryDance dance);
-
-    /**
-     * Registers custom player data.
-     *
-     * @param playerData the custom player data to register.
-     */
-    void registerCustomPlayerData(ICustomPlayerData playerData);
-
-    /**
      * Retrieves the plugin instance.
      *
      * @return the plugin instance.

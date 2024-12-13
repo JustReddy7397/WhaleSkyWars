@@ -31,7 +31,7 @@ public class GamePlayer implements IGamePlayer {
     private IGameTeam gameTeam;
     private ICombatLog combatLog;
     private boolean dead;
-    private Map<String, ICustomPlayerData> customPlayerData;
+    private final Map<String, ICustomPlayerData> customPlayerData;
 
     public GamePlayer(UUID uniqueId, String name) {
         this.uniqueId = uniqueId;

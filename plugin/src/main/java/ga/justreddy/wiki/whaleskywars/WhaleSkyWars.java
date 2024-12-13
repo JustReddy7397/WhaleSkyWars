@@ -40,7 +40,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
-import redis.clients.jedis.BuilderFactory;
 
 import java.io.File;
 
@@ -151,10 +150,10 @@ public final class WhaleSkyWars extends JavaPlugin {
         if (!setupPermissions()) return;
         initializeApi();
         initializeServerMode();
+        loadManagers();
         initializeStorage();
         initializeGameMap();
 
-        loadManagers();
         loadCreators();
 
         setupCommandsAndListeners();
@@ -163,9 +162,6 @@ public final class WhaleSkyWars extends JavaPlugin {
         if (defaultConfig.getString("spawn") != null && !defaultConfig.getString("spawn").equalsIgnoreCase("null")) {
             spawn = LocationUtil.getLocation(defaultConfig.getString("spawn"));
         }
-
-        customPlayerDataManager.addCustomPlayerData(new CustomPlayerDataExample());
-        customPlayerDataManager.addCustomPlayerData(new PlayerRanked());
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
 
@@ -336,6 +332,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         killMessageManager.start();
         chestManager.start();
         trailManager.start();
+        customPlayerDataManager.start();
     }
 
     private void loadCreators() {

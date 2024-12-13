@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.api.model.entity.data;
 
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
+import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 /**
@@ -13,7 +14,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
  * So it can be properly saved and loaded.
  * @author JustReddy
  */
-public interface ICustomPlayerData extends JsonSerializer<ICustomPlayerData>, JsonDeserializer<ICustomPlayerData> {
+public interface ICustomPlayerData extends JsonSerializer<ICustomPlayerData>, JsonDeserializer<ICustomPlayerData>, Addon {
 
     /**
      * Returns the id of the custom player data.
