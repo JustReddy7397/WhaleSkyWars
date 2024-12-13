@@ -6,8 +6,6 @@ description: This guide will show you have to add your very own VictoryDance
 
 Creating a custom VictoryDance is a fairly straight forward process. First of all, ensure you have the API dependency loaded into your project and set WhaleSkyWars as a depend in your plugin.yml file.
 
-
-
 Create your victorydance class that extends `VictoryDance`. In this example, we shall make a class called FireWorkDance that will spew out fireworks at the players location whenever they win a game
 
 ```java
@@ -168,20 +166,4 @@ public class FireWorkDance extends VictoryDance {
 
 ## Reigstering the VictoryDance
 
-There are 2 ways to register a VictoryDance: \
-\- Registering it internally in your own plugin\
-\- Compiling the jar file, not registering anything and just placing it in the `dances` folder of the WhaleSkyWars plugin folder
-
-### Registering
-
-```java
-// Accessing the API
-SkyWarsAPI api = SkyWarsProvider.get();
-// Registering a victory dance
-api.registerVictoryDance(new FireWorkDance());
-```
-
-### Compiling and placing in folder
-
-&#x20;Simply compile your jar file, and place it in the `dances` folder of the WhaleSkyWars plugin folder, restart your server and it shoud be registered.
-
+Simply build the jar file and put it in the `WhaleSkyWars/addons`folder :)
