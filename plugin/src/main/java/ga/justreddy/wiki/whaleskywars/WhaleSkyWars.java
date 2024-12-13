@@ -150,9 +150,9 @@ public final class WhaleSkyWars extends JavaPlugin {
         if (!setupPermissions()) return;
         initializeApi();
         initializeServerMode();
+        initializeGameMap();
         loadManagers();
         initializeStorage();
-        initializeGameMap();
 
         loadCreators();
 
