@@ -12,3 +12,4 @@
       * [Cosmetics](resources/whaleskywars/developer-api/addons/cosmetics/README.md)
         * [Victory Dances](resources/whaleskywars/developer-api/addons/cosmetics/victory-dances.md)
       * [Custom Player Data](resources/whaleskywars/developer-api/addons/custom-player-data.md)
+      * [GameModes](resources/whaleskywars/developer-api/addons/gamemodes.md)

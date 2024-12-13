@@ -6,7 +6,7 @@ description: This guide will show you have to add your very own VictoryDance
 
 Creating a custom VictoryDance is a fairly straight forward process. First of all, ensure you have the API dependency loaded into your project and set WhaleSkyWars as a depend in your plugin.yml file.
 
-Create your victorydance class that extends `VictoryDance`. In this example, we shall make a class called FireWorkDance that will spew out fireworks at the players location whenever they win a game
+Create your victorydance class that extends `VictoryDance`. In this example, we shall make a class called `FireWorkDance` that will spew out fireworks at the players location whenever they win a game
 
 ```java
 public class FireWorkDance extends VictoryDance {}
