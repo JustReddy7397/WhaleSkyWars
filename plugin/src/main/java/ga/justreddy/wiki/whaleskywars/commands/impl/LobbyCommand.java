@@ -51,7 +51,7 @@ public class LobbyCommand implements SkyWarsCommand {
         Player bukkitPlayer = runner.asPlayer();
         Location spawn = WhaleSkyWars.getInstance().getSpawn();
         if (spawn == null) {
-            player.sendMessages("&cThe spawn has not been set yet.");
+            player.sendMessages("&cThe lobby has not been set yet.");
             return;
         }
         bukkitPlayer.teleport(spawn);
