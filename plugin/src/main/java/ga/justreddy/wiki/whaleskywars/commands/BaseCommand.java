@@ -74,6 +74,17 @@ public class BaseCommand implements TabExecutor {
 
         if (args.length == 1) {
             completions = new ArrayList<>(commands.keySet());
+            if (args[0].startsWith("g")) {
+                completions.add("game");
+            } else if (args[0].startsWith("c")) {
+                completions.add("cage");
+            } else if (args[0].startsWith("a")) {
+                completions.add("admin");
+            } else if (args[0].startsWith("l")) {
+                completions.add("lobby");
+            } else if (args[0].startsWith("s")) {
+                completions.add("sign");
+            }
         } else if (args.length > 1) {
             SkyWarsCommand command = commands.get(args[0]);
             if (command != null) {
