@@ -57,16 +57,6 @@ public class ApiProvider implements SkyWarsAPI {
     }
 
     @Override
-    public void registerVictoryDance(VictoryDance dance) {
-        WhaleSkyWars.getInstance().getVictoryDanceManager().register(dance);
-    }
-
-    @Override
-    public void registerCustomPlayerData(ICustomPlayerData playerData) {
-        WhaleSkyWars.getInstance().getCustomPlayerDataManager().addCustomPlayerData(playerData);
-    }
-
-    @Override
     public JavaPlugin getPlugin() {
         return WhaleSkyWars.getInstance();
     }
