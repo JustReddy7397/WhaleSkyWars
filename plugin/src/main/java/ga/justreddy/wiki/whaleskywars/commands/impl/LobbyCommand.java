@@ -4,6 +4,7 @@ import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
+import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommandHolder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

@@ -10,6 +10,8 @@ import ga.justreddy.wiki.whaleskywars.nms.v1_14_R1.teams.NmsTeam;
 import ga.justreddy.wiki.whaleskywars.nms.v1_14_R1.teams.NmsTeamManager;
 import ga.justreddy.wiki.whaleskywars.util.PrefixUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_14_R1.ChatMessageType;
 import net.minecraft.server.v1_14_R1.IChatBaseComponent;
 import net.minecraft.server.v1_14_R1.PacketPlayInClientCommand;
@@ -430,5 +432,16 @@ public final class v1_14_R1 implements INms {
     @Override
     public void respawn(Player player) {
         ((CraftPlayer) player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+    }
+
+    @Override
+    public TextComponent setHoverText(TextComponent component, String text) {
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(text)));
+        return component;
+    }
+
+    @Override
+    public void sendComponent(Player player, TextComponent component) {
+        player.spigot().sendMessage(component);
     }
 }

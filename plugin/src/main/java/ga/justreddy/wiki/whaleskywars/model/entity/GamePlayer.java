@@ -14,7 +14,9 @@ import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.util.*;
 

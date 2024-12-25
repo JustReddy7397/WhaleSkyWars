@@ -5,8 +5,10 @@ import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import ga.justreddy.wiki.whaleskywars.api.ApiProvider;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
+import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
+import ga.justreddy.wiki.whaleskywars.commands.lamp.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.listeners.GameListener;
 import ga.justreddy.wiki.whaleskywars.listeners.LobbyListener;
 import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
@@ -18,10 +20,10 @@ import ga.justreddy.wiki.whaleskywars.model.board.SkyWarsBoard;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
 import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
-import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
-import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerRanked;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
+import ga.justreddy.wiki.whaleskywars.model.lamp.parameters.GameParameterType;
+import ga.justreddy.wiki.whaleskywars.model.lamp.suggestions.GameNameSuggestionProvider;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
@@ -29,6 +31,7 @@ import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
 import ga.justreddy.wiki.whaleskywars.support.IMessenger;
 import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
+import ga.justreddy.wiki.whaleskywars.util.CommandGrabber;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
@@ -40,8 +43,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import revxrsal.commands.Lamp;
+import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.process.MessageSender;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
@@ -166,6 +175,7 @@ public final class WhaleSkyWars extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
+        CommandGrabber.grabCommands();
     }
 
     @Override
@@ -341,6 +351,26 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     private void setupCommandsAndListeners() {
+        SkyWarsCommand command = new SkyWarsCommand();
+        Lamp<BukkitCommandActor> bukkitLamp = BukkitLamp.builder(this)
+                .parameterTypes(builder -> {
+                    builder.addParameterType(IGame.class, new GameParameterType());
+                })
+                .suggestionProviders(builder ->   {
+                    builder.addProvider(IGame.class, new GameNameSuggestionProvider()
+                    );
+                })
+                .defaultErrorSender(command)
+                .defaultMessageSender((actor, message) -> {
+
+                })
+                .dependency(GameManager.class, gameManager)
+                .dependency(CacheManager.class, cacheManager)
+                .dependency(GameCreator.class, gameCreator)
+                .dependency(CageCreator.class, cageCreator)
+                .build();
+                command.visit(bukkitLamp);
+        bukkitLamp.register(command);
         getCommand("whaleskywars").setExecutor(new BaseCommand());
         Bukkit.getPluginManager().registerEvents(new LobbyListener(cacheManager), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);

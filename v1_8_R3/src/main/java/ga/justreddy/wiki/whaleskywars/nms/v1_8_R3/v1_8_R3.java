@@ -11,6 +11,8 @@ import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeam;
 import ga.justreddy.wiki.whaleskywars.model.faketeams.FakeTeamManager;
 import ga.justreddy.wiki.whaleskywars.util.PrefixUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -684,6 +686,17 @@ public final class v1_8_R3 implements INms {
     @Override
     public void respawn(Player player) {
         ((CraftPlayer) player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+    }
+
+    @Override
+    public void sendComponent(Player player, TextComponent component) {
+        player.spigot().sendMessage(component);
+    }
+
+    @Override
+    public TextComponent setHoverText(TextComponent component, String text) {
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(text)));
+        return component;
     }
 
     private boolean isSign(Block block) {

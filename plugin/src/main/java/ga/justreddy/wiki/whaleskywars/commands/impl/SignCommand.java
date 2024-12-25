@@ -6,6 +6,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSign;
 import ga.justreddy.wiki.whaleskywars.commands.CommandRunner;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommand;
+import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommandHolder;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSign;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,7 +14,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 /**

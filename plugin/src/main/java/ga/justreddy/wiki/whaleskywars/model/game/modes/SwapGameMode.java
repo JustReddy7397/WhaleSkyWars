@@ -7,6 +7,8 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameMode;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -129,6 +131,7 @@ public class SwapGameMode extends GameMode {
                     }
                 });
             });
+            
             // Loop through the players of the second team
             secondTeamAlivePlayers.forEach(player -> {
                 // Remove the player from the second team

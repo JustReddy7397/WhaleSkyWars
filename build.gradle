@@ -4,6 +4,8 @@ plugins {
 }
 
 allprojects {
+
+
     repositories {
         mavenCentral()
         mavenLocal()
@@ -40,6 +42,7 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs += ["-parameters"]
 
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release.set(targetJavaVersion)
@@ -54,10 +57,13 @@ dependencies {
     implementation project(":v1_14_R1")
 }
 
+var ver = "spigot_1"
 
-ext.set('output', "D:\\server\\spigot_14\\plugins")
+ext.set('output', "D:\\server\\"+ver+"\\plugins")
 
 shadowJar {
+
+
 
     def output = rootProject.ext.get('output')
 

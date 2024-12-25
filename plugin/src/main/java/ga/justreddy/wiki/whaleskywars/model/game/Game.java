@@ -337,12 +337,8 @@ public class Game implements IGame {
 
         teamGame = teamSize > 1;
 
-        if (gameMode == null) {
-            if (teamGame) {
-                mode = new TeamGameMode();
-            } else {
-                mode = new SoloGameMode();
-            }
+        if (gameMode == null  || gameMode.equalsIgnoreCase("null")) {
+            mode = teamGame ? new TeamGameMode() : new SoloGameMode();
         } else {
             GameMode mode = WhaleSkyWars.getInstance().getGameModeManager().of(gameMode);
             if (mode == null) {
@@ -383,7 +379,16 @@ public class Game implements IGame {
                 Location location = LocationUtil.getLocation(island.getString("spawn"));
                 if (location == null) continue;
                 Location balloon = LocationUtil.getLocation(island.getString("balloon"));
-                teams.add(new GameTeam(key, this, location, balloon));
+                IGameTeam team = new GameTeam(key, this, location, balloon);
+                ConfigurationSection chests = island.getSection("chests");
+                for (String str : chests.keys()) {
+                    ConfigurationSection chest = chests.getSection(str);
+                    if (chest == null) continue;
+                    Location chestLocation = LocationUtil.getLocation(chest.getString("location"));
+                    if (chestLocation == null) continue;
+                    team.addChest(chestLocation, chest.getString("type"));
+                }
+                teams.add(team);
             }
         }
 

@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars.version.nms;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -74,5 +75,9 @@ public interface INms {
     void removeWaitingLobbyName(IGame game, IGamePlayer player);
 
     void respawn(Player player);
+
+    void sendComponent(Player player, TextComponent component);
+
+    TextComponent setHoverText(TextComponent component, String text);
 
 }

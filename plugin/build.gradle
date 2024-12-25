@@ -59,6 +59,10 @@ dependencies {
     implementation 'fr.mrmicky:fastboard:2.1.2'
     compileOnly 'com.github.decentsoftware-eu:decentholograms:2.8.11'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    implementation 'io.github.revxrsal:lamp.common:4.0.0-beta.23'
+    implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-beta.23'
+    implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-beta.23'
+    implementation 'org.reflections:reflections:0.10.2'
 }
 
 def targetJavaVersion = 11

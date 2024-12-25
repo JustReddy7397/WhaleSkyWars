@@ -3,6 +3,7 @@ package ga.justreddy.wiki.whaleskywars.manager;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.Addon;
 import ga.justreddy.wiki.whaleskywars.api.model.game.GameMode;
+import ga.justreddy.wiki.whaleskywars.model.game.modes.SwapGameMode;
 import ga.justreddy.wiki.whaleskywars.util.ClassUtil;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class GameModeManager {
             if (!file.getName().endsWith(".jar")) continue;
             register(file);
         }
-        register(new SwapGameMode1());
+        register(new SwapGameMode());
     }
 
     private void register(File file) {
