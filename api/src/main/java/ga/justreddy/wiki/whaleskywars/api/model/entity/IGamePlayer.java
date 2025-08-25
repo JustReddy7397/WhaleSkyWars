@@ -183,4 +183,6 @@ public interface IGamePlayer {
 
     <T extends ICustomPlayerData> T getCustomPlayerData(String id);
 
+    IBasePlayer toBasePlayer();
+
 }

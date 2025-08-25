@@ -32,11 +32,11 @@ version = '1.0.0'
 
 def targetJavaVersion = 11
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    def javaVersion = JavaVersion.toVersion(11)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 

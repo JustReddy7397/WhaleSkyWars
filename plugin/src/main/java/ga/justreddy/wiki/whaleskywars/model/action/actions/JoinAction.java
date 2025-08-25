@@ -8,7 +8,7 @@ import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
-import ga.justreddy.wiki.whaleskywars.support.packets.packets.JoinPacket;
+import ga.justreddy.wiki.whaleskywars.supportold.packets.packets.GameJoinPacket;
 import ga.justreddy.wiki.whaleskywars.util.ShuffleUtil;
 
 import java.util.List;
@@ -74,8 +74,8 @@ public class JoinAction implements IAction {
                 // TODO
                 return;
             }
-            JoinPacket packet = new JoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
-            plugin.getMessenger().getSender().sendPacket(packet);
+            GameJoinPacket packet = new GameJoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+            /*plugin.getMessenger().getSender().sendPacket(packet);*/
         } else {
             IGame game = plugin.getGameManager().getRandomGame();
             if (game == null) {
@@ -89,8 +89,10 @@ public class JoinAction implements IAction {
                 // TODO
                 return;
             }
-            JoinPacket packet = new JoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+            GameJoinPacket packet = new GameJoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+/*
             plugin.getMessenger().getSender().sendPacket(packet);
+*/
         }
     }
 
@@ -122,8 +124,10 @@ public class JoinAction implements IAction {
             if (playerGame != null) {
                 playerGame.onGamePlayerLeave(player, !playerGame.isGameState(GameState.WAITING) || !playerGame.isGameState(GameState.STARTING), false);
             }
-            JoinPacket packet = new JoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+            GameJoinPacket packet = new GameJoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+/*
             plugin.getMessenger().getSender().sendPacket(packet);
+*/
         } else {
             IGame game = plugin.getGameManager().getRandomGame();
             if (game == null) {
@@ -140,8 +144,10 @@ public class JoinAction implements IAction {
             if (playerGame != null) {
                 playerGame.onGamePlayerLeave(player, !playerGame.isGameState(GameState.WAITING) || !playerGame.isGameState(GameState.STARTING), false);
             }
-            JoinPacket packet = new JoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+            GameJoinPacket packet = new GameJoinPacket(bungeeGame, player.getUniqueId(), player.getName(), true, false);
+/*
             plugin.getMessenger().getSender().sendPacket(packet);
+*/
         }
     }
 

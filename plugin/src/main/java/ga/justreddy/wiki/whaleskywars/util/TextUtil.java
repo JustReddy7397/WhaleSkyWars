@@ -7,7 +7,6 @@ import ga.justreddy.wiki.whaleskywars.util.iridium.IridiumColorAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 

@@ -21,7 +21,6 @@ import ga.justreddy.wiki.whaleskywars.model.chests.CustomChest;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.cosmetics.Cage;
-import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.SoloGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.modes.TeamGameMode;
 import ga.justreddy.wiki.whaleskywars.model.game.phases.WaitingPhase;
@@ -30,7 +29,7 @@ import ga.justreddy.wiki.whaleskywars.model.game.team.TeamAssigner;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.EndingTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.PreGameTimer;
 import ga.justreddy.wiki.whaleskywars.model.game.timers.StartingTimer;
-import ga.justreddy.wiki.whaleskywars.support.BungeeUtil;
+import ga.justreddy.wiki.whaleskywars.supportold.BungeeUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.PlayerUtil;
 import ga.justreddy.wiki.whaleskywars.util.Replaceable;
@@ -46,6 +45,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +53,9 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class Game implements IGame {
+
+    private static final int SPECTATOR_INVISIBILITY_DURATION = 1000000;
+    private static final Logger LOGGER = Bukkit.getLogger();
 
     private final String name;
     private final String displayName;
@@ -77,11 +80,8 @@ public class Game implements IGame {
     private PhaseHandler phaseHandler;
     private World world;
     private ChestType defaultChestType;
-
     private boolean teamGame = false;
-
     private BungeeGame bungeeGame;
-
     private AbstractTimer startingTimer;
     private AbstractTimer endingTimer;
     private AbstractTimer preGameTimer;
@@ -98,7 +98,7 @@ public class Game implements IGame {
         this.votedChestTypes = new HashMap<>();
         this.chests = new HashMap<>();
     }
-
+    
     @Override
     public String getName() {
         return name;
@@ -126,7 +126,7 @@ public class Game implements IGame {
 
     @Override
     public int getPlayerCount() {
-        return getPlayers().size();
+        return players.size();
     }
 
     @Override
@@ -136,7 +136,9 @@ public class Game implements IGame {
 
     @Override
     public List<IGamePlayer> getAlivePlayers() {
-        return players.stream().filter(player -> !player.isDead() && !spectators.contains(player)).collect(Collectors.toList());
+        return players.stream()
+                .filter(player -> !player.isDead() && !spectators.contains(player))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -156,22 +158,26 @@ public class Game implements IGame {
 
     @Override
     public List<IGameTeam> getAliveTeams() {
-        return teams.stream().filter(team -> !team.getAlivePlayers().isEmpty()).collect(Collectors.toList());
+        return teams.stream()
+                .filter(team -> !team.getAlivePlayers().isEmpty())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<IGameTeam> getSpectatorTeams() {
-        return teams.stream().filter(team -> !team.getSpectatorPlayers().isEmpty()).collect(Collectors.toList());
+        return teams.stream()
+                .filter(team -> !team.getSpectatorPlayers().isEmpty())
+                .collect(Collectors.toList());
     }
 
     @Override
     public Map<IGamePlayer, Integer> getKills() {
-        return kills;
+        return Collections.unmodifiableMap(kills);
     }
 
     @Override
     public int getKills(IGamePlayer player) {
-        return kills.getOrDefault(player, kills.put(player, 0));
+        return kills.getOrDefault(player, 0);
     }
 
     @Override
@@ -238,14 +244,7 @@ public class Game implements IGame {
 
     @Override
     public GameEvent getCurrentEvent() {
-        GameEvent currentEvent = null;
-        for (GameEvent event : events) {
-            if (event.isEnabled() && event.getTimer() > 0) {
-                currentEvent = event;
-                break;
-            }
-        }
-        return currentEvent;
+        return events.stream().filter(e -> e.isEnabled() && e.getTimer() > 0).findFirst().orElse(null);
     }
 
     @Override
@@ -260,34 +259,27 @@ public class Game implements IGame {
 
     @Override
     public ChestType getGameChestType() {
-        return votedChestTypes.values().stream().max(Comparator.comparingInt(i -> Collections.frequency(votedChestTypes.values(), i))).orElse(ChestType.NORMAL);
+        if (votedChestTypes.isEmpty()) return ChestType.NORMAL;
+        Map<ChestType, Long> freq = votedChestTypes.values().stream()
+                .collect(Collectors.groupingBy(ct -> ct, Collectors.counting()));
+        return freq.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(ChestType.NORMAL);
     }
 
     @Override
     public List<Map.Entry<String, Integer>> getTopThreeKillers() {
-        LinkedList<Map.Entry<String, Integer>> topThree = new LinkedList<>();
-        if (kills.size() >= 3) {
-            kills.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .limit(3)
-                    .forEach(entry -> {
-                        AbstractMap.SimpleEntry<String, Integer> simpleEntry = new AbstractMap.SimpleEntry<>(entry.getKey().getName(), entry.getValue());
-                        topThree.add(simpleEntry);
-                    });
-        } else {
-            kills.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .forEach(entry -> {
-                        AbstractMap.SimpleEntry<String, Integer> simpleEntry = new AbstractMap.SimpleEntry<>(entry.getKey().getName(), entry.getValue());
-                        topThree.add(simpleEntry);
-                    });
-        }
-        return topThree;
+        return kills.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(3)
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey().getName(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Map<UUID, ChestType> getVotedChestTypes() {
-        return votedChestTypes;
+        return Collections.unmodifiableMap(votedChestTypes);
     }
 
     @Override
@@ -307,13 +299,10 @@ public class Game implements IGame {
 
     @Override
     public boolean isChest(Location location) {
-        return chests.keySet()
-                .stream()
-                .anyMatch(chest -> {
-                    return chest.getBlockX() == location.getBlockX() &&
-                            chest.getBlockY() == location.getBlockY() &&
-                            chest.getBlockZ() == location.getBlockZ();
-                });
+        return chests.keySet().stream().anyMatch(chest ->
+                chest.getBlockX() == location.getBlockX() &&
+                        chest.getBlockY() == location.getBlockY() &&
+                        chest.getBlockZ() == location.getBlockZ());
     }
 
     @Override
@@ -329,28 +318,36 @@ public class Game implements IGame {
     @Override
     public void init(World world) {
         this.world = world;
+        initializeSettings();
+        initializeSpawnsAndCuboids();
+        initializeTeams();
+        initializeChests();
+        initializeTimersAndEvents();
+        finalizeInitialization();
+    }
 
+    private void initializeSettings() {
         teamSize = config.getInteger("settings.teamSize");
-        this.minimumPlayers = config.getInteger("settings.minimumPlayers");
+        minimumPlayers = config.getInteger("settings.minimumPlayers");
 
-        String gameMode = config.getString("settings.gameMode", null);
-
+        String gameModeStr = config.getString("settings.gameMode", null);
         teamGame = teamSize > 1;
 
-        if (gameMode == null  || gameMode.equalsIgnoreCase("null")) {
+        if (gameModeStr == null || gameModeStr.equalsIgnoreCase("null")) {
             mode = teamGame ? new TeamGameMode() : new SoloGameMode();
         } else {
-            GameMode mode = WhaleSkyWars.getInstance().getGameModeManager().of(gameMode);
-            if (mode == null) {
-                TextUtil.error(null, "Game " + name + " has an invalid game mode " + gameMode + "!", true);
+            GameMode foundMode = WhaleSkyWars.getInstance().getGameModeManager().of(gameModeStr);
+            if (foundMode == null) {
+                TextUtil.error(null, "Game " + name + " has an invalid game mode " + gameModeStr + "!", true);
                 return;
             }
-            this.mode = mode;
+            this.mode = foundMode;
         }
         this.mode.setGame(this);
+    }
 
-        Location boundHigh;
-        Location boundLow;
+    private void initializeSpawnsAndCuboids() {
+        Location boundHigh, boundLow;
 
         if (config.isSet("waiting-location")) {
             waitingSpawn = LocationUtil.getLocation(config.getString("waiting-location"));
@@ -370,7 +367,9 @@ public class Game implements IGame {
         }
 
         spectatorSpawn = LocationUtil.getLocation(config.getString("spectator-location"));
+    }
 
+    private void initializeTeams() {
         ConfigurationSection section = config.getSection("islands");
         if (section != null) {
             for (String key : section.keys()) {
@@ -380,35 +379,37 @@ public class Game implements IGame {
                 if (location == null) continue;
                 Location balloon = LocationUtil.getLocation(island.getString("balloon"));
                 IGameTeam team = new GameTeam(key, this, location, balloon);
-                ConfigurationSection chests = island.getSection("chests");
-                for (String str : chests.keys()) {
-                    ConfigurationSection chest = chests.getSection(str);
-                    if (chest == null) continue;
-                    Location chestLocation = LocationUtil.getLocation(chest.getString("location"));
-                    if (chestLocation == null) continue;
-                    team.addChest(chestLocation, chest.getString("type"));
+                ConfigurationSection chestsSection = island.getSection("chests");
+                if (chestsSection != null) {
+                    for (String str : chestsSection.keys()) {
+                        ConfigurationSection chest = chestsSection.getSection(str);
+                        if (chest == null) continue;
+                        Location chestLocation = LocationUtil.getLocation(chest.getString("location"));
+                        if (chestLocation == null) continue;
+                        team.addChest(chestLocation, chest.getString("type"));
+                    }
                 }
                 teams.add(team);
             }
         }
+    }
 
-        // TODO chests!!
-
+    private void initializeChests() {
         this.defaultChestType = ChestType.valueOf(config.getString("settings.defaultChestType", "NORMAL").toUpperCase());
-
-        ConfigurationSection chests = config.getSection("chests");
-        if (chests != null) {
-            for (String key : chests.keys()) {
-                ConfigurationSection chest = chests.getSection(key);
+        ConfigurationSection chestsSection = config.getSection("chests");
+        if (chestsSection != null) {
+            for (String key : chestsSection.keys()) {
+                ConfigurationSection chest = chestsSection.getSection(key);
                 if (chest == null) continue;
                 Location location = LocationUtil.getLocation(chest.getString("location"));
                 if (location == null) continue;
                 addChest(location, chest.getString("type"));
             }
         }
+        this.maximumPlayers = teams.size() * teamSize;
+    }
 
-        this.maximumPlayers = this.teams.size() * this.teamSize;
-
+    private void initializeTimersAndEvents() {
         startingTimer = new StartingTimer(
                 WhaleSkyWars.getInstance().getSettingsConfig()
                         .getInteger("game-options.countdowns.start"), this);
@@ -419,22 +420,23 @@ public class Game implements IGame {
                 WhaleSkyWars.getInstance().getSettingsConfig()
                         .getInteger("game-options.countdowns.end"), this);
 
-        List<String> events = WhaleSkyWars.getInstance().getSettingsConfig().getStringList("game-options.events");
-        events.forEach(event -> {
-            String[] split = event.split(";");
-            String name = split[0];
+        List<String> eventList = WhaleSkyWars.getInstance().getSettingsConfig().getStringList("game-options.events");
+        eventList.forEach(eventStr -> {
+            String[] split = eventStr.split(";");
+            String eventName = split[0];
             int timer = Integer.parseInt(split[1]);
-            GameEvent gameEvent = WhaleSkyWars.getInstance().getGameEventManager().copyOf(name);
+            GameEvent gameEvent = WhaleSkyWars.getInstance().getGameEventManager().copyOf(eventName);
             if (gameEvent == null) {
-                System.out.println("Event " + name + " does not exist.");
+                LOGGER.warning("Event " + eventName + " does not exist.");
                 return;
             }
             gameEvent.setTimer(timer);
             gameEvent.setEnabled(true);
-            this.events.add(gameEvent);
+            events.add(gameEvent);
         });
+    }
 
-        // LAST
+    private void finalizeInitialization() {
         phaseHandler = new PhaseHandler(this);
 
         if (!config.getBoolean("settings.enabled")) {
@@ -442,8 +444,6 @@ public class Game implements IGame {
         } else {
             phaseHandler.setPhase(new WaitingPhase());
         }
-
-
     }
 
     @Override
@@ -458,7 +458,8 @@ public class Game implements IGame {
 
     @Override
     public void sendMessages(List<IGamePlayer> players, String... messages) {
-        players.forEach(player -> player.sendMessages(Arrays.asList(messages)));
+        List<String> msgList = Arrays.asList(messages);
+        players.forEach(player -> player.sendMessages(msgList));
     }
 
     @Override
@@ -481,7 +482,9 @@ public class Game implements IGame {
         SkyWarsGameJoinEvent event = new SkyWarsGameJoinEvent(player, this);
         event.call();
 
-        Player bukkitPlayer = player.getPlayer().get();
+        Optional<Player> bukkitPlayerOpt = player.getPlayer();
+        if (bukkitPlayerOpt.isEmpty()) return;
+        Player bukkitPlayer = bukkitPlayerOpt.get();
 
         bukkitPlayer.setAllowFlight(false);
         bukkitPlayer.setFlying(false);
@@ -495,8 +498,7 @@ public class Game implements IGame {
 
         if (waitingSpawn != null && waitingCuboid != null) {
             bukkitPlayer.teleport(waitingSpawn);
-            WhaleSkyWars.getInstance().getNms()
-                    .setWaitingLobbyName(player);
+            WhaleSkyWars.getInstance().getNms().setWaitingLobbyName(player);
         } else {
             assigner.assign(this, player);
 
@@ -510,32 +512,18 @@ public class Game implements IGame {
             if (!team.getPlayers().isEmpty()) {
                 Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCageId());
                 gameSpawn.setCage(cage);
-                if (teamGame) {
-                    cage.createBig(team.getSpawnLocation());
-                } else {
-                    cage.createSmall(team.getSpawnLocation());
-                }
+                if (teamGame) cage.createBig(team.getSpawnLocation());
+                else cage.createSmall(team.getSpawnLocation());
             }
             bukkitPlayer.teleport(team.getSpawnLocation());
-            WhaleSkyWars.getInstance().getNms()
-                    .setTeamName(player);
-
+            WhaleSkyWars.getInstance().getNms().setTeamName(player);
         }
-        WhaleSkyWars.getInstance().getSkyWarsBoard()
-                .removeScoreboard(player);
-        WhaleSkyWars.getInstance().getSkyWarsBoard()
-                .setGameBoard(player);
+        WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
+        WhaleSkyWars.getInstance().getSkyWarsBoard().setGameBoard(player);
 
-        sendMessage(getPlayers(), Messages
-                .GAME_JOINED.toString(bukkitPlayer, Replaceable.of(
-                                "<player>", player.getName()
-                        ),
-                        Replaceable.of(
-                                "<players>", String.valueOf(getPlayerCount())
-                        ),
-                        Replaceable.of(
-                                "<max-players>", String.valueOf(getMaximumPlayers())
-                        )));
+        sendMessage(getPlayers(), Messages.GAME_JOINED.toString(bukkitPlayer, Replaceable.of("<player>", player.getName()),
+                Replaceable.of("<players>", String.valueOf(getPlayerCount())),
+                Replaceable.of("<max-players>", String.valueOf(getMaximumPlayers()))));
     }
 
     @Override
@@ -543,7 +531,9 @@ public class Game implements IGame {
         SkyWarsGameJoinEvent event = new SkyWarsGameJoinEvent(player, this);
         event.call();
 
-        Player bukkitPlayer = player.getPlayer().get();
+        Optional<Player> bukkitPlayerOpt = player.getPlayer();
+        if (!bukkitPlayerOpt.isPresent()) return;
+        Player bukkitPlayer = bukkitPlayerOpt.get();
 
         bukkitPlayer.setAllowFlight(false);
         bukkitPlayer.setFlying(false);
@@ -569,28 +559,16 @@ public class Game implements IGame {
             if (!team.getPlayers().isEmpty()) {
                 Cage cage = WhaleSkyWars.getInstance().getCageManager().getById(player.getCosmetics().getSelectedCageId());
                 gameSpawn.setCage(cage);
-                if (teamGame) {
-                    cage.createBig(team.getSpawnLocation());
-                } else {
-                    cage.createSmall(team.getSpawnLocation());
-                }
+                if (teamGame) cage.createBig(team.getSpawnLocation());
+                else cage.createSmall(team.getSpawnLocation());
             }
             bukkitPlayer.teleport(team.getSpawnLocation());
-            WhaleSkyWars.getInstance().getSkyWarsBoard()
-                    .removeScoreboard(player);
-            WhaleSkyWars.getInstance().getSkyWarsBoard()
-                    .setGameBoard(player);
+            WhaleSkyWars.getInstance().getSkyWarsBoard().removeScoreboard(player);
+            WhaleSkyWars.getInstance().getSkyWarsBoard().setGameBoard(player);
         }
-        sendMessage(getPlayers(), Messages
-                .GAME_JOINED.toString(bukkitPlayer, Replaceable.of(
-                                "<player>", player.getName()
-                        ),
-                        Replaceable.of(
-                                "<players>", String.valueOf(getPlayerCount())
-                        ),
-                        Replaceable.of(
-                                "<max-players>", String.valueOf(getMaximumPlayers())
-                        )));
+        sendMessage(getPlayers(), Messages.GAME_JOINED.toString(bukkitPlayer, Replaceable.of("<player>", player.getName()),
+                Replaceable.of("<players>", String.valueOf(getPlayerCount())),
+                Replaceable.of("<max-players>", String.valueOf(getMaximumPlayers()))));
     }
 
     @Override
@@ -824,7 +802,6 @@ public class Game implements IGame {
             CustomChest customChest = WhaleSkyWars.getInstance().getChestManager().getById(id);
             if (customChest == null) return;
             customChest.populateChest(chest.getBlockInventory(), chestType, getGameChestType());
-            System.out.println("hi");
         });
         teams.forEach(team -> team.fill(this, chestType));
     }
@@ -836,7 +813,6 @@ public class Game implements IGame {
     public void setBungeeGame(BungeeGame bungeeGame) {
         this.bungeeGame = bungeeGame;
     }
-
 
 
 }

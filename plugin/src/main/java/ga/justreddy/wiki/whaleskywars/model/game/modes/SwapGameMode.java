@@ -79,7 +79,7 @@ public class SwapGameMode extends GameMode {
                         }
 
                     }, 20 * 20, 20 * 20);
-        } else if (newState == GameState.ENDING) {
+        } else {
             // Cancel the task if the game is ending
             if (swapTask != null) swapTask.cancel();
         }

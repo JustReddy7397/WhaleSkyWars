@@ -6,7 +6,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
-import ga.justreddy.wiki.whaleskywars.support.BungeeUtil;
+import ga.justreddy.wiki.whaleskywars.supportold.BungeeUtil;
 
 /**
  * @author JustReddy

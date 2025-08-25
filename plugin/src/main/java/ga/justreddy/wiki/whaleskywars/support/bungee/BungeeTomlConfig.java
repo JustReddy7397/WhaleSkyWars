@@ -1,15 +1,8 @@
 package ga.justreddy.wiki.whaleskywars.support.bungee;
 
-import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.TomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import net.md_5.bungee.api.ProxyServer;
-import org.bukkit.Bukkit;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 
 /**
  * @author JustReddy

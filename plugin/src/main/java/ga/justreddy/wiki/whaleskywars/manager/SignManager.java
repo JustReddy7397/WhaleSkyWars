@@ -9,6 +9,8 @@ import ga.justreddy.wiki.whaleskywars.model.game.GameSign;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Sign;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class SignManager {
     }
 
     public boolean hasSign(Location location) {
-        return signs.values().stream().anyMatch(sign -> sign.getLocation().equals(location));
+        return signs.values().stream().anyMatch(sign -> LocationUtil.equalsBlock(sign.getLocation(), location));
     }
 
     public ImmutableList<IGameSign> copyOf() {
@@ -61,4 +63,15 @@ public class SignManager {
     }
 
 
+    public void removeSign(Location location) {
+        IGameSign sign = signs.values().stream().filter(s -> LocationUtil.equalsBlock(s.getLocation(), location)).findFirst().orElse(null);
+        if (sign != null) {
+            signs.remove(sign.getId());
+            TomlConfig config = WhaleSkyWars.getInstance().getSignsConfig();
+            ConfigurationSection section = config.getSection("signs");
+            section.set(sign.getId(), null);
+            config.save();
+        }
+        location.getBlock().setType(Material.AIR);
+    }
 }

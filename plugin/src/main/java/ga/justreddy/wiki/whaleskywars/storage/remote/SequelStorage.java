@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.storage.remote;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
@@ -88,13 +89,14 @@ public class SequelStorage implements IStorage {
             for (ICustomPlayerData customPlayerData : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomPlayerData().values()) {
                 gsonBuilder.registerTypeAdapter(ICustomPlayerData.class, customPlayerData);
             }
-            statement.setString(3, gsonBuilder.create().toJson(player.getCosmetics(), PlayerCosmetics.class));
-            statement.setString(4, gsonBuilder.create().toJson(player.getStats(), PlayerStats.class));
+            final Gson gson = gsonBuilder.create();
+            statement.setString(3, gson.toJson(player.getCosmetics(), PlayerCosmetics.class));
+            statement.setString(4, gson.toJson(player.getStats(), PlayerStats.class));
             int current = 5;
             for (String id : WhaleSkyWars.getInstance().getCustomPlayerDataManager().getCustomColumns()) {
                 ICustomPlayerData playerData = player.getCustomPlayerData(id);
                 if (playerData != null) {
-                    statement.setString(current, gsonBuilder.create().toJson(playerData, playerData.getClass()));
+                    statement.setString(current, gson.toJson(playerData, playerData.getClass()));
                 } else {
                     statement.setString(current, null);
                 }
@@ -236,7 +238,7 @@ public class SequelStorage implements IStorage {
     @Override
     public void saveKit(Kit kit) {
 
-        String SQL = "INERT INTO wsw_kits (name, kitItems, kitArmor, guiKitItem, isDefault) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE kitItems=?, kitArmor=?, guiKitItem=?, isDefault=?";
+        String SQL = "INSERT INTO wsw_kits (name, kitItems, kitArmor, guiKitItem, isDefault) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE kitItems=?, kitArmor=?, guiKitItem=?, isDefault=?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      SQL
@@ -266,19 +268,17 @@ public class SequelStorage implements IStorage {
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT * FROM wsw_kits)");
+                     "SELECT * FROM wsw_kits");
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Kit kit = new Kit(resultSet.getString("name"),
                         new ArrayList<>(),
                         new ArrayList<>(),
                         XMaterial.matchXMaterial(Material.STONE));
-                GsonBuilder builder = new GsonBuilder();
-                builder.registerTypeAdapter(List.class, new ListItemStackAdapter());
-                builder.registerTypeAdapter(ItemStack.class, new ItemStackAdapter());
-                kit.setKitItems(builder.create().fromJson(resultSet.getString("kitItems"), List.class));
-                kit.setArmorItems(builder.create().fromJson(resultSet.getString("kitArmor"), List.class));
-                kit.setGuiKitItem(XMaterial.matchXMaterial(builder.create().fromJson(resultSet.getString("guiKitItem"), ItemStack.class)));
+
+                kit.setKitItems(GSON.fromJson(resultSet.getString("kitItems"), List.class));
+                kit.setArmorItems(GSON.fromJson(resultSet.getString("kitArmor"), List.class));
+                kit.setGuiKitItem(XMaterial.matchXMaterial(GSON.fromJson(resultSet.getString("guiKitItem"), ItemStack.class)));
                 kit.setDefault(resultSet.getBoolean("isDefault"));
                 kits.add(kit);
             }

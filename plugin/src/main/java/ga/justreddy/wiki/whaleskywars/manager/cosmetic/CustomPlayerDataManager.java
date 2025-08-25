@@ -61,7 +61,8 @@ public class CustomPlayerDataManager {
         return this.customPlayerData.get(id);
     }
 
-    public <T> T getCustomPlayerDataObj(String id) {
+    public <T> T getCustomPlayerDataObj(String id, Class<T> clazz) {
+        if (!clazz.isInstance(customPlayerData.get(id))) return null;
         return (T) this.customPlayerData.get(id);
     }
 

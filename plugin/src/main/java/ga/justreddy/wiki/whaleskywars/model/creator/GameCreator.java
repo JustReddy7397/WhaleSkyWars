@@ -14,7 +14,7 @@ import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
-import ga.justreddy.wiki.whaleskywars.support.packets.packets.MapCreatePacket;
+import ga.justreddy.wiki.whaleskywars.supportold.packets.packets.MapCreatePacket;
 import ga.justreddy.wiki.whaleskywars.util.FileUtil;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.Replaceable;
@@ -742,10 +742,10 @@ public class GameCreator<H> implements Listener {
                         File worldFile = new File("slime_worlds/" + world.getName() + ".slime");
                         Map<String, Object> data = new TempConfig(GAMES_FOLDER, name + ".toml").data();
                         MapCreatePacket packet = new MapCreatePacket(name, data, worldFile);
-                        WhaleSkyWars.getInstance()
+                        /*WhaleSkyWars.getInstance()
                                 .getMessenger().getSender().sendPacket(
                                         packet
-                                );
+                                );*/
                     } else {
                         FileUtil.delete(new File("slime_worlds/" + world.getName() + ".slime"));
                     }
@@ -759,10 +759,10 @@ public class GameCreator<H> implements Listener {
                 File worldFile = new File(WhaleSkyWars.getInstance().getDataFolder(), "/data/worlds/" + name);
                 Map<String, Object> data = new TempConfig(GAMES_FOLDER, name + ".toml").data();
                 MapCreatePacket packet = new MapCreatePacket(name, data, worldFile);
-                WhaleSkyWars.getInstance()
+                /*WhaleSkyWars.getInstance()
                         .getMessenger().getSender().sendPacket(
                                 packet
-                        );
+                        );*/
             } else {
                 FileUtil.delete(world.getWorldFolder());
             }

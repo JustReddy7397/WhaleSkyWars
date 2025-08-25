@@ -27,8 +27,12 @@ import ga.justreddy.wiki.whaleskywars.model.lamp.suggestions.GameNameSuggestionP
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
-import ga.justreddy.wiki.whaleskywars.storage.remote.SequalStorage;
-import ga.justreddy.wiki.whaleskywars.support.IMessenger;
+import ga.justreddy.wiki.whaleskywars.storage.remote.SequelStorage;
+import ga.justreddy.wiki.whaleskywars.support.ServerIdentity;
+import ga.justreddy.wiki.whaleskywars.support.ServerType;
+import ga.justreddy.wiki.whaleskywars.support.TargetPacket;
+import ga.justreddy.wiki.whaleskywars.support.packets.IdentifyPacket;
+import ga.justreddy.wiki.whaleskywars.support.spigot.SpigotSocketListener;
 import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
 import ga.justreddy.wiki.whaleskywars.util.CommandGrabber;
@@ -43,14 +47,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
-import revxrsal.commands.process.MessageSender;
 
 import java.io.File;
-import java.util.stream.Collectors;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
@@ -81,7 +87,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private IGameMap gameMap;
     private SkyWarsBoard skyWarsBoard;
     private Permission permission;
-
+    private ServerIdentity identity;
 
     // Managers
     private ActionManager actionManager;
@@ -124,7 +130,6 @@ public final class WhaleSkyWars extends JavaPlugin {
 
     // Bungee
     private ServerMode serverMode;
-    private IMessenger<WhaleSkyWars> messenger;
 
     // Storage
     private IStorage storage;
@@ -147,6 +152,23 @@ public final class WhaleSkyWars extends JavaPlugin {
         // Plugin startup logic
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading WhaleSkyWars v" + getDescription().getVersion() + " by JustReddy");
 
+        /*try {
+            SpigotSocketListener listener = new SpigotSocketListener(
+                    "localhost",
+                    4018
+            );
+            final TargetPacket packet = new TargetPacket(
+                    new IdentifyPacket(ServerType.LOBBY, "localhost", getServer().getPort(), 20),
+                    new HashSet<>()
+            );
+            CompletableFuture<ServerIdentity> identityCompletableFuture =
+                    listener.getEmitter().emitAck(packet);
+            identityCompletableFuture.thenAccept(identity -> {
+                System.out.println(identity.getUuid());
+            });
+        } catch (UnknownHostException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }*/
 
         if (!loadConfigs()) {
             getServer().getPluginManager().disablePlugin(this);
@@ -254,6 +276,7 @@ public final class WhaleSkyWars extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return false;
         }
+
         return true;
     }
 
@@ -268,7 +291,7 @@ public final class WhaleSkyWars extends JavaPlugin {
                     );
                     break;
                 case "mysql":
-                    storage = new SequalStorage(
+                    storage = new SequelStorage(
                             "mysql",
                             databaseConfig.getString("storage.mysql.host"),
                             databaseConfig.getString("storage.mysql.database"),
@@ -360,8 +383,11 @@ public final class WhaleSkyWars extends JavaPlugin {
                     builder.addProvider(IGame.class, new GameNameSuggestionProvider()
                     );
                 })
+                .hooks(builder -> {
+                    builder.onCommandExecuted(command);
+                })
                 .defaultErrorSender(command)
-                .defaultMessageSender((actor, message) -> {
+                .defaultMessageSender((nothing, interesting) -> {
 
                 })
                 .dependency(GameManager.class, gameManager)

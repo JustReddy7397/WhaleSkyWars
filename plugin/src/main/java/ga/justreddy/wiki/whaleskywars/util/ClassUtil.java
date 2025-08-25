@@ -22,54 +22,44 @@ import java.util.jar.JarInputStream;
 public class ClassUtil {
 
     @SneakyThrows
-    public static List<Class<? extends Addon>> findAddons(
-            File file
-    ) {
-        final URL url = file.toURI().toURL();
+    public static List<Class<? extends Addon>> findAddons(File file) {
         List<Class<? extends Addon>> classes = new ArrayList<>();
-        try (JarInputStream stream = new JarInputStream(url.openStream());
-             URLClassLoader loader = new URLClassLoader(new URL[]{url}, ClassUtil.class.getClassLoader());
-             JarFile jarFile = new JarFile(file)) {
-            boolean isAddonFound = false;
-            InputStream inputStream = null;
-            InputStreamReader reader = null;
-            FileConfiguration config = null;
+        URL jarUrl = file.toURI().toURL();
 
-            // Check if addon.yml exists in the JAR file
+        // Use try-with-resources for safety
+        try (JarFile jarFile = new JarFile(file);
+             URLClassLoader loader = new URLClassLoader(new URL[]{jarUrl}, ClassUtil.class.getClassLoader())) {
+
+            // Read addon.yml
             JarEntry addonYmlEntry = jarFile.getJarEntry("addon.yml");
-            if (addonYmlEntry != null) {
-                inputStream = jarFile.getInputStream(addonYmlEntry);
-                reader = new InputStreamReader(inputStream);
-                config = YamlConfiguration.loadConfiguration(reader);
-                isAddonFound = true;
+            if (addonYmlEntry == null) {
+                System.err.println("No addon.yml found in " + file.getName());
+                return classes; // No addon.yml, return empty list
             }
 
-            JarEntry entry;
-            while ((entry = stream.getNextJarEntry()) != null) {
-                if (!entry.getName().endsWith(".class")) continue;
+            String mainClassName;
+            try (InputStream inputStream = jarFile.getInputStream(addonYmlEntry);
+                 InputStreamReader reader = new InputStreamReader(inputStream)) {
+                FileConfiguration config = YamlConfiguration.loadConfiguration(reader);
+                mainClassName = config.getString("main-class");
+            }
 
-                String className = entry.getName().replace('/',
-                        '.').substring(0, entry.getName().length() - 6);
+            if (mainClassName == null || mainClassName.isEmpty()) {
+                System.err.println("No main-class specified in addon.yml of " + file.getName());
+                return classes;
+            }
 
-                try {
-                    if (!isAddonFound) continue;
-                    if (!className.startsWith(config.getString("main-class"))) continue;
-                    Class<?> loadedClass = Class.forName(className, true, loader);
-                    if (Addon.class.isAssignableFrom(loadedClass)) {
-                        classes.add(loadedClass.asSubclass(Addon.class));
-                    }
-                } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
-                } finally {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                    if (reader != null) {
-                        reader.close();
-                    }
+            // Load only the specified main-class
+            try {
+                Class<?> loadedClass = Class.forName(mainClassName, true, loader);
+                if (Addon.class.isAssignableFrom(loadedClass)) {
+                    classes.add(loadedClass.asSubclass(Addon.class));
                 }
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                System.err.println("Could not load class: " + mainClassName + " -> " + e.getMessage());
             }
-        } catch (NoClassDefFoundError ignored) {
         }
+
         return classes;
     }
 

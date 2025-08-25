@@ -2,6 +2,7 @@ package ga.justreddy.wiki.whaleskywars.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
+import ga.justreddy.wiki.whaleskywars.api.model.entity.IBasePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.ICombatLog;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.ICustomPlayerData;
@@ -187,6 +188,11 @@ public class GamePlayer implements IGamePlayer {
         ICustomPlayerData playerData = customPlayerData.get(id);
 
         return (T) playerData;
+    }
+
+    @Override
+    public IBasePlayer toBasePlayer() {
+        return BasePlayer.of(uniqueId, name);
     }
 
     public void addCustomPlayerData(ICustomPlayerData customPlayerData) {

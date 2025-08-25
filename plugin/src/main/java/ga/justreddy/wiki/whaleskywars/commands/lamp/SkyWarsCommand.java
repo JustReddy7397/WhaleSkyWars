@@ -29,8 +29,13 @@ import revxrsal.commands.Lamp;
 import revxrsal.commands.LampVisitor;
 import revxrsal.commands.annotation.*;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.bukkit.annotation.FallbackPrefix;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.help.Help;
+import revxrsal.commands.hook.CancelHandle;
+import revxrsal.commands.hook.CommandExecutedHook;
+import revxrsal.commands.node.ExecutionContext;
+import revxrsal.commands.process.CommandCondition;
 import revxrsal.commands.process.MessageSender;
 
 import java.util.List;
@@ -40,7 +45,9 @@ import java.util.List;
  */
 @Command("wsw")
 
-public class SkyWarsCommand implements LampVisitor<BukkitCommandActor>, MessageSender<BukkitCommandActor, String> {
+public class SkyWarsCommand implements LampVisitor<BukkitCommandActor>,
+        MessageSender<BukkitCommandActor, String>,
+        CommandExecutedHook<BukkitCommandActor> {
 
     private static final int ENTRIES_PER_PAGE = 8;
 
@@ -89,20 +96,26 @@ public class SkyWarsCommand implements LampVisitor<BukkitCommandActor>, MessageS
         TextUtil.sendMessage(sender, "&7Use &d/ws help &7for a list of commands");
     }
 
+    @Override
+    public void onExecuted(@NotNull ExecutableCommand<BukkitCommandActor> command, @NotNull ExecutionContext<BukkitCommandActor> context, @NotNull CancelHandle cancelHandle) {
+        BukkitCommandActor actor = context.actor();
+        CommandSender sender = actor.sender();
+
+    }
+
     @Command("wsw sign")
     @Description("Manage game signs")
     @Usage("/ws sign <create/remove>")
     public static class SignCommand {
 
-        @CommandPlaceholder
+        /*@CommandPlaceholder
         public void placeholder(BukkitCommandActor actor) {
             CommandSender sender = actor.sender();
             TextUtil.sendMessage(sender,
                     "&l&dWhaleSkyWars &8» &7v" + WhaleSkyWars.getInstance().getDescription().getVersion());
             TextUtil.sendMessage(sender, "&7Made by &dJustReddy");
             TextUtil.sendMessage(sender, "&7Use &d/ws sign help &7for a list of sign commands");
-
-        }
+        }*/
 
         @Subcommand("help")
         @Description("Shows the help menu for signs")
@@ -118,11 +131,12 @@ public class SkyWarsCommand implements LampVisitor<BukkitCommandActor>, MessageS
                 String name = holder.getName().orElse("");
                 holder.setName("wsw sign " + name);
             });
-            SkyWarsCommandHolder helpCommandHolder = holders.stream().filter(holder -> holder.getName().orElse("").equalsIgnoreCase("help")).findFirst().orElse(null);
+            SkyWarsCommandHolder helpCommandHolder = holders.stream().filter(holder -> holder.getName().orElse("").equalsIgnoreCase("wsw sign help")).findFirst().orElse(null);
             InteractiveHelpMenu.builder().build().sendInteractiveMenu(actor, holders, page, helpCommandHolder);
         }
 
         @Subcommand("create")
+        @Usage("/ws sign create <game>")
         public void createSign(Player player,
                                @SuggestWith(GameNameSuggestionProvider.class) IGame game) {
             IGamePlayer gamePlayer = GamePlayer.get(player.getUniqueId());
@@ -141,7 +155,25 @@ public class SkyWarsCommand implements LampVisitor<BukkitCommandActor>, MessageS
 
         @Subcommand("remove")
         public void removeSign(Player player) {
-            player.sendMessage("test");
+
+            IGamePlayer gamePlayer = GamePlayer.get(player.getUniqueId());
+            Block block = WhaleSkyWars.getInstance().getNms().getTargetBlock(player, 5);
+
+            if (block == null || !(block.getState() instanceof Sign)) {
+                gamePlayer.sendMessages("&cYou are not looking at a sign!");
+                return;
+            }
+
+            Location location = block.getLocation();
+            boolean isValidGameSign = WhaleSkyWars.getInstance().getSignManager().hasSign(location);
+
+            if (!isValidGameSign) {
+                gamePlayer.sendMessages("&cThis is not a valid game sign!");
+                return;
+            }
+
+            WhaleSkyWars.getInstance().getSignManager().removeSign(location);
+
         }
 
     }
