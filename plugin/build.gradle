@@ -40,14 +40,13 @@ repositories {
 
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
-    compileOnly "net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT"
-    implementation files("D:\\JARS\\bungeecord-chat-1.20-R0.2.jar")
+    compileOnly project(":shared")
     compileOnly project(':api')
     implementation("com.github.cryptomorin:XSeries:11.2.0")
-    compileOnly files("libs/slimeworldmanager-plugin-2.2.1.jar")
+    compileOnly files("plugin/libs/slimeworldmanager-plugin-2.2.1.jar")
     compileOnly "org.projectlombok:lombok:1.18.20"
     annotationProcessor("org.projectlombok:lombok:1.18.20")
-    compileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.2'
     implementation "com.alessiodp.libby:libby-bukkit:2.0.0-SNAPSHOT"
     compileOnly "org.mongodb:mongodb-driver:3.12.12"
     compileOnly "redis.clients:jedis:5.1.1"
@@ -62,10 +61,6 @@ dependencies {
     implementation 'io.github.revxrsal:lamp.common:4.0.0-beta.23'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-beta.23'
     implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-beta.23'
-    implementation 'org.reflections:reflections:0.10.2'
-    implementation ('com.corundumstudio.socketio:netty-socketio:2.0.13')
-    implementation ("io.socket:socket.io-client:2.1.1")
-    implementation 'com.github.jhg023:SimpleNet:1.6.6'
 }
 
 def targetJavaVersion = 11

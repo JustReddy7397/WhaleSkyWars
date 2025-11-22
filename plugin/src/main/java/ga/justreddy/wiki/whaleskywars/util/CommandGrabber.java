@@ -2,7 +2,6 @@ package ga.justreddy.wiki.whaleskywars.util;
 
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommandHolder;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Description;
 import revxrsal.commands.annotation.Subcommand;
@@ -21,7 +20,7 @@ import java.util.Set;
 public class CommandGrabber {
 
     public static List<SkyWarsCommandHolder> grabCommands() {
-        String packageName = "ga.justreddy.wiki.whaleskywars.commands.lamp";
+        /*String packageName = "ga.justreddy.wiki.whaleskywars.commands.lamp";
         String className = "SkyWarsCommandHolder";
         Set<Class<?>> clazzes = new Reflections(packageName)
                 .getTypesAnnotatedWith(Command.class);
@@ -51,8 +50,8 @@ public class CommandGrabber {
             }
 
 
-        }
-        return holders;
+        }*/
+        return new ArrayList<>();
     }
 
     public static List<SkyWarsCommandHolder> grabFromSpecificInnerClass(Class<?> innerClazz) {

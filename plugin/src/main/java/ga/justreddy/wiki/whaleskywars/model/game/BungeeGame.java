@@ -19,18 +19,18 @@ public class BungeeGame {
     private final String name;
     private final String server;
     private GameState gameState = GameState.WAITING;
-    private final GameMode gameMode;
+    private final String gameMode;
     private List<UUID> players = new ArrayList<>();
     private final int maxPlayers;
 
-    public BungeeGame(String name, String server, int maxPlayers, GameMode gameMode) {
+    public BungeeGame(String name, String server, int maxPlayers, String gameMode) {
         this.name = name;
         this.server = server;
         this.maxPlayers = maxPlayers;
         this.gameMode = gameMode;
     }
 
-    public BungeeGame(String name, String server, int maxPlayers, GameState state, GameMode gameMode, List<UUID> players) {
+    public BungeeGame(String name, String server, int maxPlayers, GameState state, String gameMode, List<UUID> players) {
         this.name = name;
         this.server = server;
         this.maxPlayers = maxPlayers;
@@ -44,7 +44,7 @@ public class BungeeGame {
     }
 
     public boolean isGameMode(String gameMode) {
-        return this.gameMode.getIdentifier().equalsIgnoreCase(gameMode);
+        return this.gameMode.equalsIgnoreCase(gameMode);
     }
 
     public boolean isFull() {

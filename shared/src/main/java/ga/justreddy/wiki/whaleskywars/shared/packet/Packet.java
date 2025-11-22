@@ -1,19 +1,16 @@
-package ga.justreddy.wiki.whaleskywars.support;
+package ga.justreddy.wiki.whaleskywars.shared.packet;
 
+import ga.justreddy.wiki.whaleskywars.shared.PacketType;
+import ga.justreddy.wiki.whaleskywars.shared.json.JsonSerializable;
 import ga.justreddy.wiki.whaleskywars.shared.packet.packets.entity.BasePlayer;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author JustReddy
  */
-@Getter
-@Setter
-public class Packet {
+public class Packet extends JsonSerializable {
 
     private final BasePlayer basePlayer;
     private final PacketType packetType;
-    private boolean isFromBungee;
 
     public Packet(BasePlayer basePlayer, PacketType packetType) {
         this.basePlayer = basePlayer;

@@ -1,7 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.model.entity;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
-import ga.justreddy.wiki.whaleskywars.api.SkyWarsAPI;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IBasePlayer;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.ICombatLog;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
@@ -10,14 +9,12 @@ import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.data.IPlayerStats;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
-import ga.justreddy.wiki.whaleskywars.model.entity.data.CustomPlayerDataExample;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerCosmetics;
 import ga.justreddy.wiki.whaleskywars.model.entity.data.PlayerStats;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.entity.BasePlayer;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
-import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.util.*;
 

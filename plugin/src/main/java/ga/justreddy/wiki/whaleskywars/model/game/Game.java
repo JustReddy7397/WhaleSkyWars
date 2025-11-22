@@ -806,6 +806,10 @@ public class Game implements IGame {
         teams.forEach(team -> team.fill(this, chestType));
     }
 
+    public boolean isTeamGame() {
+        return teamSize > 1;
+    }
+
     public BungeeGame getBungeeGame() {
         return bungeeGame;
     }

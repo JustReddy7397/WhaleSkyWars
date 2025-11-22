@@ -96,7 +96,7 @@ public class GameSign implements IGameSign {
                         .replace("<state>", gameStateLine)
                         .replace("<players>", String.valueOf(game.getPlayers().size()))
                         .replace("<max-players>", String.valueOf(game.getMaxPlayers()))
-                        .replace("<mode>", game.getGameMode().getIdentifier())))
+                        .replace("<mode>", game.getGameMode())))
                 .collect(Collectors.toList());
 
         int signLines = sign.getLines().length;

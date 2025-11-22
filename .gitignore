@@ -10,3 +10,4 @@ gradle.properties
 /runtime/*
 /*/libs/*
 /api/docs/*
+jar/

@@ -1,0 +1,3 @@
+name: WhaleSkyWars
+version: '${version}'
+main: ga.justreddy.wiki.whaleskywars.support.bungee.Bungee

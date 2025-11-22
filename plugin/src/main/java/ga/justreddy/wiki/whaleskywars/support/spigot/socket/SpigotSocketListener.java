@@ -1,46 +1,52 @@
-package ga.justreddy.wiki.whaleskywars.support.bungee.socket;
+package ga.justreddy.wiki.whaleskywars.support.spigot.socket;
 
-import com.corundumstudio.socketio.Configuration;
-import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.listener.ConnectListener;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.support.*;
-import ga.justreddy.wiki.whaleskywars.support.bungee.BungeeTomlConfig;
-import ga.justreddy.wiki.whaleskywars.support.bungee.listeners.GenericSocketListener;
+import ga.justreddy.wiki.whaleskywars.support.json.GsonHelper;
+import io.socket.client.Ack;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
  * @author JustReddy
  */
-public class BungeeSocketListener extends SkyWarsPacketListener {
+public class SpigotSocketListener extends SkyWarsPacketListener {
 
-    private final SocketIOServer server;
+    private final Socket socket;
     private final PacketEmitter emitter;
-    private final String token;
 
-    public BungeeSocketListener(BungeeTomlConfig tomlConfig) {
-        final Configuration config = new Configuration();
-        config.setHostname("localhost");
-        config.setPort(4018);
-        this.server = new SocketIOServer(
-                config);
-        this.token = tomlConfig.getString("super_secret_token");
-        this.emitter = new PacketEmitter(server);
-        new GenericSocketListener();
+    public SpigotSocketListener(String host, int port) throws UnknownHostException, URISyntaxException {
+        IO.Options options = IO.Options.builder().setPath("/socket")
+                .setExtraHeaders(Map.of(
+                        "Authorization", List.of("your_super_secret_token_here")
+                )).build();
+        if (host == null) {
+            this.socket = IO.socket("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port, options);
+        } else if (port != -1) {
+            this.socket = IO.socket(host + ":" + port, options);
+        } else {
+            this.socket = IO.socket(URI.create(host), options);
+        }
+        this.emitter = new PacketEmitter(socket);
     }
 
     @Override
     public void init() {
-        server.start();
-        server.addConnectListener(onConnect());
+        socket.connect();
     }
 
     @Override
@@ -107,36 +113,34 @@ public class BungeeSocketListener extends SkyWarsPacketListener {
 
     @Override
     public void listen(PacketListener listener, Method method, PacketType type) throws IOException {
-        WhaleSkyWars.getInstance().getLogger()
-                .log(Level.INFO, "Listening for packet type: " + type.getName());
-        server.addEventListener(type.getName(), String.class, (client, data, ackSender) -> {
-            method.setAccessible(true);
+        WhaleSkyWars.getInstance().getLogger().log(Level.INFO, "Listening for packet type: " + type.getName());
+        listenFor(type, (args) -> {
+            try {
 
-            byte[] bytes = data.getBytes();
+                method.setAccessible(true);
 
-            if (type.getType() == null) {
-                try {
-                    method.invoke(listener);
-                } catch (Exception e) {
-                    WhaleSkyWars.getInstance().getLogger().log(Level.SEVERE, "Error invoking method", e);
+                Object arg = null;
+                Ack ackCallback = null;
+
+                if (type.getType() != null) {
+                    if (String.class.equals(type.getType())) {
+                        arg = args[0].toString();
+                    } else {
+                        try {
+                            arg = GsonHelper.GSON.fromJson(args[0].toString(), type.getType());
+                        } catch (JsonSyntaxException ex) {
+                            throw new JsonParseException("Failed to parse JSON for " + type.getType().getTypeName(), ex);
+                        }
+                    }
                 }
-                return;
-            }
 
-            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                 ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
-
-                if (type.isAck() && ackSender != null) {
-                    method.invoke(listener, objectInputStream.readObject(), ackSender);
+                if (type.getType() != null) {
+                    method.invoke(listener, arg);
                 } else {
-                    method.invoke(listener, objectInputStream.readObject());
+                    method.invoke(listener);
                 }
-
-            } catch (Exception e) {
-                WhaleSkyWars.getInstance().getLogger().log(Level.SEVERE, "Error processing packet", e);
-                if (ackSender != null) {
-                    ackSender.sendAckData("Error: " + e.getMessage());
-                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
     }
@@ -146,22 +150,12 @@ public class BungeeSocketListener extends SkyWarsPacketListener {
         return emitter;
     }
 
+    private void listenFor(PacketType type, Emitter.Listener listener) {
+        socket.on(type.getName(), listener);
+    }
+
     @Override
     public void close() {
-        //  TODO SEND DISCONNECT PACKET
-    }
 
-    private ConnectListener onConnect() {
-        return (client) -> {
-            final String token = client.getHandshakeData().getHttpHeaders().get("Authorization");
-            System.out.println("Client trying to connect with token: " + token);
-            if (token == null || !token.equals(this.token)) {
-                client.disconnect();
-                System.out.println("Client disconnected due to invalid token.");
-            } else {
-                System.out.println("Client connected with token: " + token);
-            }
-        };
     }
-
 }

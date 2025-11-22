@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "9.0.0"
 }
 
 allprojects {
@@ -32,48 +32,41 @@ version = '1.0.0'
 
 def targetJavaVersion = 11
 java {
-    def javaVersion = JavaVersion.toVersion(11)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    sourceCompatibility = JavaVersion.toVersion(targetJavaVersion)
+    targetCompatibility = JavaVersion.toVersion(targetJavaVersion)
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.compilerArgs += ["-parameters"]
-
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release.set(targetJavaVersion)
-    }
+    options.release.set(targetJavaVersion)
 }
 
 dependencies {
+    implementation project(":bungeecord")
+    implementation project(":shared")
     implementation project(':api')
     implementation project(':plugin')
     implementation project(":v1_8_R3")
     implementation project(":v1_12_R1")
     implementation project(":v1_14_R1")
+
 }
 
-var ver = "spigot_1"
 
-ext.set('output', "D:\\server\\"+ver+"\\plugins")
+ext.set('output', "jar/")
 
 shadowJar {
-
-
-
+    minimize()
     def output = rootProject.ext.get('output')
-
     destinationDirectory = file("$output")
     archiveFileName = "WhaleSkyWars.jar"
     relocate 'com.cryptomorin.xseries', 'ga.justreddy.wiki.whaleskywars.libs.xseries'
     relocate 'fr.mrmicky.fastboard', 'ga.justreddy.wiki.whaleskywars.libs.fastboard'
-
 }
 
-build {
-    dependsOn shadowJar
+tasks.build {
+    dependsOn(tasks.shadowJar)
 }

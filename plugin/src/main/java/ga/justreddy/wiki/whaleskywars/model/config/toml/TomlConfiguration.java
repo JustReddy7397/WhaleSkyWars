@@ -3,7 +3,10 @@ package ga.justreddy.wiki.whaleskywars.model.config.toml;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,6 +57,7 @@ public abstract class TomlConfiguration extends TomlConfigurationSection impleme
 
 
         if (!file.exists()) {
+
             try (InputStream input = WhaleSkyWars.getInstance().getResource(file.getName())) {
 
                 if (input != null) {

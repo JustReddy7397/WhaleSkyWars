@@ -1,6 +1,5 @@
 package ga.justreddy.wiki.whaleskywars.support.bungee;
 
-import com.github.simplenet.Client;
 import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.support.ServerType;
 import ga.justreddy.wiki.whaleskywars.support.bungee.socket.BungeeSocketListener;
@@ -25,8 +24,6 @@ public class Bungee extends Plugin {
 
     private final Map<UUID, String> playerServers = new HashMap<>();
 
-    private final Map<ServerType, List<Client>> clients = new HashMap<>();
-
     private final Map<ServerType, List<String>> servers = new HashMap<>();
 
     @SneakyThrows
@@ -35,10 +32,10 @@ public class Bungee extends Plugin {
         instance = this;
 
         this.config = new BungeeTomlConfig("bungee-config.toml");
-        new BungeeSocketListener(config);
+        new BungeeSocketListener(config).init();
     }
 
-    public List<Client> getClientsExcept(ServerType... type) {
+   /* public List<Client> getClientsExcept(ServerType... type) {
         List<Client> allClients = new ArrayList<>();
         List<ServerType> excludedTypes = Arrays.asList(type);
         for (Map.Entry<ServerType, List<Client>> entry : clients.entrySet()) {
@@ -71,6 +68,6 @@ public class Bungee extends Plugin {
             allClients.addAll(clientList);
         }
         return allClients;
-    }
+    }*/
 
 }

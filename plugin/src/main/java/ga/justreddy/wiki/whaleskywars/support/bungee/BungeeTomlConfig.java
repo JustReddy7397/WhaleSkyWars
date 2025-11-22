@@ -1,5 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.support.bungee;
 
+import ga.justreddy.wiki.whaleskywars.model.config.toml.BungeeTomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.model.config.toml.TomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import net.md_5.bungee.api.ProxyServer;
@@ -7,7 +8,7 @@ import net.md_5.bungee.api.ProxyServer;
 /**
  * @author JustReddy
  */
-public class BungeeTomlConfig extends TomlConfiguration {
+public class BungeeTomlConfig extends BungeeTomlConfiguration {
 
     private static final String VERSION_KEY = "config-version";
 
@@ -15,7 +16,6 @@ public class BungeeTomlConfig extends TomlConfiguration {
         super(Bungee.getInstance().getDataFolder(), fileName);
         reload();
     }
-
 
     /**
      * Checks if the config version integer equals or is less than the current version.

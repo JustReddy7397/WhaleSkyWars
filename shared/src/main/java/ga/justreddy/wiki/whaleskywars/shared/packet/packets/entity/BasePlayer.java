@@ -1,4 +1,4 @@
-package ga.justreddy.wiki.whaleskywars.model.entity;
+package ga.justreddy.wiki.whaleskywars.shared.packet.packets.entity;
 
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IBasePlayer;
 import lombok.AccessLevel;
@@ -22,3 +22,4 @@ public class BasePlayer implements IBasePlayer {
     }
 
 }
+

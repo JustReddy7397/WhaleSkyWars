@@ -32,16 +32,16 @@ import ga.justreddy.wiki.whaleskywars.support.ServerIdentity;
 import ga.justreddy.wiki.whaleskywars.support.ServerType;
 import ga.justreddy.wiki.whaleskywars.support.TargetPacket;
 import ga.justreddy.wiki.whaleskywars.support.packets.IdentifyPacket;
-import ga.justreddy.wiki.whaleskywars.support.spigot.SpigotSocketListener;
+import ga.justreddy.wiki.whaleskywars.support.spigot.socket.SpigotSocketListener;
 import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
-import ga.justreddy.wiki.whaleskywars.util.CommandGrabber;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import ga.justreddy.wiki.whaleskywars.version.nms.INms;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.ISchematic;
 import ga.justreddy.wiki.whaleskywars.version.worldedit.IWorldEdit;
 import lombok.Getter;
+import lombok.Setter;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -55,7 +55,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Getter
@@ -87,6 +86,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     private IGameMap gameMap;
     private SkyWarsBoard skyWarsBoard;
     private Permission permission;
+    @Setter
     private ServerIdentity identity;
 
     // Managers
@@ -152,11 +152,13 @@ public final class WhaleSkyWars extends JavaPlugin {
         // Plugin startup logic
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading WhaleSkyWars v" + getDescription().getVersion() + " by JustReddy");
 
-        /*try {
+        try {
             SpigotSocketListener listener = new SpigotSocketListener(
                     "localhost",
                     4018
             );
+            listener.init();
+            getLogger().info("Spigot Socket Listener initialized.");
             final TargetPacket packet = new TargetPacket(
                     new IdentifyPacket(ServerType.LOBBY, "localhost", getServer().getPort(), 20),
                     new HashSet<>()
@@ -168,12 +170,13 @@ public final class WhaleSkyWars extends JavaPlugin {
             });
         } catch (UnknownHostException | URISyntaxException e) {
             throw new RuntimeException(e);
-        }*/
+        }
 
         if (!loadConfigs()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
 
         if (!initializeNms()) return;
         if (!initializeSchematicHandler()) return;
@@ -197,7 +200,6 @@ public final class WhaleSkyWars extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
-        CommandGrabber.grabCommands();
     }
 
     @Override
