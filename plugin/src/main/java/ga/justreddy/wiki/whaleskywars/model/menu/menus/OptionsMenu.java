@@ -3,7 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.menu.menus;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.config.TempConfig;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.menu.Menu;
 import ga.justreddy.wiki.whaleskywars.util.ItemStackBuilder;
 import me.clip.placeholderapi.PlaceholderAPI;

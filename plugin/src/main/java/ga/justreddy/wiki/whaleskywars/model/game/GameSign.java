@@ -7,6 +7,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSign;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

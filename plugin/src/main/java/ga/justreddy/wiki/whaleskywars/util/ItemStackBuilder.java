@@ -13,7 +13,7 @@ import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;

@@ -21,8 +21,7 @@ public class LootItem implements ILootItem {
     private final double chance;
     private final int amount;
 
-    public LootItem(ga.justreddy.wiki.whaleskywars.model.config
-                            .toml.ConfigurationSection tomlReader) {
+    public LootItem(ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection tomlReader) {
         this.material = XMaterial.matchXMaterial(
                 tomlReader.getString("material"))
                 .orElseGet(() -> XMaterial.AIR)
@@ -30,8 +29,7 @@ public class LootItem implements ILootItem {
         this.id = (byte) tomlReader.getInteger("id");
         this.enchants = new HashMap<>();
 
-        ga.justreddy.wiki.whaleskywars.model.config
-                .toml.ConfigurationSection enchantments = tomlReader.getSection("enchants");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection enchantments = tomlReader.getSection("enchants");
         if (enchantments != null && !enchantments.data().isEmpty()) {
             for (Map.Entry<String, Object> entry : enchantments.data().entrySet()) {
                 Enchantment enchantment = Enchantment.getByName(entry.getKey());

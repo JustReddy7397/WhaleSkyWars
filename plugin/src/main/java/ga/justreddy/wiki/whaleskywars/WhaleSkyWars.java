@@ -8,7 +8,6 @@ import ga.justreddy.wiki.whaleskywars.api.SkyWarsProvider;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.map.IGameMap;
 import ga.justreddy.wiki.whaleskywars.commands.BaseCommand;
-import ga.justreddy.wiki.whaleskywars.commands.lamp.SkyWarsCommand;
 import ga.justreddy.wiki.whaleskywars.listeners.GameListener;
 import ga.justreddy.wiki.whaleskywars.listeners.LobbyListener;
 import ga.justreddy.wiki.whaleskywars.listeners.MainListener;
@@ -22,18 +21,14 @@ import ga.justreddy.wiki.whaleskywars.model.creator.CageCreator;
 import ga.justreddy.wiki.whaleskywars.model.creator.GameCreator;
 import ga.justreddy.wiki.whaleskywars.model.game.map.BukkitGameMap;
 import ga.justreddy.wiki.whaleskywars.model.game.map.SlimeGameMap;
-import ga.justreddy.wiki.whaleskywars.model.lamp.parameters.GameParameterType;
-import ga.justreddy.wiki.whaleskywars.model.lamp.suggestions.GameNameSuggestionProvider;
+import ga.justreddy.wiki.whaleskywars.shared.SkyWarsListener;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.server.ServerInfo;
 import ga.justreddy.wiki.whaleskywars.storage.IStorage;
 import ga.justreddy.wiki.whaleskywars.storage.flatfile.FlatStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.MongoStorage;
 import ga.justreddy.wiki.whaleskywars.storage.remote.SequelStorage;
-import ga.justreddy.wiki.whaleskywars.support.ServerIdentity;
-import ga.justreddy.wiki.whaleskywars.support.ServerType;
-import ga.justreddy.wiki.whaleskywars.support.TargetPacket;
-import ga.justreddy.wiki.whaleskywars.support.packets.IdentifyPacket;
-import ga.justreddy.wiki.whaleskywars.support.spigot.socket.SpigotSocketListener;
-import ga.justreddy.wiki.whaleskywars.tasks.CustomColumnCheck;
+import ga.justreddy.wiki.whaleskywars.support.socket.SpigotSocketListener;
+import ga.justreddy.wiki.whaleskywars.tasks.HeartbeatTask;
 import ga.justreddy.wiki.whaleskywars.tasks.SyncTask;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
@@ -47,15 +42,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
-import revxrsal.commands.Lamp;
-import revxrsal.commands.bukkit.BukkitLamp;
-import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.concurrent.CompletableFuture;
 
 @Getter
 public final class WhaleSkyWars extends JavaPlugin {
@@ -68,12 +58,17 @@ public final class WhaleSkyWars extends JavaPlugin {
     private static final int BALLOONS_VERSION = 1;
     private static final int MESSAGES_VERSION = 1;
     private static final int HOTBAR_VERSION = 1;
-    private static final String VERSION = getVersion(Bukkit.getServer());
+    /*
+        private static final String VERSION = getVersion(Bukkit.getServer());
+    */
     public static final File ADDONS_FOLDER = new File("plugins/WhaleSkyWars/addons");
 
     // Instance
     @Getter
     private static WhaleSkyWars instance;
+
+    @Getter
+    private JavaPlugin pluginInstance;
 
     // Version-specific
     private INms nms;
@@ -87,7 +82,8 @@ public final class WhaleSkyWars extends JavaPlugin {
     private SkyWarsBoard skyWarsBoard;
     private Permission permission;
     @Setter
-    private ServerIdentity identity;
+    private ServerInfo info;
+    private SkyWarsListener skyWarsListener;
 
     // Managers
     private ActionManager actionManager;
@@ -140,6 +136,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        pluginInstance = this;
         LibraryManager libraryManager = new LibraryManager();
         libraryManager.loadDependencies();
         if (!ADDONS_FOLDER.exists()) {
@@ -152,35 +149,26 @@ public final class WhaleSkyWars extends JavaPlugin {
         // Plugin startup logic
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aLoading WhaleSkyWars v" + getDescription().getVersion() + " by JustReddy");
 
-        try {
-            SpigotSocketListener listener = new SpigotSocketListener(
-                    "localhost",
-                    4018
-            );
-            listener.init();
-            getLogger().info("Spigot Socket Listener initialized.");
-            final TargetPacket packet = new TargetPacket(
-                    new IdentifyPacket(ServerType.LOBBY, "localhost", getServer().getPort(), 20),
-                    new HashSet<>()
-            );
-            CompletableFuture<ServerIdentity> identityCompletableFuture =
-                    listener.getEmitter().emitAck(packet);
-            identityCompletableFuture.thenAccept(identity -> {
-                System.out.println(identity.getUuid());
-            });
-        } catch (UnknownHostException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
         if (!loadConfigs()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
+        try {
+            skyWarsListener = new SpigotSocketListener(
+                    settingsConfig.getString("bungee.socket.host"),
+                    settingsConfig.getInteger("bungee.socket.port")
+            );
+            skyWarsListener.init();
+            Bukkit.getScheduler().runTaskTimer(this, new HeartbeatTask(skyWarsListener.getEmitter()), 0, 100L);
+        } catch (UnknownHostException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
-        if (!initializeNms()) return;
+/*        if (!initializeNms()) return;
         if (!initializeSchematicHandler()) return;
-        if (!initializeWorldEdit()) return;
+        if (!initializeWorldEdit()) return;*/
+/*
         if (!setupPermissions()) return;
         initializeApi();
         initializeServerMode();
@@ -198,18 +186,20 @@ public final class WhaleSkyWars extends JavaPlugin {
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CustomColumnCheck(storage), 20, 20L);
+*/
 
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aWhaleSkyWars v" + getDescription().getVersion() + " by JustReddy loaded!");
     }
 
     @Override
     public void onDisable() {
+        skyWarsListener.close();
         stopManagers();
         gameCreator.kill();
     }
 
     // Initialization methods
-    private boolean initializeNms() {
+    /*private boolean initializeNms() {
         TextUtil.sendConsoleMessage("&7[&dWhaleSkyWars&7] &aFinding NMS version...");
         try {
             nms = (INms) Class.forName("ga.justreddy.wiki.whaleskywars.nms." + VERSION + "." + VERSION).newInstance();
@@ -250,7 +240,7 @@ public final class WhaleSkyWars extends JavaPlugin {
             }
         }
         return true;
-    }
+    }*/
 
     private boolean setupPermissions() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -376,29 +366,6 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     private void setupCommandsAndListeners() {
-        SkyWarsCommand command = new SkyWarsCommand();
-        Lamp<BukkitCommandActor> bukkitLamp = BukkitLamp.builder(this)
-                .parameterTypes(builder -> {
-                    builder.addParameterType(IGame.class, new GameParameterType());
-                })
-                .suggestionProviders(builder ->   {
-                    builder.addProvider(IGame.class, new GameNameSuggestionProvider()
-                    );
-                })
-                .hooks(builder -> {
-                    builder.onCommandExecuted(command);
-                })
-                .defaultErrorSender(command)
-                .defaultMessageSender((nothing, interesting) -> {
-
-                })
-                .dependency(GameManager.class, gameManager)
-                .dependency(CacheManager.class, cacheManager)
-                .dependency(GameCreator.class, gameCreator)
-                .dependency(CageCreator.class, cageCreator)
-                .build();
-                command.visit(bukkitLamp);
-        bukkitLamp.register(command);
         getCommand("whaleskywars").setExecutor(new BaseCommand());
         Bukkit.getPluginManager().registerEvents(new LobbyListener(cacheManager), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
@@ -406,7 +373,7 @@ public final class WhaleSkyWars extends JavaPlugin {
     }
 
     private void scheduleTasks() {
-        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager,  signManager), 0, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, new SyncTask(gameManager, signManager), 0, 20L);
     }
 
     private boolean loadConfigs() {

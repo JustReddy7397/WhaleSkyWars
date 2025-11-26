@@ -3,7 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.hotbar.items;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.entity.IGamePlayer;
 import ga.justreddy.wiki.whaleskywars.manager.HotBarManager;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.entity.GamePlayer;
 import ga.justreddy.wiki.whaleskywars.model.hotbar.HotBarItem;
 import ga.justreddy.wiki.whaleskywars.model.hotbar.HotBarType;

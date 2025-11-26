@@ -111,7 +111,7 @@ public class IridiumColorAPI {
      * @since 1.0.0
      */
     public static String color(String string, Color color) {
-        return (SUPPORTS_RGB ? ChatColor.of(color) : getClosestColor(color)) + string;
+        return (SUPPORTS_RGB ? ChatColor.getByChar('2') : getClosestColor(color)) + string;
     }
 
     /**
@@ -146,7 +146,7 @@ public class IridiumColorAPI {
      * @since 1.0.0
      */
     public static ChatColor getColor(String string) {
-        return SUPPORTS_RGB ? ChatColor.of(new Color(Integer.parseInt(string, 16)))
+        return SUPPORTS_RGB ? ChatColor.getByChar('2')
                 : getClosestColor(new Color(Integer.parseInt(string, 16)));
     }
 
@@ -210,7 +210,7 @@ public class IridiumColorAPI {
         for (int i = 0; i < step; i++) {
             Color color = Color.getHSBColor((float) (colorStep * i), saturation, saturation);
             if (SUPPORTS_RGB) {
-                colors[i] = ChatColor.of(color);
+                colors[i] = ChatColor.getByChar('2');
             } else {
                 colors[i] = getClosestColor(color);
             }
@@ -243,7 +243,7 @@ public class IridiumColorAPI {
         for (int i = 0; i < step; i++) {
             Color color = new Color(start.getRed() + ((stepR * i) * direction[0]), start.getGreen() + ((stepG * i) * direction[1]), start.getBlue() + ((stepB * i) * direction[2]));
             if (SUPPORTS_RGB) {
-                colors[i] = ChatColor.of(color);
+                colors[i] = ChatColor.getByChar('2');
             } else {
                 colors[i] = getClosestColor(color);
             }

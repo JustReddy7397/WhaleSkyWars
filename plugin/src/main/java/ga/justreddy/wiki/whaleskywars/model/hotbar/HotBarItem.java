@@ -3,7 +3,7 @@ package ga.justreddy.wiki.whaleskywars.model.hotbar;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.manager.HotBarManager;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.util.ItemStackBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

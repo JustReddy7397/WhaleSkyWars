@@ -87,6 +87,7 @@ bungee.on-leave = "LOBBY_SERVER"
 # Bungeecord lobby server name.
 bungee.lobby = "lobby"
 bungee.leave-commands = ["cmd <player>", "tell <player> &aYou have left the game!"]
+bungee.token= "your_super_secret_token_here"
 
 # If spigot and bungeecord are on the same machine, leave as "localhost".
 bungee.socket.host = "localhost"
@@ -98,7 +99,3 @@ bungee.rabbitmq.port = 5672
 bungee.rabbitmq.username = "guest"
 bungee.rabbitmq.password = "guest"
 bungee.rabbitmq.virtual-host = "/"
-# NOTE: This configuration is untested due to external constraints.
-
-bungee.redis.host = "localhost"
-bungee.redis.port = 6379

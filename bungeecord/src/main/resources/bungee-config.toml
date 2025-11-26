@@ -1,0 +1,6 @@
+super_secret_token="your_super_secret_token_here"
+
+bungee.type="SOCKET"
+
+bungee.socket.host="localhost"
+bungee.socket.port=3000

@@ -1,18 +1,12 @@
 package ga.justreddy.wiki.whaleskywars.util.pages;
 
-import com.avaje.ebeaninternal.server.query.LimitOffsetList;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.commands.SkyWarsCommandHolder;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.entity.Player;
-import revxrsal.commands.bukkit.actor.BukkitCommandActor;
-import revxrsal.commands.command.ExecutableCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +49,7 @@ public class InteractiveHelpMenu {
         return new Builder().build();
     }
 
-    public TextComponent generate(SkyWarsCommandHolder command, BukkitCommandActor actor) {
+    public TextComponent generate(SkyWarsCommandHolder command) {
 
         List<String> tooltips = createTooltip(command);
         StringJoiner joiner = new StringJoiner(" ");
@@ -84,23 +78,20 @@ public class InteractiveHelpMenu {
         return tooltip;
     }
 
-    public void sendInteractiveMenu(BukkitCommandActor actor, List<SkyWarsCommandHolder> commands, int page, SkyWarsCommandHolder command) {
-        if (!actor.isPlayer()) return;
-        // Stupid NPE fix
-        if (actor.asPlayer() == null) return;
-        Paginator<SkyWarsCommandHolder> paginator = new Paginator<>(actor.asPlayer().getUniqueId(), commands, pageSize);
+    public void sendInteractiveMenu(Player player, List<SkyWarsCommandHolder> commands, int page, SkyWarsCommandHolder command) {
+        Paginator<SkyWarsCommandHolder> paginator = new Paginator<>(player.getUniqueId(), commands, pageSize);
         List<SkyWarsCommandHolder> pageCommands = paginator.getFromPage(page);
         if (pageCommands.isEmpty()) {
-            TextUtil.sendMessage(actor.asPlayer(), "&cNo commands found on page " + page + "!");
+            TextUtil.sendMessage(player, "&cNo commands found on page " + page + "!");
             return;
         }
 
-        sendTopBar(actor.asPlayer(), page, paginator.getTotalPages(), command);
+        sendTopBar(player, page, paginator.getTotalPages(), command);
         for (SkyWarsCommandHolder pageCommand : pageCommands) {
-            TextComponent component = generate(pageCommand, actor);
-            WhaleSkyWars.getInstance().getNms().sendComponent(actor.asPlayer(), component);
+            TextComponent component = generate(pageCommand);
+            WhaleSkyWars.getInstance().getNms().sendComponent(player, component);
         }
-        sendBottomBar(actor.asPlayer(), page, paginator.getTotalPages());
+        sendBottomBar(player, page, paginator.getTotalPages());
     }
 
     private static void sendTopBar(Player player, int currentPage, int pageSize, SkyWarsCommandHolder command) {

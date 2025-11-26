@@ -19,17 +19,14 @@ public class ServerIdentity extends Packet {
     private final String ip;
     private final int port;
     private final int maxPlayers;
-    private final List<ServerPlayer> initialPlayers;
 
-
-    public ServerIdentity(ServerType serverType, UUID uniqueIdentifier, String ip, int port, int maxPlayers, List<ServerPlayer> initialPlayers) {
+    public ServerIdentity(ServerType serverType, UUID uniqueIdentifier, String ip, int port, int maxPlayers) {
         super(PacketType.CLIENT_IDENTIFY);
         this.serverType = serverType;
         this.uniqueIdentifier = uniqueIdentifier;
         this.ip = ip;
         this.port = port;
         this.maxPlayers = maxPlayers;
-        this.initialPlayers = initialPlayers;
     }
 
 

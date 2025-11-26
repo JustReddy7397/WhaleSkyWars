@@ -30,7 +30,7 @@ dependencies {
     compileOnly project(':plugin')
     compileOnly project(":api")
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT"
-    implementation("de.tr7zw:item-nbt-api:2.13.2")
+    compileOnly("de.tr7zw:item-nbt-api:2.13.2")
 
 }
 

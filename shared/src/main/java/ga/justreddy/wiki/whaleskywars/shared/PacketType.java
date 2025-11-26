@@ -1,6 +1,7 @@
 package ga.justreddy.wiki.whaleskywars.shared;
 
 import ga.justreddy.wiki.whaleskywars.shared.packet.packets.server.ServerIdentity;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.server.ServerInfo;
 import lombok.Getter;
 
 import java.lang.reflect.Type;
@@ -11,12 +12,17 @@ import java.lang.reflect.Type;
 @Getter
 public enum PacketType {
 
+    CONNECT("connect", null, false, false),
+    CONNECT_ERROR("connect_error", String.class, false, false),
+    DISCONNECT_CLIENT("disconnect", null, false, false),
+
+
     // SELF -> CLIENT
     // CLIENT -> SERVER
     // SERVER -> CLIENT
-    CLIENT_IDENTIFY("client:identify", ServerIdentity.class, true),
-    CLIENT_CHECKUP("client:checkup", null, false);
-
+    SERVER_IDENTIFY("client:identify", ServerIdentity.class, true, false),
+    CLIENT_IDENTIFY("client:identify", ServerInfo.class, true, false),
+    CLIENT_HEARTBEAT("client:heartbeat", null, false, false);
 /*
     CLIENT_BACK_TO_SERVER("client:back_to_server", BackToServerPacket.class),
     CLIENT_GAME_UPDATE("client:game_update", GameUpdatePacket.class),
@@ -35,12 +41,14 @@ public enum PacketType {
 
     private final String name;
     private final Type type;
-    private final boolean ack;
+    private final boolean receiveAck;
+    private final boolean sendAck;
 
-    PacketType(String name, Type type, boolean ack) {
+    PacketType(String name, Type type, boolean receiveAck, boolean sendAck) {
         this.name = name;
         this.type = type;
-        this.ack = ack;
+        this.receiveAck = receiveAck;
+        this.sendAck = sendAck;
     }
 
 }

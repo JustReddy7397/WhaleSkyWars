@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGameSign;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.game.GameSign;
 import ga.justreddy.wiki.whaleskywars.util.LocationUtil;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;

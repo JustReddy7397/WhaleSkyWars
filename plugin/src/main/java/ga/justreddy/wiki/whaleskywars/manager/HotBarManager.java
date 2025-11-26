@@ -2,16 +2,14 @@ package ga.justreddy.wiki.whaleskywars.manager;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.model.config.TomlConfig;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.model.hotbar.HotBarItem;
 import ga.justreddy.wiki.whaleskywars.model.hotbar.HotBarType;
 import ga.justreddy.wiki.whaleskywars.model.hotbar.items.CustomItem;
+import ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection;
 import ga.justreddy.wiki.whaleskywars.util.ItemStackBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

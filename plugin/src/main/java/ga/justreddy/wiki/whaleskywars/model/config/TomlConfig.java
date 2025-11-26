@@ -1,18 +1,15 @@
 package ga.justreddy.wiki.whaleskywars.model.config;
 
-import com.google.gson.GsonBuilder;
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
-import ga.justreddy.wiki.whaleskywars.model.config.toml.TomlConfiguration;
 import ga.justreddy.wiki.whaleskywars.util.TextUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 
 /**
  * @author JustReddy
  */
-public class TomlConfig extends TomlConfiguration {
+public class TomlConfig extends SpigotTomlConfiguration {
 
     private static final String VERSION_KEY = "config-version";
 

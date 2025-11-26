@@ -42,11 +42,11 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
     compileOnly project(":shared")
     compileOnly project(':api')
-    implementation("com.github.cryptomorin:XSeries:11.2.0")
-    compileOnly files("plugin/libs/slimeworldmanager-plugin-2.2.1.jar")
+    compileOnly("com.github.cryptomorin:XSeries:11.2.0")
+    compileOnly files("libs/slimeworldmanager-plugin-2.2.1.jar")
     compileOnly "org.projectlombok:lombok:1.18.20"
     annotationProcessor("org.projectlombok:lombok:1.18.20")
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.2'
+    compileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.18.1'
     implementation "com.alessiodp.libby:libby-bukkit:2.0.0-SNAPSHOT"
     compileOnly "org.mongodb:mongodb-driver:3.12.12"
     compileOnly "redis.clients:jedis:5.1.1"
@@ -55,12 +55,11 @@ dependencies {
     compileOnly "de.tr7zw:item-nbt-api:2.13.1"
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly "com.mojang:authlib:1.5.21"
-    implementation 'fr.mrmicky:fastboard:2.1.2'
+    compileOnly 'fr.mrmicky:fastboard:2.1.2'
     compileOnly 'com.github.decentsoftware-eu:decentholograms:2.8.11'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    implementation 'io.github.revxrsal:lamp.common:4.0.0-beta.23'
-    implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-beta.23'
-    implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-beta.23'
+    compileOnly("io.socket:socket.io-client:2.1.1")
+    compileOnly("com.rabbitmq:amqp-client:5.27.1")
 }
 
 def targetJavaVersion = 11
@@ -68,10 +67,11 @@ java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
+
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

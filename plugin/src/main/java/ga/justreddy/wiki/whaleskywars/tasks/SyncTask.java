@@ -5,7 +5,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.manager.GameManager;
 import ga.justreddy.wiki.whaleskywars.manager.SignManager;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
-import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 
 /**
  * @author JustReddy

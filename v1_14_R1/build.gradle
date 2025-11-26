@@ -33,7 +33,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.9")
     compileOnly("com.sk89q.worldedit:worldedit-core:7.2.0-SNAPSHOT")
 
-    implementation("de.tr7zw:item-nbt-api:2.13.2")
+    compileOnly("de.tr7zw:item-nbt-api:2.13.2")
 
 }
 

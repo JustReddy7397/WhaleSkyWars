@@ -42,40 +42,40 @@ public class CustomChest {
         this.refillInsane = new ArrayList<>();
         this.minamount = configuration.getInteger("min-items");
         this.maxamount = configuration.getInteger("max-items");
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection basic = configuration.getSection("basic");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection basic = configuration.getSection("basic");
         for (String key : basic.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section
                     = basic.getSection(key);
             this.basic.add(new LootItem(section));
         }
 
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection normal = configuration.getSection("normal");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection normal = configuration.getSection("normal");
         for (String key : normal.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section = normal.getSection(key);
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section = normal.getSection(key);
             this.normal.add(new LootItem(section));
         }
 
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection insane = configuration.getSection("insane");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection insane = configuration.getSection("insane");
         for (String key : insane.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section = insane.getSection(key);
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section = insane.getSection(key);
             this.insane.add(new LootItem(section));
         }
 
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection refillBasic = configuration.getSection("refill_basic");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection refillBasic = configuration.getSection("refill_basic");
         for (String key : refillBasic.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section = refillBasic.getSection(key);
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section = refillBasic.getSection(key);
             this.refillBasic.add(new LootItem(section));
         }
 
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection refillNormal = configuration.getSection("refill_normal");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection refillNormal = configuration.getSection("refill_normal");
         for (String key : refillNormal.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section = refillNormal.getSection(key);
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section = refillNormal.getSection(key);
             this.refillNormal.add(new LootItem(section));
         }
 
-        ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection refillInsane = configuration.getSection("refill_insane");
+        ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection refillInsane = configuration.getSection("refill_insane");
         for (String key : refillInsane.keys()) {
-            ga.justreddy.wiki.whaleskywars.model.config.toml.ConfigurationSection section = refillInsane.getSection(key);
+            ga.justreddy.wiki.whaleskywars.shared.config.ConfigurationSection section = refillInsane.getSection(key);
             this.refillInsane.add(new LootItem(section));
         }
 

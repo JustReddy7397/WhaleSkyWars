@@ -2,7 +2,7 @@ package ga.justreddy.wiki.whaleskywars.supportold.spigot.socket;
 
 import ga.justreddy.wiki.whaleskywars.WhaleSkyWars;
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
-import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import ga.justreddy.wiki.whaleskywars.supportold.IMessengerReceiver;
 import ga.justreddy.wiki.whaleskywars.supportold.packets.Packet;

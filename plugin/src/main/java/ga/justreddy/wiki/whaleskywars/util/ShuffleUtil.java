@@ -2,7 +2,7 @@ package ga.justreddy.wiki.whaleskywars.util;
 
 import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.team.IGameTeam;
-import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 
 import java.util.Collections;
 import java.util.Comparator;

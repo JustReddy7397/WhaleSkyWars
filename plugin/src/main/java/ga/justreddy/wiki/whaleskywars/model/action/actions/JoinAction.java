@@ -6,7 +6,7 @@ import ga.justreddy.wiki.whaleskywars.api.model.game.IGame;
 import ga.justreddy.wiki.whaleskywars.api.model.game.enums.GameState;
 import ga.justreddy.wiki.whaleskywars.model.ServerMode;
 import ga.justreddy.wiki.whaleskywars.model.action.IAction;
-import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.model.game.Game;
 import ga.justreddy.wiki.whaleskywars.supportold.packets.packets.GameJoinPacket;
 import ga.justreddy.wiki.whaleskywars.util.ShuffleUtil;

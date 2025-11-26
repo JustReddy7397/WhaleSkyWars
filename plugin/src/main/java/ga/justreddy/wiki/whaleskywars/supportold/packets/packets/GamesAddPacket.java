@@ -1,6 +1,6 @@
 package ga.justreddy.wiki.whaleskywars.supportold.packets.packets;
 
-import ga.justreddy.wiki.whaleskywars.model.game.BungeeGame;
+import ga.justreddy.wiki.whaleskywars.shared.packet.packets.game.BungeeGame;
 import ga.justreddy.wiki.whaleskywars.supportold.packets.Packet;
 import ga.justreddy.wiki.whaleskywars.supportold.packets.PacketType;
 import lombok.Getter;

@@ -5,7 +5,6 @@ plugins {
 
 allprojects {
 
-
     repositories {
         mavenCentral()
         mavenLocal()
@@ -24,7 +23,6 @@ allprojects {
     }
 
 }
-
 
 
 group = 'ga.justreddy.wiki'
@@ -59,12 +57,24 @@ dependencies {
 ext.set('output', "jar/")
 
 shadowJar {
-    minimize()
+    minimize {
+        exclude(project(":shared"))
+        exclude(project(":api"))
+        exclude(project(":plugin"))
+        exclude(project(":bungeecord"))
+        exclude(project(":v1_8_R3"))
+        exclude(project(":v1_12_R1"))
+        exclude(project(":v1_14_R1"))
+    }
+    exclude("META-INF/**")
     def output = rootProject.ext.get('output')
     destinationDirectory = file("$output")
     archiveFileName = "WhaleSkyWars.jar"
-    relocate 'com.cryptomorin.xseries', 'ga.justreddy.wiki.whaleskywars.libs.xseries'
+    relocate "com.alessiodp.libby", "ga.justreddy.wiki.whaleskywars.libs.libby"
     relocate 'fr.mrmicky.fastboard', 'ga.justreddy.wiki.whaleskywars.libs.fastboard'
+    relocate "com.fasterxml.jackson", "ga.justreddy.wiki.whaleskywars.libs.jackson"
+    relocate "io.socket", "ga.justreddy.wiki.whaleskywars.libs.socketio"
+    relocate "com.corundumstudio.socketio", "ga.justreddy.wiki.whaleskywars.libs.nettysocketio"
 }
 
 tasks.build {
